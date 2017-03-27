@@ -1,0 +1,970 @@
+ MPI_INITIALIZED F
+ MPI_INITIALIZED F
+ MPI_INITIALIZED F
+ MPI_INITIALIZED F
+ MASTER PROCESSOR NUMBER            0  OF THE GROUP OF            4
+ EXECUTABLE FILE: /home/B61570/opentelemac/git/trunk/examples/sisyphe/sandpit/para/C9.gfortran.dyn/t2d_sandpit.cas_2017-02-22-03h28min14s/A.EXE
+ BARRIER PASSED
+ LISTING OF TELEMAC2D------------------------------------------------------------------------------
+
+                TTTTT  EEEEE  L      EEEEE  M   M  AAAAA  CCCCC
+                  T    E      L      E      MM MM  A   A  C
+                  T    EEE    L      EEE    M M M  AAAAA  C
+                  T    E      L      E      M   M  A   A  C
+                  T    EEEEE  LLLLL  EEEEE  M   M  A   A  CCCCC
+
+                        2D    VERSION TRUNK  FORTRAN 2003
+
+                        ~^~^~^~^~^~^~^~^~^~^~^^~^~^~^~^~^~
+                          ~                            ~
+                               \   '    o      '
+                               /\ o       \  o
+                             >=)'>    '   /\ '
+                               \/   \   >=)'>        ~
+                               /    /\    \/
+                        ~         >=)'>   /     .
+                                    \/                   )
+                                    /                   (
+                                          ~          )   )
+                          }     ~              (    (   (
+                         {                      )    )   )
+                          }  }         .       (    (   (
+                         {  {               /^^^^^^^^^^^^
+                        ^^^^^^^^^\         /
+                                  ^^^^^^^^^
+
+ WARNING IN DICTIONARY:
+ FOR KEYWORD: VARIABLES FOR GRAPHIC PRINTOUTS
+ THE NUMBER OF DEFAULT VALUES            1  IS DIFFERENT FROM THE DECLARED SIZE            4
+
+ THE KEY-WORD: PARALLEL PROCESSORS
+ APPPEARS AT LEAST TWICE , THE LAST VALUE WILL BE KEPT...
+
+ END OF FILE FOR DAMOCLES
+
+                   ********************************************
+                   *               LECDON:                    *
+                   *        AFTER CALLING DAMOCLES            *
+                   *        CHECKING OF DATA  READ            *
+                   *         IN THE STEERING FILE             *
+                   ********************************************
+
+ EXITING LECDON. NAME OF THE STUDY:
+
+ OPENING FILES FOR TELEMAC2D
+  - FILE    /home/B61570/opentelemac/git/trunk/examples/sisyphe/sandpit/para/C9.gfortran.dyn/t2d_sandpit.cas_2017-02-22-03h28min14s/T2DBI100003-00000 OF TYPE BIG_ENDIAN
+  - FILE    /home/B61570/opentelemac/git/trunk/examples/sisyphe/sandpit/para/C9.gfortran.dyn/t2d_sandpit.cas_2017-02-22-03h28min14s/T2DBI100003-00000 IS SINGLE PRECISION
+  - FILE    /home/B61570/opentelemac/git/trunk/examples/sisyphe/sandpit/para/C9.gfortran.dyn/t2d_sandpit.cas_2017-02-22-03h28min14s/T2DGEO00003-00000 OF TYPE BIG_ENDIAN
+  - FILE    /home/B61570/opentelemac/git/trunk/examples/sisyphe/sandpit/para/C9.gfortran.dyn/t2d_sandpit.cas_2017-02-22-03h28min14s/T2DGEO00003-00000 IS SINGLE PRECISION
+  - FILE    /home/B61570/opentelemac/git/trunk/examples/sisyphe/sandpit/para/C9.gfortran.dyn/t2d_sandpit.cas_2017-02-22-03h28min14s/T2DPRE00003-00000 OF TYPE BIG_ENDIAN
+  - FILE    /home/B61570/opentelemac/git/trunk/examples/sisyphe/sandpit/para/C9.gfortran.dyn/t2d_sandpit.cas_2017-02-22-03h28min14s/T2DPRE00003-00000 IS SINGLE PRECISION
+
+                          *****************************
+                          *    MEMORY ORGANIZATION    *
+                          *****************************
+
+ READ_MESH_INFO: TITLE= TELEMAC BINAER DATEI
+            NUMBER OF ELEMENTS:      401
+            NUMBER OF POINTS:      230
+
+            FORMAT NOT INDICATED IN TITLE
+
+ MXPTEL (BIEF) : MAXIMUM NUMBER OF ELEMENTS AROUND A POINT:   7
+                 MAXIMUM NUMBER OF POINTS AROUND A POINT:   8
+ (GLOBAL MESH)
+ SEGBOR (BIEF) : NUMBER OF BOUNDARY SEGMENTS =     57
+ INCLUDING THOSE DUE TO DOMAIN DECOMPOSITION
+ CORRXY (BIEF):NO MODIFICATION OF COORDINATES
+
+ MESH: MESH   ALLOCATED
+
+                     *************************************
+                     *    END OF MEMORY ORGANIZATION:    *
+                     *************************************
+
+ LISTING OF SISYPHE------------------------------------------------------------------------------
+
+                   SSSS I   SSSS Y   Y PPPP  H   H EEEEE
+                  S     I  S      Y Y  P   P H   H E
+                   SSS  I   SSS    Y   PPPP  HHHHH EEEE
+                      S I      S   Y   P     H   H E
+                  SSSS  I  SSSS    Y   P     H   H EEEEE
+
+                       VERSION TRUNK  FORTRAN 2003
+
+                                            ____
+                                     /^\   / -- )
+                                    / | \ (____/
+                                   / | | \ / /
+                                  /_|_|_|_/ /
+                                   |     / /
+                    __    __    __ |    / /__    __    __
+                   [  ]__[  ]__[  ].   / /[  ]__[  ]__[  ]
+                   |__            ____/ /___           __|
+                      |          / .------  )         |
+                      |         / /        /          |
+                      |        / /        /           |
+                   ~~~~~~~~~~~~-----------~~~~~~~~~~~~~~~~~~
+
+                     COUPLED WITH TELEMAC2D INTERNALLY
+
+                   ********************************************
+                   *               LECDON:                    *
+                   *        AFTER CALLING DAMOCLES            *
+                   *        CHECKING OF DATA  READ            *
+                   *         IN THE STEERING FILE             *
+                   ********************************************
+
+ OPENING FILES FOR SISYPHE
+  - FILE    /home/B61570/opentelemac/git/trunk/examples/sisyphe/sandpit/para/C9.gfortran.dyn/t2d_sandpit.cas_2017-02-22-03h28min14s/SISGEO00003-00000 OF TYPE BIG_ENDIAN
+  - FILE    /home/B61570/opentelemac/git/trunk/examples/sisyphe/sandpit/para/C9.gfortran.dyn/t2d_sandpit.cas_2017-02-22-03h28min14s/SISGEO00003-00000 IS SINGLE PRECISION
+  - FILE    /home/B61570/opentelemac/git/trunk/examples/sisyphe/sandpit/para/C9.gfortran.dyn/t2d_sandpit.cas_2017-02-22-03h28min14s/SISCOU00003-00000 OF TYPE BIG_ENDIAN
+  - FILE    /home/B61570/opentelemac/git/trunk/examples/sisyphe/sandpit/para/C9.gfortran.dyn/t2d_sandpit.cas_2017-02-22-03h28min14s/SISCOU00003-00000 IS SINGLE PRECISION
+
+                     *******************************
+                     *     MEMORY ORGANISATION     *
+                     *******************************
+
+ READ_MESH_INFO: TITLE= TELEMAC BINAER DATEI
+            NUMBER OF ELEMENTS:      401
+            NUMBER OF POINTS:      230
+
+            FORMAT NOT INDICATED IN TITLE
+
+ MXPTEL (BIEF) : MAXIMUM NUMBER OF ELEMENTS AROUND A POINT:   7
+                 MAXIMUM NUMBER OF POINTS AROUND A POINT:   8
+ (GLOBAL MESH)
+ SEGBOR (BIEF) : NUMBER OF BOUNDARY SEGMENTS =     57
+ INCLUDING THOSE DUE TO DOMAIN DECOMPOSITION
+ CORRXY (BIEF):NO MODIFICATION OF COORDINATES
+
+ MESH: MESH_S ALLOCATED
+
+                     *************************************
+                     *    END OF MEMORY ORGANIZATION:    *
+                     *************************************
+
+ INBIEF (BIEF): NOT A VECTOR MACHINE (ACCORDING TO YOUR DATA)
+ STRCHE (BIEF): NO MODIFICATION OF FRICTION
+
+ NUMBER OF LIQUID BOUNDARIES:           2
+
+ CORFON (TELEMAC2D): NO MODIFICATION OF BOTTOM
+
+ TITLE OF PREVIOUS COMPUTATION:
+
+ NAME: VELOCITY U        UNIT: M/S
+ NAME: VELOCITY V        UNIT: M/S
+ NAME: WATER DEPTH       UNIT: M
+ NAME: FREE SURFACE      UNIT: M
+ NAME: BOTTOM            UNIT: M
+ NAME: FROUDE NUMBER     UNIT:
+ NAME: SCALAR FLOWRATE   UNIT: M2/S
+
+ READ_DATASET : READ OF RECORD    11
+
+ TIME OF RECORD:     3600.000     S
+ ELAPSED TIME RESET TO ZERO
+
+================================================================================
+ ITERATION        0    TIME:   0.0000 S
+ TELEMAC2D COUPLED WITH: SISYPHE
+ TELEMAC-2D: INTERNAL COUPLING WITH SISYPHE
+ PART 0 : INITIALISING SISYPHE
+ INBIEF (BIEF): NOT A VECTOR MACHINE (ACCORDING TO YOUR DATA)
+
+ LIQUID BOUNDARIES:           2
+ STRCHE (BIEF): NO MODIFICATION OF FRICTION
+
+  LECTURE HOULE :tom_sandpit.slf
+
+ TITLE OF PREVIOUS COMPUTATION: SANDPIT benchmark 2: Waves crests normal to a trench
+
+ NAME: WAVE HEIGHT HM0   UNIT: M
+ NAME: MEAN DIRECTION    UNIT: DEG
+ NAME: FORCE FX          UNIT: M/S2
+ NAME: FORCE FY          UNIT: M/S2
+ NAME: BOTTOM VELOCITY   UNIT: M/S
+ NAME: MEAN FREQ FMOY    UNIT: HZ
+ NAME: MEAN FREQ FM01    UNIT: HZ
+ NAME: MEAN PERIOD TMOY  UNIT: S
+ NAME: PEAK PERIOD TPR5  UNIT: S
+
+ READ_DATASET : READ OF RECORD    25
+
+ TIME OF RECORD:     120.0000     S
+ INITIALISATION EN CAS DE COUPLAGE : PART=           0
+ QSCL REINITIALISED IN INIT_TRANSPORT
+ FOR CLASS            1
+ QS REINITIALISED IN INIT_TRANSPORT
+
+================================================================================
+ ITERATION        0    TIME:   0.0000 S
+
+ SISYPHE COUPLED WITH: TELEMAC2D
+
+================================================================================
+ ITERATION        1    TIME:   1.0000 S
+ THE LIQUID BOUNDARIES FILE CONTAINS
+           9  LINES WITH:
+ SL(1)    Q(1)     SL(2)    Q(2)
+ LIQUID BOUNDARY: SL(2)    =   2.5499999999999998
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999999
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999999
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999999
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999999
+--------------------------------------------------------------------------------
+                          ADVECTION STEP
+ USING STREAMLINE VERSION 7.2 FOR CHARACTERISTICS
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP
+
+ PROSOU: WAVE DRIVEN CURRENTS MODELLING
+          READING FILE AT TIME      5.000
+
+ GRACJG (BIEF) :       27 ITERATIONS, ABSOLUTE PRECISION:   0.9414846E-05
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME
+     VOLUME IN THE DOMAIN :    4940.001     M3
+     FLUX BOUNDARY    1:    -15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:     15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =        1.000     S :   -0.5123213E-06
+
+================================================================================
+ ITERATION     5692    TIME:  1 H 34 MIN  52.0000 S     (   5692.0000 S)
+
+ BEDLOAD EQUATION SOLVED IN     1 ITERATIONS
+CVTRVF_NERD (SCHEME NERD, 13 OR 14):   1 ITERATIONS
+ EQUNOR (BIEF) :        4 ITERATIONS, ABSOLUTE PRECISION:   0.1015935E-13
+ MAXIMAL CONCENTRATION    :    0.3915103E-03 %, NODE =       81
+ MINIMAL CONCENTRATION    :    0.3324365E-03 %, NODE =      683
+ MAXIMAL EVOLUTION        :    0.3883181E-05  , NODE =      859
+ MINIMAL EVOLUTION        :   -0.1116739E-05  , NODE =      841
+ MAX. CFL FOR SUSPENSION  :    0.8249988      , NODE =      568
+
+ MAXIMAL EVOLUTION        :    0.1085618E-04 NODE  :    459
+ MINIMAL EVOLUTION        :   -0.8409958E-05 NODE  :    844
+ TOTAL MAXIMAL EVOLUTION  :    0.6349438E-01 NODE  :    459
+ TOTAL MINIMAL EVOLUTION  :   -0.5289478E-01 NODE  :    844
+
+================================================================================
+ ITERATION     5693    TIME:  1 H 34 MIN  53.0000 S   (     5693.0000 S)
+ LIQUID BOUNDARY: SL(2)    =   2.5499999999999998
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999999
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999999
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999999
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999999
+--------------------------------------------------------------------------------
+                          ADVECTION STEP
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP
+ GRACJG (BIEF) :        4 ITERATIONS, ABSOLUTE PRECISION:   0.9824371E-05
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME
+     VOLUME IN THE DOMAIN :    4935.005     M3
+     FLUX BOUNDARY    1:    -15.96597     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:     15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =        5693.     S :    0.1250307E-06
+
+================================================================================
+ ITERATION    11384    TIME:  3 H  9 MIN  44.0000 S     (  11384.0000 S)
+
+ BEDLOAD EQUATION SOLVED IN     1 ITERATIONS
+CVTRVF_NERD (SCHEME NERD, 13 OR 14):   1 ITERATIONS
+ EQUNOR (BIEF) :        4 ITERATIONS, ABSOLUTE PRECISION:   0.9680868E-14
+ MAXIMAL CONCENTRATION    :    0.3915110E-03 %, NODE =      567
+ MINIMAL CONCENTRATION    :    0.3329780E-03 %, NODE =      682
+ MAXIMAL EVOLUTION        :    0.3861267E-05  , NODE =      859
+ MINIMAL EVOLUTION        :   -0.1053854E-05  , NODE =      841
+ MAX. CFL FOR SUSPENSION  :    0.8203863      , NODE =      568
+
+ MAXIMAL EVOLUTION        :    0.9997685E-05 NODE  :    783
+ MINIMAL EVOLUTION        :   -0.7207354E-05 NODE  :    844
+ TOTAL MAXIMAL EVOLUTION  :    0.1227203     NODE  :    459
+ TOTAL MINIMAL EVOLUTION  :   -0.9720012E-01 NODE  :    844
+
+================================================================================
+ ITERATION    11385    TIME:  3 H  9 MIN  45.0000 S   (    11385.0000 S)
+ LIQUID BOUNDARY: SL(2)    =   2.5499999999999998
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999999
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999999
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999999
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999999
+--------------------------------------------------------------------------------
+                          ADVECTION STEP
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP
+ GRACJG (BIEF) :        7 ITERATIONS, ABSOLUTE PRECISION:   0.7600699E-05
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME
+     VOLUME IN THE DOMAIN :    4928.651     M3
+     FLUX BOUNDARY    1:    -15.96598     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:     15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.1138E+05 S :    0.1425269E-06
+
+================================================================================
+ ITERATION    17076    TIME:  4 H 44 MIN  36.0000 S     (  17076.0000 S)
+
+ BEDLOAD EQUATION SOLVED IN     1 ITERATIONS
+CVTRVF_NERD (SCHEME NERD, 13 OR 14):   1 ITERATIONS
+ EQUNOR (BIEF) :        4 ITERATIONS, ABSOLUTE PRECISION:   0.8703302E-14
+ MAXIMAL CONCENTRATION    :    0.3915116E-03 %, NODE =       81
+ MINIMAL CONCENTRATION    :    0.3334727E-03 %, NODE =      439
+ MAXIMAL EVOLUTION        :    0.3867577E-05  , NODE =      454
+ MINIMAL EVOLUTION        :   -0.9902891E-06  , NODE =      840
+ MAX. CFL FOR SUSPENSION  :    0.8172741      , NODE =      568
+
+ MAXIMAL EVOLUTION        :    0.9835759E-05 NODE  :    458
+ MINIMAL EVOLUTION        :   -0.6258780E-05 NODE  :    763
+ TOTAL MAXIMAL EVOLUTION  :    0.1761608     NODE  :    459
+ TOTAL MINIMAL EVOLUTION  :   -0.1354151     NODE  :    844
+
+================================================================================
+ ITERATION    17077    TIME:  4 H 44 MIN  37.0000 S   (    17077.0000 S)
+ LIQUID BOUNDARY: SL(2)    =   2.5499999999999998
+ LIQUID BOUNDARY: Q(1)     =  -15.966000000000001
+ LIQUID BOUNDARY: Q(1)     =  -15.966000000000001
+ LIQUID BOUNDARY: Q(2)     =   15.966000000000001
+ LIQUID BOUNDARY: Q(2)     =   15.966000000000001
+--------------------------------------------------------------------------------
+                          ADVECTION STEP
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP
+ GRACJG (BIEF) :        3 ITERATIONS, ABSOLUTE PRECISION:   0.9306664E-05
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME
+     VOLUME IN THE DOMAIN :    4922.124     M3
+     FLUX BOUNDARY    1:    -15.96599     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:     15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.1708E+05 S :    0.3705963E-06
+
+================================================================================
+ ITERATION    22768    TIME:  6 H 19 MIN  28.0000 S     (  22768.0000 S)
+
+ BEDLOAD EQUATION SOLVED IN     1 ITERATIONS
+CVTRVF_NERD (SCHEME NERD, 13 OR 14):   1 ITERATIONS
+ EQUNOR (BIEF) :        4 ITERATIONS, ABSOLUTE PRECISION:   0.9343638E-14
+ MAXIMAL CONCENTRATION    :    0.3915336E-03 %, NODE =       80
+ MINIMAL CONCENTRATION    :    0.3341142E-03 %, NODE =      439
+ MAXIMAL EVOLUTION        :    0.3839609E-05  , NODE =      454
+ MINIMAL EVOLUTION        :   -0.9327667E-06  , NODE =      840
+ MAX. CFL FOR SUSPENSION  :    0.8151063      , NODE =      568
+
+ MAXIMAL EVOLUTION        :    0.9944793E-05 NODE  :    539
+ MINIMAL EVOLUTION        :   -0.5629264E-05 NODE  :    762
+ TOTAL MAXIMAL EVOLUTION  :    0.2232066     NODE  :    459
+ TOTAL MINIMAL EVOLUTION  :   -0.1687352     NODE  :    844
+
+================================================================================
+ ITERATION    22769    TIME:  6 H 19 MIN  29.0000 S   (    22769.0000 S)
+ LIQUID BOUNDARY: SL(2)    =   2.5499999999999998
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999999
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999999
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999999
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999999
+--------------------------------------------------------------------------------
+                          ADVECTION STEP
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP
+ GRACJG (BIEF) :        3 ITERATIONS, ABSOLUTE PRECISION:   0.9951781E-05
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME
+     VOLUME IN THE DOMAIN :    4915.473     M3
+     FLUX BOUNDARY    1:    -15.96599     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:     15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.2277E+05 S :    0.1853138E-06
+
+================================================================================
+ ITERATION    28460    TIME:  7 H 54 MIN  20.0000 S     (  28460.0000 S)
+
+ BEDLOAD EQUATION SOLVED IN     1 ITERATIONS
+CVTRVF_NERD (SCHEME NERD, 13 OR 14):   1 ITERATIONS
+ EQUNOR (BIEF) :        4 ITERATIONS, ABSOLUTE PRECISION:   0.9925687E-14
+ MAXIMAL CONCENTRATION    :    0.3915750E-03 %, NODE =       80
+ MINIMAL CONCENTRATION    :    0.3347481E-03 %, NODE =      681
+ MAXIMAL EVOLUTION        :    0.3809473E-05  , NODE =      454
+ MINIMAL EVOLUTION        :   -0.8653368E-06  , NODE =      839
+ MAX. CFL FOR SUSPENSION  :    0.8135938      , NODE =      568
+
+ MAXIMAL EVOLUTION        :    0.9899904E-05 NODE  :    539
+ MINIMAL EVOLUTION        :   -0.5174688E-05 NODE  :    519
+ TOTAL MAXIMAL EVOLUTION  :    0.2718524     NODE  :    458
+ TOTAL MINIMAL EVOLUTION  :   -0.1980380     NODE  :    844
+
+================================================================================
+ ITERATION    28461    TIME:  7 H 54 MIN  21.0000 S   (    28461.0000 S)
+ LIQUID BOUNDARY: SL(2)    =   2.5499999999999998
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999999
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999999
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999999
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999999
+--------------------------------------------------------------------------------
+                          ADVECTION STEP
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP
+ GRACJG (BIEF) :        7 ITERATIONS, ABSOLUTE PRECISION:   0.7011157E-05
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME
+     VOLUME IN THE DOMAIN :    4908.729     M3
+     FLUX BOUNDARY    1:    -15.96599     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:     15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.2846E+05 S :    0.3657755E-06
+
+================================================================================
+ ITERATION    34152    TIME:  9 H 29 MIN  12.0000 S     (  34152.0000 S)
+
+ BEDLOAD EQUATION SOLVED IN     1 ITERATIONS
+CVTRVF_NERD (SCHEME NERD, 13 OR 14):   1 ITERATIONS
+ EQUNOR (BIEF) :        4 ITERATIONS, ABSOLUTE PRECISION:   0.1049155E-13
+ MAXIMAL CONCENTRATION    :    0.3916116E-03 %, NODE =      566
+ MINIMAL CONCENTRATION    :    0.3353066E-03 %, NODE =      681
+ MAXIMAL EVOLUTION        :    0.3776903E-05  , NODE =      454
+ MINIMAL EVOLUTION        :   -0.8166590E-06  , NODE =      839
+ MAX. CFL FOR SUSPENSION  :    0.8124802      , NODE =      568
+
+ MAXIMAL EVOLUTION        :    0.9784836E-05 NODE  :    457
+ MINIMAL EVOLUTION        :   -0.4770195E-05 NODE  :    519
+ TOTAL MAXIMAL EVOLUTION  :    0.3244585     NODE  :    782
+ TOTAL MINIMAL EVOLUTION  :   -0.2239844     NODE  :    844
+
+================================================================================
+ ITERATION    34153    TIME:  9 H 29 MIN  13.0000 S   (    34153.0000 S)
+ LIQUID BOUNDARY: SL(2)    =   2.5500000000000003
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999999
+ LIQUID BOUNDARY: Q(1)     =  -15.966000000000001
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999999
+ LIQUID BOUNDARY: Q(2)     =   15.966000000000001
+--------------------------------------------------------------------------------
+                          ADVECTION STEP
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP
+ GRACJG (BIEF) :        4 ITERATIONS, ABSOLUTE PRECISION:   0.5468506E-05
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME
+     VOLUME IN THE DOMAIN :    4901.914     M3
+     FLUX BOUNDARY    1:    -15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:     15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.3415E+05 S :    0.4026701E-06
+
+================================================================================
+ ITERATION    39844    TIME: 11 H  4 MIN   4.0000 S     (  39844.0000 S)
+
+ BEDLOAD EQUATION SOLVED IN     1 ITERATIONS
+CVTRVF_NERD (SCHEME NERD, 13 OR 14):   1 ITERATIONS
+ EQUNOR (BIEF) :        4 ITERATIONS, ABSOLUTE PRECISION:   0.1106182E-13
+ MAXIMAL CONCENTRATION    :    0.3916480E-03 %, NODE =      485
+ MINIMAL CONCENTRATION    :    0.3359139E-03 %, NODE =      681
+ MAXIMAL EVOLUTION        :    0.3753449E-05  , NODE =      453
+ MINIMAL EVOLUTION        :   -0.7612766E-06  , NODE =      839
+ MAX. CFL FOR SUSPENSION  :    0.8116106      , NODE =      568
+
+ MAXIMAL EVOLUTION        :    0.9832847E-05 NODE  :    781
+ MINIMAL EVOLUTION        :   -0.4375348E-05 NODE  :    519
+ TOTAL MAXIMAL EVOLUTION  :    0.3763421     NODE  :    539
+ TOTAL MINIMAL EVOLUTION  :   -0.2470829     NODE  :    844
+
+================================================================================
+ ITERATION    39845    TIME: 11 H  4 MIN   5.0000 S   (    39845.0000 S)
+ LIQUID BOUNDARY: SL(2)    =   2.5499999999999998
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999999
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999999
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999999
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999999
+--------------------------------------------------------------------------------
+                          ADVECTION STEP
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP
+ GRACJG (BIEF) :        4 ITERATIONS, ABSOLUTE PRECISION:   0.9170696E-05
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME
+     VOLUME IN THE DOMAIN :    4895.045     M3
+     FLUX BOUNDARY    1:    -15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:     15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.3984E+05 S :    0.1188710E-06
+
+================================================================================
+ ITERATION    45536    TIME: 12 H 38 MIN  56.0000 S     (  45536.0000 S)
+
+ BEDLOAD EQUATION SOLVED IN     1 ITERATIONS
+CVTRVF_NERD (SCHEME NERD, 13 OR 14):   1 ITERATIONS
+ EQUNOR (BIEF) :        4 ITERATIONS, ABSOLUTE PRECISION:   0.1163408E-13
+ MAXIMAL CONCENTRATION    :    0.3916814E-03 %, NODE =      485
+ MINIMAL CONCENTRATION    :    0.3365131E-03 %, NODE =      680
+ MAXIMAL EVOLUTION        :    0.3730356E-05  , NODE =      453
+ MINIMAL EVOLUTION        :   -0.7004217E-06  , NODE =      838
+ MAX. CFL FOR SUSPENSION  :    0.8109503      , NODE =      568
+
+ MAXIMAL EVOLUTION        :    0.9890322E-05 NODE  :    538
+ MINIMAL EVOLUTION        :   -0.4001702E-05 NODE  :    519
+ TOTAL MAXIMAL EVOLUTION  :    0.4255783     NODE  :    539
+ TOTAL MINIMAL EVOLUTION  :   -0.2677335     NODE  :    844
+
+================================================================================
+ ITERATION    45537    TIME: 12 H 38 MIN  57.0000 S   (    45537.0000 S)
+ LIQUID BOUNDARY: SL(2)    =   2.5499999999999998
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999998
+ LIQUID BOUNDARY: Q(1)     =  -15.966000000000001
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999998
+ LIQUID BOUNDARY: Q(2)     =   15.966000000000001
+--------------------------------------------------------------------------------
+                          ADVECTION STEP
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP
+ GRACJG (BIEF) :        4 ITERATIONS, ABSOLUTE PRECISION:   0.8352809E-05
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME
+     VOLUME IN THE DOMAIN :    4888.142     M3
+     FLUX BOUNDARY    1:    -15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:     15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.4554E+05 S :    0.3436966E-06
+
+================================================================================
+ ITERATION    51228    TIME: 14 H 13 MIN  48.0000 S     (  51228.0000 S)
+
+ BEDLOAD EQUATION SOLVED IN     1 ITERATIONS
+CVTRVF_NERD (SCHEME NERD, 13 OR 14):   1 ITERATIONS
+ EQUNOR (BIEF) :        4 ITERATIONS, ABSOLUTE PRECISION:   0.1219346E-13
+ MAXIMAL CONCENTRATION    :    0.3917209E-03 %, NODE =       79
+ MINIMAL CONCENTRATION    :    0.3371001E-03 %, NODE =      680
+ MAXIMAL EVOLUTION        :    0.3705439E-05  , NODE =      453
+ MINIMAL EVOLUTION        :   -0.6793015E-06  , NODE =      510
+ MAX. CFL FOR SUSPENSION  :    0.8103736      , NODE =      568
+
+ MAXIMAL EVOLUTION        :    0.9795930E-05 NODE  :    780
+ MINIMAL EVOLUTION        :   -0.3656241E-05 NODE  :    519
+ TOTAL MAXIMAL EVOLUTION  :    0.4697275     NODE  :    539
+ TOTAL MINIMAL EVOLUTION  :   -0.2862567     NODE  :    844
+
+================================================================================
+ ITERATION    51229    TIME: 14 H 13 MIN  49.0000 S   (    51229.0000 S)
+ LIQUID BOUNDARY: SL(2)    =   2.5499999999999998
+ LIQUID BOUNDARY: Q(1)     =  -15.966000000000001
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999999
+ LIQUID BOUNDARY: Q(2)     =   15.966000000000001
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999999
+--------------------------------------------------------------------------------
+                          ADVECTION STEP
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP
+ GRACJG (BIEF) :        6 ITERATIONS, ABSOLUTE PRECISION:   0.9489156E-05
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME
+     VOLUME IN THE DOMAIN :    4881.208     M3
+     FLUX BOUNDARY    1:    -15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:     15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.5123E+05 S :    0.1732560E-06
+
+================================================================================
+ ITERATION    56920    TIME: 15 H 48 MIN  40.0000 S     (  56920.0000 S)
+
+ BEDLOAD EQUATION SOLVED IN     1 ITERATIONS
+CVTRVF_NERD (SCHEME NERD, 13 OR 14):   1 ITERATIONS
+ EQUNOR (BIEF) :        4 ITERATIONS, ABSOLUTE PRECISION:   0.1272868E-13
+ MAXIMAL CONCENTRATION    :    0.3917602E-03 %, NODE =      565
+ MINIMAL CONCENTRATION    :    0.3377262E-03 %, NODE =      680
+ MAXIMAL EVOLUTION        :    0.3678289E-05  , NODE =      453
+ MINIMAL EVOLUTION        :   -0.6611986E-06  , NODE =      510
+ MAX. CFL FOR SUSPENSION  :    0.8098956      , NODE =      568
+
+ MAXIMAL EVOLUTION        :    0.1010077E-04 NODE  :    537
+ MINIMAL EVOLUTION        :   -0.3338096E-05 NODE  :    519
+ TOTAL MAXIMAL EVOLUTION  :    0.5184024     NODE  :    457
+ TOTAL MINIMAL EVOLUTION  :   -0.3047473     NODE  :    438
+
+================================================================================
+ ITERATION    56921    TIME: 15 H 48 MIN  41.0000 S   (    56921.0000 S)
+ LIQUID BOUNDARY: SL(2)    =   2.5499999999999998
+ LIQUID BOUNDARY: Q(1)     =  -15.966000000000001
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999998
+ LIQUID BOUNDARY: Q(2)     =   15.966000000000001
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999998
+--------------------------------------------------------------------------------
+                          ADVECTION STEP
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP
+ GRACJG (BIEF) :        5 ITERATIONS, ABSOLUTE PRECISION:   0.9529691E-05
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME
+     VOLUME IN THE DOMAIN :    4874.258     M3
+     FLUX BOUNDARY    1:    -15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:     15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.5692E+05 S :    0.3650774E-06
+
+================================================================================
+ ITERATION    62612    TIME: 17 H 23 MIN  32.0000 S     (  62612.0000 S)
+
+ BEDLOAD EQUATION SOLVED IN     1 ITERATIONS
+CVTRVF_NERD (SCHEME NERD, 13 OR 14):   1 ITERATIONS
+ EQUNOR (BIEF) :        4 ITERATIONS, ABSOLUTE PRECISION:   0.1322812E-13
+ MAXIMAL CONCENTRATION    :    0.3917996E-03 %, NODE =      564
+ MINIMAL CONCENTRATION    :    0.3383330E-03 %, NODE =      679
+ MAXIMAL EVOLUTION        :    0.3648678E-05  , NODE =      453
+ MINIMAL EVOLUTION        :   -0.6453841E-06  , NODE =      509
+ MAX. CFL FOR SUSPENSION  :    0.8094263      , NODE =      568
+
+ MAXIMAL EVOLUTION        :    0.1031405E-04 NODE  :    537
+ MINIMAL EVOLUTION        :   -0.3087806E-05 NODE  :    518
+ TOTAL MAXIMAL EVOLUTION  :    0.5670975     NODE  :    457
+ TOTAL MINIMAL EVOLUTION  :   -0.3221050     NODE  :    438
+
+================================================================================
+ ITERATION    62613    TIME: 17 H 23 MIN  33.0000 S   (    62613.0000 S)
+ LIQUID BOUNDARY: SL(2)    =   2.5499999999999998
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999998
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999999
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999998
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999999
+--------------------------------------------------------------------------------
+                          ADVECTION STEP
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP
+ GRACJG (BIEF) :        4 ITERATIONS, ABSOLUTE PRECISION:   0.7843652E-05
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME
+     VOLUME IN THE DOMAIN :    4867.301     M3
+     FLUX BOUNDARY    1:    -15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:     15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.6261E+05 S :    0.7664607E-07
+
+================================================================================
+ ITERATION    68304    TIME: 18 H 58 MIN  24.0000 S     (  68304.0000 S)
+
+ BEDLOAD EQUATION SOLVED IN     1 ITERATIONS
+CVTRVF_NERD (SCHEME NERD, 13 OR 14):   1 ITERATIONS
+ EQUNOR (BIEF) :        4 ITERATIONS, ABSOLUTE PRECISION:   0.1368393E-13
+ MAXIMAL CONCENTRATION    :    0.3918478E-03 %, NODE =      564
+ MINIMAL CONCENTRATION    :    0.3389421E-03 %, NODE =      679
+ MAXIMAL EVOLUTION        :    0.3616056E-05  , NODE =      453
+ MINIMAL EVOLUTION        :   -0.6290508E-06  , NODE =      509
+ MAX. CFL FOR SUSPENSION  :    0.8090399      , NODE =       82
+
+ MAXIMAL EVOLUTION        :    0.1038618E-04 NODE  :    537
+ MINIMAL EVOLUTION        :   -0.2885062E-05 NODE  :    518
+ TOTAL MAXIMAL EVOLUTION  :    0.6121599     NODE  :    781
+ TOTAL MINIMAL EVOLUTION  :   -0.3379852     NODE  :    438
+
+================================================================================
+ ITERATION    68305    TIME: 18 H 58 MIN  25.0000 S   (    68305.0000 S)
+ LIQUID BOUNDARY: SL(2)    =   2.5499999999999998
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999999
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999998
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999999
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999998
+--------------------------------------------------------------------------------
+                          ADVECTION STEP
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP
+ GRACJG (BIEF) :        3 ITERATIONS, ABSOLUTE PRECISION:   0.8509621E-05
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME
+     VOLUME IN THE DOMAIN :    4860.337     M3
+     FLUX BOUNDARY    1:    -15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:     15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.6830E+05 S :    0.3952452E-06
+
+================================================================================
+ ITERATION    73996    TIME: 20 H 33 MIN  16.0000 S     (  73996.0000 S)
+
+ BEDLOAD EQUATION SOLVED IN     1 ITERATIONS
+CVTRVF_NERD (SCHEME NERD, 13 OR 14):   1 ITERATIONS
+ EQUNOR (BIEF) :        4 ITERATIONS, ABSOLUTE PRECISION:   0.1409985E-13
+ MAXIMAL CONCENTRATION    :    0.3918901E-03 %, NODE =       78
+ MINIMAL CONCENTRATION    :    0.3395810E-03 %, NODE =      679
+ MAXIMAL EVOLUTION        :    0.3579943E-05  , NODE =      453
+ MINIMAL EVOLUTION        :   -0.6126766E-06  , NODE =      509
+ MAX. CFL FOR SUSPENSION  :    0.8086244      , NODE =      568
+
+ MAXIMAL EVOLUTION        :    0.1027560E-04 NODE  :    537
+ MINIMAL EVOLUTION        :   -0.2689254E-05 NODE  :    518
+ TOTAL MAXIMAL EVOLUTION  :    0.6556309     NODE  :    537
+ TOTAL MINIMAL EVOLUTION  :   -0.3525183     NODE  :    438
+
+================================================================================
+ ITERATION    73997    TIME: 20 H 33 MIN  17.0000 S   (    73997.0000 S)
+ LIQUID BOUNDARY: SL(2)    =   2.5499999999999998
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999999
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999998
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999999
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999998
+--------------------------------------------------------------------------------
+                          ADVECTION STEP
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP
+ GRACJG (BIEF) :        6 ITERATIONS, ABSOLUTE PRECISION:   0.7862661E-05
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME
+     VOLUME IN THE DOMAIN :    4853.377     M3
+     FLUX BOUNDARY    1:    -15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:     15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.7400E+05 S :    0.1180543E-06
+
+================================================================================
+ ITERATION    79688    TIME: 22 H  8 MIN   8.0000 S     (  79688.0000 S)
+
+ BEDLOAD EQUATION SOLVED IN     1 ITERATIONS
+CVTRVF_NERD (SCHEME NERD, 13 OR 14):   1 ITERATIONS
+ EQUNOR (BIEF) :        4 ITERATIONS, ABSOLUTE PRECISION:   0.1448109E-13
+ MAXIMAL CONCENTRATION    :    0.3919369E-03 %, NODE =       77
+ MINIMAL CONCENTRATION    :    0.3401819E-03 %, NODE =      678
+ MAXIMAL EVOLUTION        :    0.3551372E-05  , NODE =      452
+ MINIMAL EVOLUTION        :   -0.5955148E-06  , NODE =      509
+ MAX. CFL FOR SUSPENSION  :    0.8082781      , NODE =      568
+
+ MAXIMAL EVOLUTION        :    0.1057687E-04 NODE  :     50
+ MINIMAL EVOLUTION        :   -0.2501029E-05 NODE  :    518
+ TOTAL MAXIMAL EVOLUTION  :    0.7133116     NODE  :    537
+ TOTAL MINIMAL EVOLUTION  :   -0.3658192     NODE  :    438
+
+================================================================================
+ ITERATION    79689    TIME: 22 H  8 MIN   9.0000 S   (    79689.0000 S)
+ LIQUID BOUNDARY: SL(2)    =   2.5499999999999998
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999998
+ LIQUID BOUNDARY: Q(1)     =  -15.966000000000001
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999998
+ LIQUID BOUNDARY: Q(2)     =   15.966000000000001
+--------------------------------------------------------------------------------
+                          ADVECTION STEP
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP
+ GRACJG (BIEF) :        7 ITERATIONS, ABSOLUTE PRECISION:   0.8935344E-05
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME
+     VOLUME IN THE DOMAIN :    4846.422     M3
+     FLUX BOUNDARY    1:    -15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:     15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.7969E+05 S :    0.3702951E-06
+
+================================================================================
+ ITERATION    85380    TIME: 23 H 43 MIN   0.0000 S     (  85380.0000 S)
+
+ BEDLOAD EQUATION SOLVED IN     1 ITERATIONS
+CVTRVF_NERD (SCHEME NERD, 13 OR 14):   1 ITERATIONS
+ EQUNOR (BIEF) :        3 ITERATIONS, ABSOLUTE PRECISION:   0.9989187E-12
+ MAXIMAL CONCENTRATION    :    0.3919845E-03 %, NODE =      563
+ MINIMAL CONCENTRATION    :    0.3408044E-03 %, NODE =      678
+ MAXIMAL EVOLUTION        :    0.3523228E-05  , NODE =      452
+ MINIMAL EVOLUTION        :   -0.5779127E-06  , NODE =      509
+ MAX. CFL FOR SUSPENSION  :    0.8079076      , NODE =      568
+
+ MAXIMAL EVOLUTION        :    0.1090237E-04 NODE  :    536
+ MINIMAL EVOLUTION        :   -0.2348988E-05 NODE  :    517
+ TOTAL MAXIMAL EVOLUTION  :    0.7685241     NODE  :    537
+ TOTAL MINIMAL EVOLUTION  :   -0.3779893     NODE  :    438
+
+================================================================================
+ ITERATION    85381    TIME: 23 H 43 MIN   1.0000 S   (    85381.0000 S)
+ LIQUID BOUNDARY: SL(2)    =   2.5499999999999998
+ LIQUID BOUNDARY: Q(1)     =  -15.966000000000001
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999999
+ LIQUID BOUNDARY: Q(2)     =   15.966000000000001
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999999
+--------------------------------------------------------------------------------
+                          ADVECTION STEP
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP
+ GRACJG (BIEF) :        4 ITERATIONS, ABSOLUTE PRECISION:   0.9520577E-05
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME
+     VOLUME IN THE DOMAIN :    4839.478     M3
+     FLUX BOUNDARY    1:    -15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:     15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.8538E+05 S :    0.1686295E-06
+
+================================================================================
+ ITERATION    91072    TIME:    1 D  1 H 17 MN  52.0000 S     (     91072.0000 S)
+
+ BEDLOAD EQUATION SOLVED IN     1 ITERATIONS
+CVTRVF_NERD (SCHEME NERD, 13 OR 14):   1 ITERATIONS
+ EQUNOR (BIEF) :        3 ITERATIONS, ABSOLUTE PRECISION:   0.9968490E-12
+ MAXIMAL CONCENTRATION    :    0.3920269E-03 %, NODE =       77
+ MINIMAL CONCENTRATION    :    0.3414463E-03 %, NODE =      677
+ MAXIMAL EVOLUTION        :    0.3492601E-05  , NODE =      452
+ MINIMAL EVOLUTION        :   -0.5613983E-06  , NODE =      508
+ MAX. CFL FOR SUSPENSION  :    0.8075701      , NODE =      568
+
+ MAXIMAL EVOLUTION        :    0.1109532E-04 NODE  :    536
+ MINIMAL EVOLUTION        :   -0.2215960E-05 NODE  :    517
+ TOTAL MAXIMAL EVOLUTION  :    0.8200041     NODE  :    537
+ TOTAL MINIMAL EVOLUTION  :   -0.3891186     NODE  :    438
+
+================================================================================
+ ITERATION    91073    TIME:    1 D  1 H 17 MN  53.0000 S   (    91073.0000 S)
+ LIQUID BOUNDARY: SL(2)    =   2.5499999999999998
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999999
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999999
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999999
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999999
+--------------------------------------------------------------------------------
+                          ADVECTION STEP
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP
+ GRACJG (BIEF) :        4 ITERATIONS, ABSOLUTE PRECISION:   0.8713298E-05
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME
+     VOLUME IN THE DOMAIN :    4832.557     M3
+     FLUX BOUNDARY    1:    -15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:     15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.9107E+05 S :    0.2205947E-06
+
+================================================================================
+ ITERATION    96764    TIME:    1 D  2 H 52 MN  44.0000 S     (     96764.0000 S)
+
+ BEDLOAD EQUATION SOLVED IN     1 ITERATIONS
+CVTRVF_NERD (SCHEME NERD, 13 OR 14):   1 ITERATIONS
+ EQUNOR (BIEF) :        3 ITERATIONS, ABSOLUTE PRECISION:   0.9948803E-12
+ MAXIMAL CONCENTRATION    :    0.3920723E-03 %, NODE =      562
+ MINIMAL CONCENTRATION    :    0.3420557E-03 %, NODE =      677
+ MAXIMAL EVOLUTION        :    0.3458986E-05  , NODE =      452
+ MINIMAL EVOLUTION        :   -0.5453813E-06  , NODE =      508
+ MAX. CFL FOR SUSPENSION  :    0.8072396      , NODE =       82
+
+ MAXIMAL EVOLUTION        :    0.1111237E-04 NODE  :    536
+ MINIMAL EVOLUTION        :   -0.2085191E-05 NODE  :    517
+ TOTAL MAXIMAL EVOLUTION  :    0.8666032     NODE  :    537
+ TOTAL MINIMAL EVOLUTION  :   -0.3992871     NODE  :    438
+
+================================================================================
+ ITERATION    96765    TIME:    1 D  2 H 52 MN  45.0000 S   (    96765.0000 S)
+ LIQUID BOUNDARY: SL(2)    =   2.5499999999999998
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999999
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999999
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999999
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999999
+--------------------------------------------------------------------------------
+                          ADVECTION STEP
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP
+ GRACJG (BIEF) :        5 ITERATIONS, ABSOLUTE PRECISION:   0.9255838E-05
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME
+     VOLUME IN THE DOMAIN :    4825.648     M3
+     FLUX BOUNDARY    1:    -15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:     15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.9676E+05 S :    0.3204715E-06
+
+================================================================================
+ ITERATION   102456    TIME:    1 D  4 H 27 MN  36.0000 S     (    102456.0000 S)
+
+ BEDLOAD EQUATION SOLVED IN     1 ITERATIONS
+CVTRVF_NERD (SCHEME NERD, 13 OR 14):   1 ITERATIONS
+ EQUNOR (BIEF) :        3 ITERATIONS, ABSOLUTE PRECISION:   0.9928977E-12
+ MAXIMAL CONCENTRATION    :    0.3921179E-03 %, NODE =      562
+ MINIMAL CONCENTRATION    :    0.3426856E-03 %, NODE =      677
+ MAXIMAL EVOLUTION        :    0.3421817E-05  , NODE =      452
+ MINIMAL EVOLUTION        :   -0.5287612E-06  , NODE =      508
+ MAX. CFL FOR SUSPENSION  :    0.8069263      , NODE =      568
+
+ MAXIMAL EVOLUTION        :    0.1091465E-04 NODE  :    536
+ MINIMAL EVOLUTION        :   -0.1957069E-05 NODE  :     31
+ TOTAL MAXIMAL EVOLUTION  :    0.9074184     NODE  :    537
+ TOTAL MINIMAL EVOLUTION  :   -0.4085660     NODE  :    438
+
+================================================================================
+ ITERATION   102457    TIME:    1 D  4 H 27 MN  37.0000 S   (   102457.0000 S)
+ LIQUID BOUNDARY: SL(2)    =   2.5499999999999998
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999999
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999999
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999999
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999999
+--------------------------------------------------------------------------------
+                          ADVECTION STEP
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP
+ GRACJG (BIEF) :        6 ITERATIONS, ABSOLUTE PRECISION:   0.7555821E-05
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME
+     VOLUME IN THE DOMAIN :    4818.766     M3
+     FLUX BOUNDARY    1:    -15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:     15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.1025E+06 S :    0.3474029E-06
+
+================================================================================
+ ITERATION   108148    TIME:    1 D  6 H  2 MN  28.0000 S     (    108148.0000 S)
+
+ BEDLOAD EQUATION SOLVED IN     1 ITERATIONS
+CVTRVF_NERD (SCHEME NERD, 13 OR 14):   1 ITERATIONS
+ EQUNOR (BIEF) :        3 ITERATIONS, ABSOLUTE PRECISION:   0.9909278E-12
+ MAXIMAL CONCENTRATION    :    0.3921583E-03 %, NODE =      562
+ MINIMAL CONCENTRATION    :    0.3433344E-03 %, NODE =      677
+ MAXIMAL EVOLUTION        :    0.3380319E-05  , NODE =      452
+ MINIMAL EVOLUTION        :   -0.5113769E-06  , NODE =      508
+ MAX. CFL FOR SUSPENSION  :    0.8066277      , NODE =       82
+
+ MAXIMAL EVOLUTION        :    0.1047966E-04 NODE  :    536
+ MINIMAL EVOLUTION        :   -0.1833344E-05 NODE  :    517
+ TOTAL MAXIMAL EVOLUTION  :    0.9418993     NODE  :    537
+ TOTAL MINIMAL EVOLUTION  :   -0.4170192     NODE  :    438
+
+================================================================================
+ ITERATION   108149    TIME:    1 D  6 H  2 MN  29.0000 S   (   108149.0000 S)
+ LIQUID BOUNDARY: SL(2)    =   2.5499999999999998
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999999
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999999
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999999
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999999
+--------------------------------------------------------------------------------
+                          ADVECTION STEP
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP
+ GRACJG (BIEF) :        3 ITERATIONS, ABSOLUTE PRECISION:   0.9770059E-05
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME
+     VOLUME IN THE DOMAIN :    4811.911     M3
+     FLUX BOUNDARY    1:    -15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:     15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.1081E+06 S :    0.2884110E-06
+
+================================================================================
+ ITERATION   113840    TIME:    1 D  7 H 37 MN  20.0000 S     (    113840.0000 S)
+
+ BEDLOAD EQUATION SOLVED IN     1 ITERATIONS
+CVTRVF_NERD (SCHEME NERD, 13 OR 14):   1 ITERATIONS
+ EQUNOR (BIEF) :        3 ITERATIONS, ABSOLUTE PRECISION:   0.9888737E-12
+ MAXIMAL CONCENTRATION    :    0.3922043E-03 %, NODE =      561
+ MINIMAL CONCENTRATION    :    0.3439518E-03 %, NODE =      676
+ MAXIMAL EVOLUTION        :    0.3348000E-05  , NODE =      451
+ MINIMAL EVOLUTION        :   -0.4933824E-06  , NODE =      508
+ MAX. CFL FOR SUSPENSION  :    0.8063184      , NODE =       82
+
+ MAXIMAL EVOLUTION        :    0.1068642E-04 NODE  :     49
+ MINIMAL EVOLUTION        :   -0.1727167E-05 NODE  :    516
+ TOTAL MAXIMAL EVOLUTION  :    0.9949326     NODE  :     50
+ TOTAL MINIMAL EVOLUTION  :   -0.4247039     NODE  :    438
+
+================================================================================
+ ITERATION   113841    TIME:    1 D  7 H 37 MN  21.0000 S   (   113841.0000 S)
+ LIQUID BOUNDARY: SL(2)    =   2.5500000000000003
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999999
+ LIQUID BOUNDARY: Q(1)     =  -15.965999999999999
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999999
+ LIQUID BOUNDARY: Q(2)     =   15.965999999999999
+--------------------------------------------------------------------------------
+                          ADVECTION STEP
+--------------------------------------------------------------------------------
+                    DIFFUSION-PROPAGATION STEP
+ GRACJG (BIEF) :        4 ITERATIONS, ABSOLUTE PRECISION:   0.9670135E-05
+--------------------------------------------------------------------------------
+                       BALANCE OF WATER VOLUME
+     VOLUME IN THE DOMAIN :    4805.082     M3
+     FLUX BOUNDARY    1:    -15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     FLUX BOUNDARY    2:     15.96600     M3/S  ( >0 : ENTERING  <0 : EXITING )
+     RELATIVE ERROR IN VOLUME AT T =       0.1138E+06 S :    0.1169366E-06
+--------------------------------------------------------------------------------
+                   FINAL BALANCE OF WATER VOLUME
+
+     RELATIVE ERROR CUMULATED ON VOLUME:    0.2744400E-01
+
+     INITIAL VOLUME              :     4939.999     M3
+     FINAL VOLUME                :     4805.082     M3
+     VOLUME THAT ENTERED THE DOMAIN:    0.6567286     M3  ( IF <0 EXIT )
+     TOTAL VOLUME LOST             :     135.5733     M3
+
+ END OF TIME LOOP
+
+ EXITING MPI
+
+ CORRECT END OF RUN
+
+ ELAPSE TIME :
+                              1  MINUTES
+                             53  SECONDS

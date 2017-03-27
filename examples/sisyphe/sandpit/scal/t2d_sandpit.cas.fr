@@ -1,0 +1,118 @@
+/****************************************************************
+/                      STEERING FILE
+/                       TELEMAC-2D
+/****************************************************************
+
+
+
+/ Dell 2.8 GHz Linux, compilateur pgi :  9562 s version 5.7 JMH 18/05/2007
+/ HP C3700, compilateur HP            : 15187 s version 5.7
+/ HP C3700, compilateur Nag           : 44002 s version 5.7
+
+/ Version 5.8
+/ Dell 2.8 GHz Linux, compilateur pgi : ????? s
+/ HP C3700, compilateur HP            : 14805 s JMH 25/01/2008
+/ HP C3700, compilateur Nag           : 43419 s JMH 01/02/2008
+
+/----------------------------------------------------------------
+/	INPUTS-OUTPUTS, FILES (1)
+/----------------------------------------------------------------
+/TITE                                          =  'crue '
+/ maillage de base DX=10 m
+/                  7000 points environ
+
+ FICHIER DE GEOMETRIE                                  =  geo_sandpit.slf
+ FICHIER DES CONDITIONS AUX LIMITES                       =  geo_sandpit.cli
+ FICHIER DE DONNEES BINAIRE 1                             =  tom_sandpit.slf
+ FORMAT DU FICHIER DE DONNEES BINAIRE 1                      =  SERAFIN
+ FICHIER DES PARAMETRES DE SISYPHE                          =  sis_sandpit.cas
+ FICHIER DES RESULTATS                                   =  r2d_sandpit.slf
+ NUMERO DE L'ENREGISTREMENT DANS LE FICHIER DE HOULE = 2
+/ uniform grain
+
+
+/----------------------------------------------------------------
+/	DUREE DU CALCUL (2)
+/----------------------------------------------------------------
+/ durée de simulation sur 10 jours:
+/ si méthode des caractéristiques;
+ PAS DE TEMPS                                      =  1.0
+ NOMBRE DE PAS DE TEMPS                           =  113841
+ PERIODE POUR LES SORTIES GRAPHIQUES                        =  5692
+ PERIODE DE SORTIE LISTING                        =  5692
+
+/----------------------------------------------------------------
+/	INPUT-OUTPUT, GRAPHICS AND LISTINGS (3)
+/----------------------------------------------------------------
+ VARIABLES POUR LES SORTIES GRAPHIQUES                =
+ U,V,S,B,Q,F,H,HM0,DMOY,FM01,TMOY,ZF,FX,FY,TPR5
+/----------------------------------------------------------------
+/	INITIAL CONDITIONS (4)
+/----------------------------------------------------------------
+ REMISE A ZERO DU TEMPS                       =  YES
+ SUITE DE CALCUL                          =  YES
+ COTE INITIALE                              =  2.55
+ FICHIER DU CALCUL PRECEDENT                      =  t2d_init_sandpit.slf
+/----------------------------------------------------------------
+/	BOUNDARY CONDITIONS (5)
+/----------------------------------------------------------------
+
+ FICHIER DES FRONTIERES LIQUIDES                         =  LBScale.txt
+
+/----------------------------------------------------------------
+/	PHYSICAL PARAMETERS (7)
+/----------------------------------------------------------------
+ COURANTS DE HOULE                           = YES
+ OPTION DE TRAITEMENT DES BANCS DECOUVRANTS        =  1
+ BANCS DECOUVRANTS                                    =  NO
+ MASS-LUMPING SUR H                              =  1.
+/TYPE OF ADVECTION                              =  6;5
+ FORME DE LA CONVECTION                              =  1;5
+/ H;U
+/ 1 : CARACTERISTIQUES
+/ 2 : SUPG
+/ 5 : CONSERVATIF
+/ 6 : SCHEMA PSI
+/ 7 : SCHEMA N
+ SOLVEUR                                         =  1/ 7
+/ 1 : gradient conjuge
+/ 2 : residu conjuge
+/ 3 : equation normale
+/ 4 : erreur minimale
+/ 6 : cgstab
+/ 7 : gmres
+ OPTION DU SOLVEUR                                  =  3
+/ TRY VALUES BETWEEN 2 AND 15
+ PRECISION DU SOLVEUR                                =  1.E-5
+ IMPLICITATION POUR LA HAUTEUR                        =  1.0/ 0.6
+ IMPLICITATION POUR LA VITESSE                     =  1.0
+ IMPLICITATION POUR LA DIFFUSION DES VITESSES        =  1.0
+ MAXIMUM D'ITERATIONS POUR LE SOLVEUR        =  350
+ INFORMATIONS SUR LE SOLVEUR                       =  YES
+ BILAN DE MASSE                                   =  YES
+ CORRECTION DE CONTINUITE                          =  NO
+ TRAITEMENT DU SYSTEME LINEAIRE                 =  2/ 1
+/ 1 : traitement couple
+/ 2 : Equation d''onde
+ DISCRETISATIONS EN ESPACE                       =  11;11/ 12;11
+ COMPATIBILITE DU GRADIENT DE SURFACE LIBRE : 0.
+ STOCKAGE DES MATRICES                                 =  3
+ PRODUIT MATRICE-VECTEUR                          =  1
+ PRECONDITIONNEMENT                                =  2
+/ 2 : diagonal / 0 : aucun
+/ 3 : diagonal condensee / 7 : crout
+/ 14 : diagonal et crout / 21 : diagonal condense et crout
+/----------------------------------------------------------------
+/	PHYSICAL PARAMETERS (8)
+/----------------------------------------------------------------
+ LOI DE FROTTEMENT SUR LE FOND                         =  5
+ COEFFICIENT DE FROTTEMENT                           =  0.015
+ MODELE DE TURBULENCE                               =  1
+/WAVE EFFECTS ON FRICTION                       = YES
+/VELOCITY DIFFUSIVITY                           =  0.1 / 1.E-6
+/----------------------------------------------------------------
+/	COUPLING AND PARALLELISM (9)
+/----------------------------------------------------------------
+ COUPLAGE AVEC                                 =  'SISYPHE'
+ PERIODE DE COUPLAGE POUR SISYPHE                   =  1
+&FIN

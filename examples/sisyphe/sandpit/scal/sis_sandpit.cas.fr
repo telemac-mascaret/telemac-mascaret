@@ -1,0 +1,84 @@
+/----------------------------------------------------------------------
+/  UNCOUPLED TELEMAC2D AND SISYPHE
+/----------------------------------------------------------------------
+
+ TITRE = 'Widening Channel Test'
+
+/----------------------------------------------
+/ DATA
+/----------------------------------------------
+
+ FICHIER DE GEOMETRIE                               =  geo_sandpit.slf
+ FICHIER DES CONDITIONS AUX LIMITES                    =  geo_sandpit.cli
+ FICHIER DES RESULTATS                                =  sis_sandpit.slf
+ FICHIER DE HOULE                                   =  tom_sandpit.slf
+
+/------------------------------------------------------
+/ NUMERICAL INFO
+/------------------------------------------------------
+ CAS PERMANENT                     = NO
+/NUMBER OF TIDES OR FLOODS       = 10
+ SUITE DE CALCUL = NO
+ CONCENTRATION MASSIQUE = YES
+ RAPPORT D'EVOLUTION CRITIQUE                  = 0.1
+ FACTEUR MORPHOLOGIQUE                      = 1
+
+/----------------------------------------------
+/ OUTPUTS
+/----------------------------------------------
+
+ VARIABLES POUR LES SORTIES GRAPHIQUES = 'B,E,CS1,CS2,QSBL,QS1,QS2,QS3,W,X'
+
+ BILAN DE MASSE = NO
+
+/-------------------------------------------------
+/ NUMERICAL STUFF
+/------------------------------------------------
+ BANCS DECOUVRANTS                               = YES
+ OPTION DE TRAITEMENT DES BANCS DECOUVRANTS   = 1
+ VALEUR MINIMUM DE H         = 0.001
+ PRECISION DU SOLVEUR                           = 1.E-12
+ PRECISION DU SOLVEUR POUR LA SUSPENSION            = 1.E-12
+ VOLUMES FINIS                            = NO
+ FORME DE LA CONVECTION                         = 13
+ TETA                                      = 0.5
+
+ MASS-LUMPING             : NO
+
+/----------------------------------------------
+/  PHYSICAL PARAMETERS
+/----------------------------------------------
+
+ CHARRIAGE                                   = YES
+/ TOTAL LOAD                                 = NO
+ FORMULE DE TRANSPORT SOLIDE                 = 5
+ PRISE EN COMPTE DE LA HOULE                            = YES
+ EFFET DE PENTE                               = YES
+ FORMULE POUR EFFET DE PENTE                   = 1
+/ BETA                                       = 3
+ BETA                                       = 1.3
+
+ SUSPENSION                                 = YES
+ CONCENTRATION D'EQUILIBRE EN ENTREE           = YES
+ FORMULE POUR LA CONCENTRATION DE REFERENCE            = 4
+ FORMULATION POUR DEPOT ET EROSION     = 3
+/it does accept this setting
+/ even if the dico doesn't give more then 2 options
+ SETTLING LAG                               = YES
+/not coded into the trunk
+
+ MASSE VOLUMIQUE DE L'EAU                              = 1000
+ MASSE VOLUMIQUE DU SEDIMENT                           = 2650.0
+ NOMBRE DE CLASSES GRANULOMETRIQUES     = 1
+ SEDIMENTS COHESIFS                         = NO
+ DIAMETRE MOYEN DES GRAINS              = 0.0001
+ D90                                        = 0.0003
+/SETTLING VELOCITIES                        = 0.0221
+
+ ZERO                                       = 1e-12
+
+ COURANTS SECONDAIRES                         = NO
+ PREDICTION DE LA RUGOSITE                   = NO
+ OPTION DU PREDICTEUR DE RUGOSITE             = 1
+ CORRECTION FROTTEMENT DE PEAU                   = 2
+
