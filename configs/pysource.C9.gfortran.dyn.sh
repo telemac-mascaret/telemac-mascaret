@@ -6,7 +6,7 @@
 ### TELEMAC settings -----------------------------------------------------------
 ###
 # Path to telemac root dir
-export HOMETEL=$HOME/opentelemac/git/trunk
+export HOMETEL=$HOME/hackathon/telemac-mascaret
 # Adding python scripts to PATH
 export PATH=$HOMETEL/scripts/python27:.:$PATH
 # Configuration file
