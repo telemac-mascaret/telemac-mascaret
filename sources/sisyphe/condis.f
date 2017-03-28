@@ -7,7 +7,7 @@
      & NPF     , NCOUCH, TASSE , ITASS , RHOS      , XKV       ,
      & CFDEP   , ESOMT , TOCE  , SEDCO , CONC_LAYER, TOCE_LAYER,
      & ES_LAYER, SEDNCO, MIXTE , EPAICO, EPAINCO   , PVSCO     ,
-     & PVSNCO  , PVSNCO0)
+     & PVSNCO  , PVSNCO0, H, Z, NPLAN)
 !
 !***********************************************************************
 ! TELEMAC3D   V7P1
@@ -97,11 +97,12 @@
 !| Y              |-->| SECOND COORDINATE OF 2D MESH
 !| ZF             |-->| BOTTOM ELEVATION
 !| ZR             |<--| ELEVATION OF RIDIG BED
+!| H              |-->| WATER DEPTH
+!| Z              |-->| Z COORDINATE
+!| NPLAN          |-->| NUMBER OF PLANE
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !
       USE BIEF
-      USE DECLARATIONS_TELEMAC3D, ONLY : H,Z,NPLAN
-      USE INTERFACE_TELEMAC3D, EX_CONDIS => CONDIS
       USE DECLARATIONS_SPECIAL
       IMPLICIT NONE
 !
@@ -110,7 +111,6 @@
 !
       INTEGER, INTENT(IN)             :: NPOIN2,NPOIN3,NCOUCH
       DOUBLE PRECISION, INTENT(OUT)   :: IVIDE(NPOIN2,NCOUCH+1), CFDEP
-!
       DOUBLE PRECISION, INTENT(INOUT) :: EPAI(NPOIN2,NCOUCH)
       DOUBLE PRECISION, INTENT(INOUT) :: EPAICO(NPOIN2), EPAINCO(NPOIN2)
       DOUBLE PRECISION, INTENT(INOUT) :: PVSCO(NPOIN2), PVSNCO(NPOIN2)
@@ -131,6 +131,10 @@
       LOGICAL, INTENT(IN)             :: SEDCO, SEDNCO, MIXTE
       INTEGER, INTENT(IN)             :: ITASS
       DOUBLE PRECISION, INTENT(IN)    :: RHOS,XKV, PVSNCO0
+      TYPE(BIEF_OBJ), INTENT (INOUT)  :: H
+      DOUBLE PRECISION, TARGET, INTENT(IN)    :: Z(NPOIN3)
+      INTEGER, INTENT(IN)             :: NPLAN
+
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
