@@ -1,8 +1,9 @@
-!                    ******************
-                     SUBROUTINE LAYER3D
-!                    ******************
+!                    **************************
+                     SUBROUTINE BED_MASSBALANCE
+!                    **************************
 !
-     &(NLAYER,ZR,ZF,NSICLA,NPOIN)
+     &(ZR_T3D,ZF_T3D)
+!
 !***********************************************************************
 ! SISYPHE   V7P3                                             28/03/2017
 !***********************************************************************
@@ -17,57 +18,49 @@
 !+  Creation of the subroutine.
 !
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-!| ZF             |-->| ELEVATION OF BOTTOM
-!| ZR             |-->| NON ERODABLE BED
-!| NSICLA         |-->| NUMBER OF SIZE CLASSES FOR BED MATERIALS
-!| NLAYER         |<--| NUMBER OF LAYER FOR EACH POINT
+!| ZF_T3D             |-->| ELEVATION OF BOTTOM
+!| ZR_T3D             |-->| NON ERODABLE BED
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !
       USE BIEF
-      USE DECLARATIONS_SISYPHE, ONLY: NOMBLAY
+      USE DECLARATIONS_SISYPHE
       USE DECLARATIONS_SPECIAL
       IMPLICIT NONE
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
-      INTEGER,          INTENT(IN)    :: NSICLA,NPOIN
-      TYPE (BIEF_OBJ),  INTENT(IN)    :: ZR,ZF
+      TYPE (BIEF_OBJ),  INTENT(INOUT)    :: ZR_T3D,ZF_T3D
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
       INTEGER IPOIN,ILAYER,ISAND,IMUD
       DOUBLE PRECISION TOT,MIN_SED_MASS_COMP
 !
-      ! ADD TO POINTE
-      MASS_MUD(IPOIN,NLAYER,NMUD)
-      MASS_SAND(IPOIN,NLAYER,NSAND)
-!
       DOUBLE PRECISION,DIMENSION(:,:), ALLOCATABLE :: MASS_MUD_TOT
       DOUBLE PRECISION,DIMENSION(:,:), ALLOCATABLE :: MASS_SAND_TOT
       DOUBLE PRECISION,DIMENSION(:,:), ALLOCATABLE :: MASS_MIX_TOT
       DOUBLE PRECISION,DIMENSION(:,:), ALLOCATABLE :: RATIO_MUD_SAND
+      DOUBLE PRECISION,DIMENSION(:,:), ALLOCATABLE :: ES_PORO_SAND
+      DOUBLE PRECISION,DIMENSION(:,:), ALLOCATABLE :: ES_MUD_ONLY
       DOUBLE PRECISION,DIMENSION(:,:,:), ALLOCATABLE :: RATIO_SAND
       DOUBLE PRECISION,DIMENSION(:,:,:), ALLOCATABLE :: RATIO_MUD
-!      MASS_MUD_TOT(IPOIN,ICOUCH)
-!      MASS_SAND_TOT(IPOIN,ICOUCH)
-!      MASS_MIX_TOT(IPOIN,ICOUCH)
-!      RATIO_SAND(IPOIN,NLAYER,ISAND)
-!      RATIO_MUD(IPOIN,NLAYER,ISAND)
-!      RATIO_MUD_SAND
+!
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
       MIN_SED_MASS_COMP = 1.D-9
       ! INITIALIZATIONS AND ALLOCATIONS
-      ALLOCATE(MASS_MUD_TOT(NLAYER,NPOIN))
-      ALLOCATE(MASS_SAND_TOT(NLAYER,NPOIN))
-      ALLOCATE(MASS_MIX_TOT(NLAYER,NPOIN))
-      ALLOCATE(RATIO_SAND(NSAND,NLAYER,NPOIN))
-      ALLOCATE(RATIO_MUD(NMUD,NLAYER,NPOIN))
-      ALLOCATE(RATIO_MUD_SAND(NLAYER,NPOIN))
+      ALLOCATE(MASS_MUD_TOT(NOMBLAY,NPOIN))
+      ALLOCATE(MASS_SAND_TOT(NOMBLAY,NPOIN))
+      ALLOCATE(MASS_MIX_TOT(NOMBLAY,NPOIN))
+      ALLOCATE(ES_PORO_SAND(NPOIN,NOMBLAY))
+      ALLOCATE(ES_MUD_ONLY(NPOIN,NOMBLAY))
+      ALLOCATE(RATIO_SAND(NSAND,NOMBLAY,NPOIN))
+      ALLOCATE(RATIO_MUD(NMUD,NOMBLAY,NPOIN))
+      ALLOCATE(RATIO_MUD_SAND(NOMBLAY,NPOIN))
 !
       DO IPOIN = 1,NPOIN
 !
-        DO ILAYER = 1,NLAYER
+        DO ILAYER = 1,NOMBLAY
           MASS_MIX_TOT(ILAYER,IPOIN) = 0.D0
           MASS_SAND_TOT(ILAYER,IPOIN) = 0.D0
           MASS_MUD_TOT(ILAYER,IPOIN) = 0.D0
@@ -93,7 +86,7 @@
 !
       IF(NSAND.GE.1) THEN
         DO IPOIN = 1,NPOIN
-          DO ILAYER = 1,NLAYER
+          DO ILAYER = 1,NOMBLAY
             DO ISAND = 1,NSAND
               MASS_SAND_TOT(ILAYER,IPOIN) = MASS_SAND_TOT(ILAYER,IPOIN)
      &        + MASS_SAND(ISAND,ILAYER,IPOIN)
@@ -103,7 +96,7 @@
       ENDIF
       IF(NMUD.GE.1) THEN
         DO IPOIN = 1,NPOIN
-          DO ILAYER = 1,NLAYER
+          DO ILAYER = 1,NOMBLAY
             DO IMUD = 1,NMUD
               MASS_MUD_TOT(ILAYER,IPOIN) = MASS_MUD_TOT(ILAYER,IPOIN)
      &        + MASS_MUD(IMUD,ILAYER,IPOIN)
@@ -113,7 +106,7 @@
       ENDIF
 !
       DO IPOIN = 1,NPOIN
-        DO ILAYER = 1,NLAYER
+        DO ILAYER = 1,NOMBLAY
           MASS_MIX_TOT(ILAYER,IPOIN) = MASS_SAND_TOT(ILAYER,IPOIN)
      &    + MASS_MUD_TOT(ILAYER,IPOIN)
         ENDDO
@@ -124,7 +117,7 @@
       IF(NSAND.GE.1)THEN
 !
         DO IPOIN = 1,NPOIN
-          DO ILAYER = 1,NLAYER
+          DO ILAYER = 1,NOMBLAY
             TOT = 0.D0
             DO ISAND = 1,NSAND
               IF (ISAND.NE.NSAND)THEN
@@ -150,7 +143,7 @@
       IF(NMUD.GE.1)THEN
 !
         DO IPOIN = 1,NPOIN
-          DO ILAYER = 1,NLAYER
+          DO ILAYER = 1,NOMBLAY
             TOT = 0.D0
             DO IMUD = 1,NMUD
               IF (IMUD.NE.NMUD)THEN
@@ -175,20 +168,20 @@
 !
       IF(NMUD.EQ.0) THEN
         DO IPOIN=1,NPOIN
-          DO ILAYER=1,NLAYER
+          DO ILAYER=1,NOMBLAY
             RATIO_MUD_SAND(ILAYER,IPOIN) = 0.D0
           ENDDO
         ENDDO
       ELSEIF(NSAND.EQ.0) THEN
         DO IPOIN=1,NPOIN
-          DO ILAYER=1,NLAYER
+          DO ILAYER=1,NOMBLAY
             RATIO_MUD_SAND(ILAYER,IPOIN) = 1.D0
           ENDDO
         ENDDO
       ELSE ! NSAND AND NMUD GT 0 (IF NSAND AND NMUD EQ 0: WHAT ARE YOU
            ! DOING IS SISYPHE?)
         DO IPOIN = 1,NPOIN
-          DO ILAYER = 1,NLAYER
+          DO ILAYER = 1,NOMBLAY
             IF(MASS_SAND_TOT(ILAYER,IPOIN).GE.MIN_SED_MASS_COMP)THEN
               RATIO_MUD_SAND(ILAYER,IPOIN)= MIN(1.D0,
      &          MASS_MUD_TOT(ILAYER,IPOIN)
@@ -202,27 +195,27 @@
 !
 ! COMPUTE THICKNESS
 !
-      DO ILAYER = 1,NLAYER
+      DO ILAYER = 1,NOMBLAY
         DO IPOIN = 1,NPOIN
-          ES_PORO_SAND(IPOIN,ILAYER) = (MASS_SAND_TOT(ILAYER,IPOIN)*XKV)
-     &                               /((1-XKV)*XMVS)
+          ES_PORO_SAND(IPOIN,ILAYER) = MASS_SAND_TOT(ILAYER,IPOIN)*XMVM
+     &                               /((1.D0-XMVM)*XMVS)
           ES_MUD_ONLY(IPOIN,ILAYER) = MASS_MUD_TOT(ILAYER,IPOIN)
-     &                              /CONC_VASE((IPOIN,ILAYER)
+     &                              /CONC_VASE(ILAYER)
            IF(ES_MUD_ONLY(IPOIN,ILAYER).GE.ES_PORO_SAND(IPOIN,ILAYER))
      &     THEN
              ES(IPOIN,ILAYER) = MASS_SAND_TOT(ILAYER,IPOIN)/XMVS
      &                        + ES_MUD_ONLY(IPOIN,ILAYER)
            ELSE
              ES(IPOIN,ILAYER) = MASS_SAND_TOT(ILAYER,IPOIN)
-     &                        /((1-XKV)*XMVS)
+     &                        /((1.D0-XMVM)*XMVS)
            ENDIF
         ENDDO
       ENDDO
 ! COMPUTE ZF (NOTE: THIS COULD BE MOVED)
       DO IPOIN = 1,NPOIN
-        ZF(IPOIN) = ZR(IPOIN)
-        DO ILAYER = 1,NLAYER
-          ZF(IPOIN)= ZF(IPOIN) + ES(IPOIN,ILAYER)
+        ZF_T3D%R(IPOIN) = ZR_T3D%R(IPOIN)
+        DO ILAYER = 1,NOMBLAY
+          ZF_T3D%R(IPOIN) = ZF_T3D%R(IPOIN) + ES(IPOIN,ILAYER)
         ENDDO
       ENDDO
 !
@@ -232,6 +225,11 @@
       DEALLOCATE(MASS_MUD_TOT)
       DEALLOCATE(MASS_SAND_TOT)
       DEALLOCATE(MASS_MIX_TOT)
+      DEALLOCATE(RATIO_SAND)
+      DEALLOCATE(RATIO_MUD)
+      DEALLOCATE(RATIO_MUD_SAND)
+      DEALLOCATE(ES_PORO_SAND)
+      DEALLOCATE(ES_MUD_ONLY)
 
       RETURN
       END
