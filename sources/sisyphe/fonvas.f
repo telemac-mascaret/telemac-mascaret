@@ -9,7 +9,8 @@
      & RHOS    , CFMAX  , TASSE  , ITASS , ZF_S   , ESOMT  ,
      & VOLU2D  , MASDEP , SETDEP , ZR    , TS     , FLUDPTC,
      & FLUDPTNC, FLUERC , FLUERNC, MIXTE , FLUDPC , FLUDPNC,
-     & PVSCO   , PVSNCO , CFDEP  , EPAICO, EPAINCO)
+     & PVSCO   , PVSNCO , CFDEP  , EPAICO, EPAINCO,
+     & IPBOT, OPTBAN, NPLAN)
 !
 !***********************************************************************
 ! TELEMAC3D   V7P2                                   21/08/2010
@@ -131,8 +132,6 @@
 !
       USE BIEF
       USE INTERFACE_PARALLEL
-      USE INTERFACE_TELEMAC3D, EX_FONVAS => FONVAS
-      USE DECLARATIONS_TELEMAC3D, ONLY : IPBOT,OPTBAN,NPLAN
 !
       USE DECLARATIONS_SPECIAL
       IMPLICIT NONE
@@ -176,6 +175,10 @@
       INTEGER, INTENT(IN) :: ITASS
 !
       TYPE(BIEF_OBJ), INTENT(IN) :: VOLU2D
+!
+      TYPE(BIEF_OBJ), INTENT(IN) :: IPBOT
+      INTEGER, INTENT(IN) :: OPTBAN
+      INTEGER, INTENT(IN) :: NPLAN
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
@@ -478,12 +481,10 @@
 !
 !     TOTAL DEPOSITED MASS --> MASDEP
 !
-!###>TBE - fixed bug...add up the deposition flux for all partitions (MASDEP)
 !       MASDEP = MASDEP + FLUX*DT
         MASTMP = FLUX*DT
         IF(NCSIZE.GT.1) MASTMP=P_DSUM(MASTMP)
         MASDEP = MASDEP + MASTMP
-!###<TBE
 !
 !=======================================================================
 !

@@ -743,6 +743,12 @@ files: declarations_sisyphe.f
   sed3d.f
   sedi3d_z.f
   sedi3d_impsed.f
+  suised.f
+  mudstress3d.f
+  condis.f
+  sedi3d_init.f
+  fonvas.f
+  sedi3d_bottom_treatment.f
 
 [special]
 path: <root>|sources|utils|special
@@ -861,8 +867,6 @@ files: declarations_telemac3d.f
   diff3d.f
   murd3d_pos.f
   cvdf3d.f
-  fonvas.f
-  mudstress3d.f
   limi3d.f
   numliq_3d.f
   soukom.f
@@ -912,7 +916,6 @@ files: declarations_telemac3d.f
   bed_fluxes.f
   phstat.f
   preres_telemac3d.f
-  suised.f
   correction_depth_3d.f
   kepcl3.f
   longml.f
@@ -928,7 +931,6 @@ files: declarations_telemac3d.f
   source_trac.f
   condim.f
   mass3d.f
-  condis.f
   telemac3d.F
   homere_telemac3d.f
 
