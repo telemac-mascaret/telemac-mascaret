@@ -749,6 +749,9 @@ files: declarations_sisyphe.f
   sedi3d_init.f
   fonvas.f
   sedi3d_bottom_treatment.f
+  erodc.f
+  erodnc.f
+  sedi3d_erod.f
 
 [special]
 path: <root>|sources|utils|special
@@ -907,8 +910,6 @@ files: declarations_telemac3d.f
   t3d_read_fic_curves.f
   findksce.f
   sources_sinks.f
-  erodc.f
-  erodnc.f
   flused.f
   clsedi.f
   bil3d.f
@@ -933,6 +934,7 @@ files: declarations_telemac3d.f
   mass3d.f
   telemac3d.F
   homere_telemac3d.f
+  clsedi_forsis.f
 
 [tomawac]
 path: <root>|sources|tomawac
