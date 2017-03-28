@@ -931,6 +931,7 @@ files: declarations_telemac3d.f
   mass3d.f
   telemac3d.F
   homere_telemac3d.f
+  clsedi_forsis.f
 
 [tomawac]
 path: <root>|sources|tomawac
