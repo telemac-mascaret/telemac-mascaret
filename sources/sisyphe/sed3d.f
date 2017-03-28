@@ -85,7 +85,6 @@
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !
       USE BIEF
-      USE INTERFACE_TELEMAC3D, EX_SED3D => SED3D
       USE DECLARATIONS_SPECIAL
       IMPLICIT NONE
 !
@@ -168,7 +167,8 @@
 !
 !=======================================================================
 !
-      CALL MASSED(MASBED,EPAI,CONC,HDEP,TRA02,NPOIN2,NPFMAX,NCOUCH,
+      CALL SEDI3D_MASSED(MASBED,EPAI,CONC,HDEP,TRA02,NPOIN2,NPFMAX,
+     &            NCOUCH,
      &            NPF,TASSE,GIBSON,RHOS,VOLU2D,CFDEP,EPAICO,EPAINCO,
      &            MIXTE)
 !

@@ -737,6 +737,12 @@ files: declarations_sisyphe.f
   init_zero.f
   entete_sisyphe.f
   sisyphe.F
+  sedi3d_dessed.f
+  sedi3d_massed.f
+  sedi3d_y.f
+  sed3d.f
+  sedi3d_z.f
+  sedi3d_impsed.f
 
 [special]
 path: <root>|sources|utils|special
@@ -843,7 +849,6 @@ files: declarations_telemac3d.f
   vermoy.f
   wave_equation.f
   tbord.f
-  dessed.f
   plane_bottom.f
   flux_cor.f
   murd3d.f
@@ -883,8 +888,6 @@ files: declarations_telemac3d.f
   wstar.f
   preadv.f
   visclip.f
-  impsed.f
-  massed.f
   thomps_2dto3d.f
   grad2d.f
   fsgrad.f
@@ -924,7 +927,6 @@ files: declarations_telemac3d.f
   ifab3dt.f
   source_trac.f
   condim.f
-  sed3d.f
   mass3d.f
   condis.f
   telemac3d.F

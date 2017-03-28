@@ -1,5 +1,5 @@
 !                    *****************
-                     SUBROUTINE MASSED
+                     SUBROUTINE SEDI3D_MASSED
 !                    *****************
 !
      &(MASBED,EPAI,CONC,HDEP,TRA02,NPOIN2,
@@ -75,7 +75,6 @@
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !
       USE BIEF
-      USE INTERFACE_TELEMAC3D, EX_MASSED => MASSED
       USE DECLARATIONS_SPECIAL
       IMPLICIT NONE
 !

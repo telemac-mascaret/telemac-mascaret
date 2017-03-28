@@ -6,15 +6,15 @@
 ### TELEMAC settings -----------------------------------------------------------
 ###
 # Path to telemac root dir
-export HOMETEL=<path-to-install>
+export HOMETEL=/home/sara/hackathon/telemac-mascaret
 # Adding python scripts to PATH
 export PATH=$HOMETEL/scripts/python27:.:$PATH
 # Configuration file
-export SYSTELCFG=$HOMETEL/configs/systel.edf.cfg
+export SYSTELCFG=$HOMETEL/configs/systel.cfg
 # Name of the configuration to use
-export USETELCFG=<your-config>
+export USETELCFG=gfortran
 # Path to this file
-export SOURCEFILE=$HOMETEL/configs/pysource.template.sh
+export SOURCEFILE=$HOMETEL/configs/pysource.gfortran.sh
 ### Python
 # To force python to flush its output
 export PYTHONUNBUFFERED='true'
@@ -29,9 +29,9 @@ export PYTHONPATH=$HOMETEL/builds/$USETELCFG/wrap_api/lib:$PYTHONPATH
 #export SYSTEL=/data/projets/projets.002/systel.002
 
 ### MPI -----------------------------------------------------------
-#export MPIHOME=$SYSTEL/LIBRARY/mpi/ifort.10.1.008
-#export PATH=$MPIHOME/bin:$PATH
-#export LD_LIBRARY_PATH=$MPIHOME/lib:$LD_LIBRARY_PATH
+export MPIHOME=$SYSTEL/LIBRARY/mpi/ifort.10.1.008
+export PATH=$MPIHOME/bin:$PATH
+export LD_LIBRARY_PATH=$MPIHOME/lib:$LD_LIBRARY_PATH
 ###
 ### EXTERNAL LIBRARIES -----------------------------------------------------------
 ###
@@ -48,5 +48,5 @@ export PYTHONPATH=$HOMETEL/builds/$USETELCFG/wrap_api/lib:$PYTHONPATH
 #export SCALAPACKHOME=$SYSTEL/LIBRARY/scalapack/gnu
 #export BLACSHOME=$SYSTEL/LIBRARY/blacs/gnu
 ### METIS -------------------------------------------------------------
-#export METISHOME=$SYSTEL/LIBRARY/metis-5.1.0/arch/C9
-#export LD_LIBRARY_PATH=$METISHOME/lib:$LD_LIBRARY_PATH
+export METISHOME=$SYSTEL/LIBRARY/metis-5.1.0/arch/ubuntu
+export LD_LIBRARY_PATH=$METISHOME/lib:$LD_LIBRARY_PATH

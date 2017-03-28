@@ -1,10 +1,10 @@
 !                    *****************
-                     SUBROUTINE DESSED
+                     SUBROUTINE SEDI3D_DESSED
 !                    *****************
 !
      & (NPF,IVIDE,EPAI,HDEP,CONC,TEMP,ZR,NPOIN2,NPFMAX,NCOUCH,
-     &  NIT,GRAPRD,LT,DTC,TASSE,GIBSON,NRSED,TITCAS,FMTRSED,GRADEB)
-!
+     &  NIT,GRAPRD,LT,DTC,TASSE,GIBSON,NRSED,TITCAS,FMTRSED,GRADEB,
+     &  MESH2D,RHOS)
 !***********************************************************************
 ! TELEMAC3D   V7P0                                   21/08/2010
 !***********************************************************************
@@ -86,8 +86,7 @@
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !
       USE INTERFACE_HERMES
-      USE BIEF, ONLY: NPTIR
-      USE DECLARATIONS_TELEMAC3D, ONLY: MESH2D,RHOS
+      USE BIEF
 !
       USE DECLARATIONS_SPECIAL
       IMPLICIT NONE
@@ -117,6 +116,8 @@
       LOGICAL, INTENT(IN)          :: TASSE,GIBSON
       CHARACTER(LEN=72), INTENT(IN):: TITCAS
       CHARACTER(LEN=8), INTENT(IN) :: FMTRSED
+      TYPE(BIEF_MESH),INTENT(IN)   :: MESH2D
+      DOUBLE PRECISION, INTENT(IN) :: RHOS
 !
       INTEGER DATE(3), TIME(3), IERR
       CHARACTER(LEN=32) :: VARNAME(4)

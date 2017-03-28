@@ -1,5 +1,5 @@
 !                    *****************
-                     SUBROUTINE IMPSED
+                     SUBROUTINE SEDI3D_IMPSED
 !                    *****************
 !
      &(IVIDE , EPAI  , CONC  , TEMP  , HDEP  , PDEPOT,
@@ -109,4 +109,4 @@
 !      PRINTOUTS SPECIFIED BY USER
 !
       RETURN
-      END SUBROUTINE IMPSED
+      END SUBROUTINE 
