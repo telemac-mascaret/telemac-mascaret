@@ -2710,8 +2710,9 @@
 !
           IF(DEBUG.GT.0) WRITE(LU,*) 'CALLING SISYPHE, SUSPENSION'
           CALL SISYPHE(1,LT,LEOPRD,LISPRD,NIT,U,V,H,HN,HPROP,ZF,
-     &                 CF,CF,CHESTR,
-     &                 CODE1,1,U,V,AT,VISC,DT,CHARR_TEL,SIS_CPL%SUSP,
+     &                 CF,CF,CHESTR,SIS_CPL%CONSTFLOW,SIS_CPL%NSIS_CFD,
+     &                 SIS_CPL%SISYPHE_CFD,CODE1,
+     &                 1,U,V,AT,VISC,DT,CHARR_TEL,SIS_CPL%SUSP,
      &                 FLBOR,SOLSYS,DM1,USIS,VSIS,ZCONV,
      &                 DIRMOY,HM0,TPR5,ORBVEL)
           IF(DEBUG.GT.0) WRITE(LU,*) 'FIN APPEL DE SISYPHE, SUSPENSION'
