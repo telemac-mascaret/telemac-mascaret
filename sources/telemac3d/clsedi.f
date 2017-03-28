@@ -130,6 +130,7 @@
       USE BIEF
       USE INTERFACE_TELEMAC3D, EX_CLSEDI => CLSEDI
       USE DECLARATIONS_SPECIAL
+      USE DECLARATIONS_TELEMAC3D, ONLY: KARMAN,PRANDTL,FICT
       IMPLICIT NONE
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -213,7 +214,6 @@
       ENDIF
 !
 !      -----COMPUTES THE EXPLICIT EROSION FLUX-----
-
       CALL SEDI3D_EROD !
      &  (CONC,EPAI,FLUER,TOB,DENSI,
      &  MPART,DT,NPOIN2,NCOUCH,TOCE,
