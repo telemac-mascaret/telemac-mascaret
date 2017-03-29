@@ -199,7 +199,17 @@
       IF(.NOT.CALWC) THEN
         DENS = (XMVS - XMVE) / XMVE
         DO I = 1, NSICLA
-          CALL VITCHU_SISYPHE(XWC(I),DENS,FDM(I),GRAV,VCE)
+             CALL VITCHU_SISYPHE(XWC(I),DENS,FDM(I),GRAV,VCE)
+	      IF(BED_MIXTE_GRADED)THEN
+!            calcul de la vitesse de chute en 2d ou au fond
+!            si T3D: la vitesse de chute est calculée en 3D puis repassée à sisyphe pour le fond		
+			IF(TYPE_OF_SEDIMENT.EQ.SED_NCO)THEN
+               CALL VITCHU_SISYPHE(XWC(I),DENS,FDM(I),GRAV,VCE)
+			ELSE
+!           par defaut 1mm/s pour toutes les classes de vase
+			   XWC(I)= 0.001D0
+			ENDIF
+		   ENDIF	
         ENDDO
       ENDIF
 !
@@ -230,6 +240,12 @@
 !     FOR MIXED SEDIMENTS
 !
       IF(MIXTE) TOCE_SABLE=AC(1)*FDM(1)*GRAV*(XMVS - XMVE)
+	  
+	  IF(BED_MIXTE_GRADED)THEN
+	   DO ISAND = 1,NSAND
+	    TOC_SAND(ISAND)= AC(ISAND)*FDM(ISAND)*GRAV*(XMVS - XMVE)
+	   ENDDO
+	  ENDIF
 !
 !-----------------------------------------------------------------------
 !
