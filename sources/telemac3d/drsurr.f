@@ -3,7 +3,7 @@
 !                    *****************
 !
      & (DELTAR, TA, BETAC,T0AC,RHO,RHO0,RHOS,DENLAW,SEDI,NTRAC,
-     &  IND_T,IND_S, MIXTE)
+     &  IND_T,IND_S,NCLASS,SED_TRA)
 !
 !***********************************************************************
 ! TELEMAC3D   V6P3                                   21/08/2010
@@ -72,17 +72,17 @@
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
-      INTEGER, INTENT(IN)           :: NTRAC, DENLAW,IND_T,IND_S
+      INTEGER, INTENT(IN)           :: NTRAC, DENLAW,IND_T,IND_S,NCLASS
       DOUBLE PRECISION, INTENT(IN)  :: RHO0,RHOS
       DOUBLE PRECISION, INTENT(IN)  :: BETAC(NTRAC), T0AC(NTRAC)
       TYPE(BIEF_OBJ), INTENT(INOUT) :: DELTAR
-      TYPE(BIEF_OBJ), INTENT(IN)    :: TA
+      TYPE(BIEF_OBJ), INTENT(IN)    :: TA,SED_TRA
       TYPE(BIEF_OBJ), INTENT(INOUT) :: RHO
       LOGICAL, INTENT(IN)           :: SEDI, MIXTE
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
-      INTEGER ITRAC,NTRACM1
+      INTEGER ITRAC,NTRACM1,ICLASS
 !
 !***********************************************************************
 !
@@ -151,15 +151,7 @@
 !
         CALL OS( 'X=0     ' , X=DELTAR )
 !
-        IF(SEDI) THEN
-          IF(MIXTE) THEN
-            NTRACM1=NTRAC-2
-          ELSE
-            NTRACM1=NTRAC-1
-          ENDIF
-        ELSE
-          NTRACM1=NTRAC
-        ENDIF
+        NTRACM1=NTRAC-NCLASS
 !
         IF(NTRACM1.GT.0) THEN
           DO ITRAC = 1,NTRACM1
@@ -195,15 +187,10 @@
 !     ADDS UP THE SEDIMENT EFFECT
 !
       IF(SEDI) THEN
-        IF(MIXTE) THEN
-          CALL OS('X=X+CY  ',X=DELTAR,Y=TA%ADR(NTRAC-1)%P,
+        DO ICLASS = 1,NCLASS
+          CALL OS('X=X+CY  ',X=DELTAR,Y=SED_TA%ADR(ICLASS)%P,
      &                       C=(RHOS-RHO0)/(RHO0*RHOS))
-          CALL OS('X=X+CY  ',X=DELTAR,Y=TA%ADR(NTRAC)%P,
-     &                       C=(RHOS-RHO0)/(RHO0*RHOS))
-        ELSE
-          CALL OS('X=X+CY  ',X=DELTAR,Y=TA%ADR(NTRAC)%P,
-     &                       C=(RHOS-RHO0)/(RHO0*RHOS))
-        ENDIF
+        END DO
       ENDIF
 !
 !-----------------------------------------------------------------------

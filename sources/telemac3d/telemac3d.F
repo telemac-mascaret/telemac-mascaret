@@ -912,7 +912,7 @@
 !GA: DRSURR HAS BEEN MODIFIED TO ALLOW TWO SEDIMENT CLASSES
       IF(DEBUG.GT.0) WRITE(LU,*) 'APPEL DE DRSURR'
       CALL DRSURR(DELTAR,TA,BETAC,T0AC,T3_01,RHO0,RHOS,DENLAW,SEDI,
-     &            NTRAC,IND_T,IND_S, MIXTE)
+     &            NTRAC,IND_T,IND_S, NCLASS,SED_TRA)
       IF(DEBUG.GT.0) WRITE(LU,*) 'RETOUR DE DRSURR'
 !
 !-----------------------------------------------------------------------
@@ -1107,14 +1107,15 @@
 !
 !     SEDIMENTOLOGY OUTPUT
 !
-      IF(SEDI.AND.T3D_FILES(T3DSED)%NAME(1:1).NE.' ') THEN
-        IF(DEBUG.GT.0) WRITE(LU,*) 'APPEL DE DESSED'
-        CALL SEDI3D_DESSED(NPF%I,IVIDE%R,EPAI,HDEP%R,
-     &              CONC,TEMP%R,ZR%R,NPOIN2,NPFMAX,
-     &              NCOUCH,NIT,GRAPRD,LT,DTC,TASSE,GIBSON,
-     &              T3D_FILES(T3DSED)%LU,TITCAS,BIRSED,0,MESH2D,RHOS)
-        IF(DEBUG.GT.0) WRITE(LU,*) 'RETOUR DE DESSED'
-      ENDIF
+! should be in sisyphe!
+!TBRK      IF(SEDI.AND.T3D_FILES(T3DSED)%NAME(1:1).NE.' ') THEN
+!        IF(DEBUG.GT.0) WRITE(LU,*) 'APPEL DE DESSED'
+!        CALL SEDI3D_DESSED(NPF%I,IVIDE%R,EPAI,HDEP%R,
+!     &              CONC,TEMP%R,ZR%R,NPOIN2,NPFMAX,
+!     &              NCOUCH,NIT,GRAPRD,LT,DTC,TASSE,GIBSON,
+!     &              T3D_FILES(T3DSED)%LU,TITCAS,BIRSED,0,MESH2D,RHOS)
+!        IF(DEBUG.GT.0) WRITE(LU,*) 'RETOUR DE DESSED'
+!      ENDIF
 !
 ! PREPARES THE 2D OUTPUT FILE
 !
@@ -1169,13 +1170,14 @@
 !       MASDEP : Set to Zero
 !
 !GA: MASSED HAS BEEN MODIFIED TO ALLOW TWO SEDIMENT CLASSES
-        IF(SEDI) THEN
-          CALL SEDI3D_Y(MASBED0,EPAI,CONC,HDEP%R,T2_01%R,
-     &         NPOIN2,NPFMAX,NCOUCH,NPF%I,TASSE,GIBSON,RHOS,VOLU2D%R,
-     &         CFDEP, EPAICO%R, EPAINCO%R, MIXTE,MASDEP,ESOMT,
-     &         DEBUG)
+!TBRK it will be done in sisyphe with the new model
+!        IF(SEDI) THEN
+!          CALL SEDI3D_Y(MASBED0,EPAI,CONC,HDEP%R,T2_01%R,
+!     &         NPOIN2,NPFMAX,NCOUCH,NPF%I,TASSE,GIBSON,RHOS,VOLU2D%R,
+!     &         CFDEP, EPAICO%R, EPAINCO%R, MIXTE,MASDEP,ESOMT,
+!     &         DEBUG)
 !
-        ENDIF
+!        ENDIF
       ENDIF
 !
 !-----------------------------------------------------------------------
@@ -1443,15 +1445,13 @@
       IF(SEDI) THEN
         IF(DEBUG.GT.0) WRITE(LU,*) 'APPEL DE VITCHU'
         CALL VITCHU(WCHU,WCHU0,TURBWC,U,V,W,H,RUGOF,LISRUF,
-     &              TURBA,TURBB,T3_01,T3_02,T3_03,SVIDE,MESH3D,
-     &              IELM3,NPOIN2,NPOIN3,NPLAN,NTRAC,MSK,MASKEL,
-     &              UETCAR,TA,HN,HSED,FLOC, FLOC_TYPE,
-     &              HINDER,HIND_TYPE,CGEL,CINI)
+     &              TURBA,TURBB,T3_01,T3_02,T3_03,T3_04,SVIDE,MESH3D,
+     &              IELM3,NPOIN2,NPOIN3,NPLAN,NCLASS,MSK,MASKEL,
+     &              UETCAR,SED_TRA,HN,HSED,FLOC, FLOC_TYPE,
+     &              HINDER,HIND_TYPE,CGEL,CINI,TYPE_OF_SEDIMENT,
+     &              SED_CO,SED_NCO)
         IF(DEBUG.GT.0) WRITE(LU,*) 'RETOUR DE VITCHU'
 !
-        IF(MIXTE) THEN
-          CALL OS( 'X=C     ' , X=WCS , C=WCS0 )
-        ENDIF
       ENDIF ! (SEDI)
 !
 !=======================================================================
@@ -1539,41 +1539,7 @@
         ENDIF
       ENDIF
 !
-!=======================================================================
-! INTERNAL COUPLING WITH SISYPHE
-!=======================================================================
-!
-      IF( INCLUS(COUPLING,'SISYPHE')   .AND.
-     &   (PERCOU_SIS*(LT/PERCOU_SIS).EQ.LT.OR.LT.EQ.1) ) THEN
-!
-!       U AND V WITH 2D STRUCTURE : BOTTOM VELOCITY AS A 2D VARIABLE
-        CALL CPSTVC(U2D,U)
-        CALL CPSTVC(V2D,V)
-!
-!       NOW RUNS ONE TURN OF SISYPHE'S TIME LOOP AND RETURNS
-        CALL CONFIG_CODE(2)
-        IBID=1
-        LBID=.FALSE.
-        IF(DEBUG.GT.0) WRITE(LU,*) 'APPEL DE SISYPHE'
-        CALL SISYPHE(1,LT,GRAPRD,LISPRD,NIT,U2D,V2D,H,HN,HPROP,ZF,
-     &               UETCAR,CF,RUGOF,LBID,IBID,LBID,CODE1,PERCOU_SIS,
-     &               U,V,AT,VISCVI,DT*PERCOU_SIS,CHARR,SUSP,
-!                          1 PRECLUDES THE USE OF THE 4 FOLLOWING ARGUMENTS
-     &               FLBOR,1,DM1,UCONV,VCONV,ZCONV,
-!                    VARIABLES TRANSMITTED FROM TOMAWAC
-     &               DIRMOY,HM0,TPR5,ORBVEL)
-        IF(DEBUG.GT.0) WRITE(LU,*) 'RETOUR DE SISYPHE'
-        CALL CONFIG_CODE(1)
-!
-!       HDEP MUST BE UPDATED BECAUSE SISYPHE CHANGED ZF
-        IF(SEDI) CALL OS('X=Y-Z   ',X=HDEP,Y=ZF,Z=ZR)
-!
-!       RETRIEVES ORIGINAL U AND V STRUCTURE
-        CALL CPSTVC(UN,U)
-        CALL CPSTVC(VN,V)
-!
-      ENDIF
-!
+
 !=======================================================================
 ! END OF CAMILLE LEQUETTE'S MODIFICATIONS
 !=======================================================================
@@ -1686,80 +1652,43 @@
 !
         CALL VITCHU(WCHU,WCHU0,TURBWC,U,V,W,H,RUGOF,LISRUF,
      &  TURBA,TURBB,T3_01,T3_02,T3_03,SVIDE,MESH3D,IELM3,NPOIN2,NPOIN3,
-!###>TBE: REPLACED HMIN WITH HSED
-     &  NPLAN,NTRAC,MSK,MASKEL,UETCAR,TA,HN,HSED,FLOC, FLOC_TYPE,
-!###<TBE
-     &  HINDER,HIND_TYPE,CGEL,CINI)
+     &  NPLAN,NCLASS,MSK,MASKEL,UETCAR,SED_TRA,HN,HSED,FLOC, FLOC_TYPE,
+     &  HINDER,HIND_TYPE,CGEL,CINI,TYPE_OF_SEDIMENT,
+     &              SED_CO,SED_NCO))
 !
 !       BOUNDARY CONDITIONS FOR THE SEDIMENTOLOGY
 !
         IF(DEBUG.GT.0) WRITE(LU,*) 'APPEL DE CLSEDI'
-!GA: CLSEDI HAS BEEN MODIFIED TO ALLOW TWO SEDIMENT CLASSES
-        IF(MIXTE) THEN
 
-          DO ITRAC = NTRAC-1,NTRAC
+
+!          DO ITRAC = NTRAC-1,NTRAC
+          DO ICLASS = 1,NCLASS
+! this will not work if we have water quality tracers!!
+              ITRAC = NTRAC-NCLASS+ICLASS
 
             CALL CLSEDI
      &       (ATABOF%ADR(ITRAC)%P%R,BTABOF%ADR(ITRAC)%P%R,
      &        ATABOS%ADR(ITRAC)%P%R,BTABOS%ADR(ITRAC)%P%R,
-     &        TA%ADR(ITRAC)%P%R,WCHU%R,
+     &        SED_TRA%ADR(ICLASS)%P%R,WCHU%ADR(ICLASS)%P%R,
      &        GRADZF%ADR(1)%P%R,GRADZF%ADR(2)%P%R,
      &        GRADZS%ADR(1)%P%R,GRADZS%ADR(2)%P%R,
      &        X, Y, Z, H, DELTAR%R, T3_01, T3_02%R, T3_03%R,
-     &        EPAI, CFDEP,CONC, HDEP%R, FLUER%R,
-     &        FLUDPT%R, LITABF%ADR(ITRAC)%P%I, LITABS%ADR(ITRAC)%P%I,
+     &        EPAI, CFDEP,CONC, HDEP%R, FLUER%ADR(ICLASS)%R,
+     &        FLUDPT%ADR(ICLASS)%R, LITABF%ADR(ITRAC)%P%I, 
+     &        LITABS%ADR(ITRAC)%P%I,
      &        KLOG, NPOIN3, NPOIN2, NPLAN, NCOUCH,
      &        ITURBV, DT, RHO0, RHOS,
      &        TOCD,MPART,TOCE,UETCAR%R,
      &        GRAV,SEDCO,DMOY,CREF,ZREF,CF,AC,KSPRATIO,ICR,ICQ,
      &        RUGOF,SETDEP,HSED,
-     &        WCS%R, EPAICO%R, EPAINCO%R, MIXTE, SEDNCO,
-     &        FLUDPTC%R, FLUDPTNC%R, FLUERC%R, FLUERNC%R,
-     &        NTRAC, ITRAC)
+!     &        WCS%R, EPAICO%R, EPAINCO%R, MIXTE, SEDNCO,
+!     &        FLUDPTC%R, FLUDPTNC%R, FLUERC%R, FLUERNC%R,
+     &        NCLASS, ITRAC, ICLASS)
 !       ATABOF AND BTABOF ARE NO LONGER 0 FOLLOWING CLSEDI
         ATABOF%ADR(ITRAC)%P%TYPR='Q'
         BTABOF%ADR(ITRAC)%P%TYPR='Q'
 
           ENDDO
-
-        ELSEIF (SEDCO.OR.SEDNCO) THEN
-
-        CALL CLSEDI
-     &   (ATABOF%ADR(NTRAC)%P%R,BTABOF%ADR(NTRAC)%P%R,
-     &    ATABOS%ADR(NTRAC)%P%R,BTABOS%ADR(NTRAC)%P%R,
-     &    SED_TRA%ADR(1)%P%R,WCHU%R,
-     &    GRADZF%ADR(1)%P%R,GRADZF%ADR(2)%P%R,
-     &    GRADZS%ADR(1)%P%R,GRADZS%ADR(2)%P%R,
-     &    X, Y, Z, H, DELTAR%R, T3_01, T3_02%R, T3_03%R,
-     &    EPAI, CFDEP,CONC, HDEP%R, FLUER%R,
-     &    FLUDPT%R, LITABF%ADR(NTRAC)%P%I, LITABS%ADR(NTRAC)%P%I,
-     &    KLOG, NPOIN3, NPOIN2, NPLAN, NCOUCH,
-     &    ITURBV, DT, RHO0, RHOS,
-     &    TOCD,MPART,TOCE,UETCAR%R,
-     &    GRAV,SEDCO,DMOY,CREF,ZREF,CF,AC,KSPRATIO,ICR,ICQ,
-     &    RUGOF,SETDEP,HSED,
-     &    WCS%R, EPAICO%R, EPAINCO%R, MIXTE, SEDNCO,
-     &    FLUDPTC%R, FLUDPTNC%R, FLUERC%R, FLUERNC%R,
-     &    NTRAC, ITRAC)
-!
-!       ATABOF AND BTABOF ARE NO LONGER 0 FOLLOWING CLSEDI
-        ATABOF%ADR(NTRAC)%P%TYPR='Q'
-        BTABOF%ADR(NTRAC)%P%TYPR='Q'
-!
-
-        ELSE
-!
-            WRITE(LU,*) ' '
-          IF(LNG.EQ.1) THEN
-            WRITE(LU,*) 'SEDI3D : ERREUR DE MOT CLE SEDIMENT'
-          ENDIF
-          IF(LNG.EQ.2) THEN
-            WRITE(LU,*) 'SEDI3D : ERROR ON SEDIMENT KEY WORD'
-          ENDIF
-           CALL PLANTE(1)
-           STOP
-!
-        ENDIF
 
         IF(DEBUG.GT.0) WRITE(LU,*) 'RETOUR DE CLSEDI'
       ENDIF !(SEDI)
@@ -2690,8 +2619,8 @@
 ! COMPUTES DELRA RHO / RHO FOR THE BUOYANCY TERMS
 !
         IF(DEBUG.GT.0) WRITE(LU,*) 'APPEL DE DRSURR'
-        CALL DRSURR(DELTAR,TA,BETAC,T0AC,T3_01,RHO0,RHOS,DENLAW,SEDI,
-     &              NTRAC,IND_T,IND_S,MIXTE)
+      CALL DRSURR(DELTAR,TA,BETAC,T0AC,T3_01,RHO0,RHOS,DENLAW,SEDI,
+     &            NTRAC,IND_T,IND_S, NCLASS,SED_TRA)
         IF(DEBUG.GT.0) WRITE(LU,*) 'RETOUR DE DRSURR'
 !
       ENDIF
@@ -2703,17 +2632,54 @@
 ! SEDIMENTOLOGY : BOTTOM TREATMENT
 !
       IF(SEDI) THEN
-        call sedi3d_bottom_treatment(
-     &        IVIDE%R,EPAI,CONC,TREST,TEMP%R,HDEP%R,
-     &        FLUDP%R,FLUDPT%R,FLUER%R,ZF%R,SED_TRA%ADR(NCLASS)%P%R,
-     &        WCHU%R,T3_01%R,T3_02%R,T3_03%R,NPOIN2,NPOIN3,NPFMAX,
-     &        NCOUCH,NPF%I,LT,DT,DTC,GRAV,RHOS,CFMAX,TASSE,ITASS,
-     &        ZF_S%R,ESOMT%R,VOLU2D,MASDEP,SETDEP,ZR%R,
-     &        SED_TRA%ADR(1)%P%R,FLUDPTC%R,FLUDPTNC%R,
-     &        FLUERC%R,FLUERNC%R,MIXTE,FLUDPC%R,
-     &        FLUDPNC%R,PVSCO%R,PVSNCO%R,CFDEP,
-     &        EPAICO%R,EPAINCO%R,IPBOT,OPTBAN,NPLAN,
-     &        DEBUG,SEDCO,SEDNCO)
+!=======================================================================
+! INTERNAL COUPLING WITH SISYPHE
+!=======================================================================
+!
+      IF( INCLUS(COUPLING,'SISYPHE')   .AND.
+     &   (PERCOU_SIS*(LT/PERCOU_SIS).EQ.LT.OR.LT.EQ.1) ) THEN
+!
+!       U AND V WITH 2D STRUCTURE : BOTTOM VELOCITY AS A 2D VARIABLE
+        CALL CPSTVC(U2D,U)
+        CALL CPSTVC(V2D,V)
+!
+!       NOW RUNS ONE TURN OF SISYPHE'S TIME LOOP AND RETURNS
+        CALL CONFIG_CODE(2)
+        IBID=1
+        LBID=.FALSE.
+        IF(DEBUG.GT.0) WRITE(LU,*) 'APPEL DE SISYPHE'
+        CALL SISYPHE(1,LT,GRAPRD,LISPRD,NIT,U2D,V2D,H,HN,HPROP,ZF,
+     &               UETCAR,CF,RUGOF,LBID,IBID,LBID,CODE1,PERCOU_SIS,
+     &               U,V,AT,VISCVI,DT*PERCOU_SIS,CHARR,SUSP,
+!                          1 PRECLUDES THE USE OF THE 4 FOLLOWING ARGUMENTS
+     &               FLBOR,1,DM1,UCONV,VCONV,ZCONV,
+!                    VARIABLES TRANSMITTED FROM TOMAWAC
+     &               DIRMOY,HM0,TPR5,ORBVEL)
+        IF(DEBUG.GT.0) WRITE(LU,*) 'RETOUR DE SISYPHE'
+        CALL CONFIG_CODE(1)
+!
+!       HDEP MUST BE UPDATED BECAUSE SISYPHE CHANGED ZF
+        IF(SEDI) CALL OS('X=Y-Z   ',X=HDEP,Y=ZF,Z=ZR)
+!
+!       RETRIEVES ORIGINAL U AND V STRUCTURE
+        CALL CPSTVC(UN,U)
+        CALL CPSTVC(VN,V)
+!
+      ENDIF
+!
+
+
+!        call sedi3d_bottom_treatment(
+!     &        IVIDE%R,EPAI,CONC,TREST,TEMP%R,HDEP%R,
+!     &        FLUDP%R,FLUDPT%R,FLUER%R,ZF%R,SED_TRA%ADR(NCLASS)%P%R,
+!     &        WCHU%R,T3_01%R,T3_02%R,T3_03%R,NPOIN2,NPOIN3,NPFMAX,
+!     &        NCOUCH,NPF%I,LT,DT,DTC,GRAV,RHOS,CFMAX,TASSE,ITASS,
+!     &        ZF_S%R,ESOMT%R,VOLU2D,MASDEP,SETDEP,ZR%R,
+!     &        SED_TRA%ADR(1)%P%R,FLUDPTC%R,FLUDPTNC%R,
+!     &        FLUERC%R,FLUERNC%R,MIXTE,FLUDPC%R,
+!     &        FLUDPNC%R,PVSCO%R,PVSNCO%R,CFDEP,
+!     &        EPAICO%R,EPAINCO%R,IPBOT,OPTBAN,NPLAN,
+!     &        DEBUG,SEDCO,SEDNCO)
 !
       ENDIF !(SEDI)
 !

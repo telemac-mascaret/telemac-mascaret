@@ -3,9 +3,10 @@
 !                    *****************
 !
      &(WCHU,WCHU0,TURBWC,U,V,W,H,RUGOF,LISRUF,TURBA,TURBB,
-     & TRAV1,TRAV2,TRAV3,S,MESH3D,IELM3,NPOIN2,NPOIN3,NPLAN,NTRAC,
-     & MSK,MASKEL,UETCAR,TA,HN,HMIN,
-     & FLOC,FLOC_TYPE,HINDER,HIND_TYPE,CGEL,CINI)
+     & TRAV1,TRAV2,TRAV3,TRAV4,S,MESH3D,IELM3,NPOIN2,NPOIN3,NPLAN,
+     & NCLASS,MSK,MASKEL,UETCAR,SED_TRA,HN,HMIN,
+     & FLOC,FLOC_TYPE,HINDER,HIND_TYPE,CGEL,CINI,TYPE_OF_SEDIMENT,
+     & SED_CO,SED_NCO)
 !
 !***********************************************************************
 ! TELEMAC3D   V7P2                                  31/08/2016
@@ -55,7 +56,7 @@
 !| NPOIN2         |-->| NUMBER OF POINTS IN 2D
 !| NPOIN3         |-->| NUMBER OF POINTS IN 3D
 !| NPLAN          |-->| NUMBER OF PLANES IN THE 3D MESH OF PRISMS
-!| NTRAC          |-->| NUMBER OF TRACERS
+!| NCLASS         |-->| NUMBER OF SEDIMENT CLASSES
 !| RUGOF          |-->| FRICTION COEFFICIENT
 !| S              |-->| VOID STRUCTURE
 !| SOULSBYWC      |-->| SWITCH FOR SOULSBY FLOCCULATION FORMULA
@@ -81,20 +82,37 @@
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
       TYPE(BIEF_MESH),INTENT(INOUT) :: MESH3D
-      TYPE(BIEF_OBJ), INTENT(INOUT) :: WCHU,TRAV1,TRAV2,TRAV3
+      TYPE(BIEF_OBJ), INTENT(INOUT) :: WCHU,TRAV1,TRAV2,TRAV3,TRAV4
       TYPE(BIEF_OBJ), INTENT(IN)    :: MASKEL,S,H,HN,RUGOF,U,V,W
-      TYPE(BIEF_OBJ), INTENT(IN)    :: TA,UETCAR
+      TYPE(BIEF_OBJ), INTENT(IN)    :: SED_TRA,UETCAR
       LOGICAL, INTENT(IN)           :: TURBWC,MSK,HINDER, FLOC
       INTEGER, INTENT(IN)           :: NPOIN2,NPOIN3,NPLAN,IELM3,LISRUF
-      INTEGER, INTENT(IN)           :: NTRAC,HIND_TYPE, FLOC_TYPE
-      DOUBLE PRECISION, INTENT(IN)  :: WCHU0,TURBA,TURBB,HMIN,CGEL
+      INTEGER, INTENT(IN)           :: NCLASS,HIND_TYPE, FLOC_TYPE
+      INTEGER, INTENT(IN)           :: TYPE_OF_SEDIMENT(NCLASS)
+      INTEGER, INTENT(IN)           :: SED_CO,SED_NCO 
+      DOUBLE PRECISION, INTENT(IN)  :: WCHU0(NCLASS)
+      DOUBLE PRECISION, INTENT(IN)  :: TURBA,TURBB,HMIN,CGEL
       DOUBLE PRECISION, INTENT(IN)  :: CINI
+      INTEGER                       :: ICLASS
+      
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
-!     CONSTANT VALUE GIVEN HERE
+!     CONSTANT VALUE GIVEN HERE WORKING FOR COHESIVE AND NON-COHESIVE CLASSES
 !
-      CALL OS( 'X=C     ' , X=WCHU , C=WCHU0 )
+      DO ICLASS=1,NCLASS
+        CALL OS( 'X=C     ' , X=WCHU%ADR(ICLASS)%P, C=WCHU0(ICLASS) )
+      END DO
+
+! computation the total suspended concentration in TRAV2
+! for cohesive and non-cohesive  -- HR !!!
+      IF(FLOC_TYPE==2.OR.HINDER) THEN
+        CALL OS( 'X=0     ' , X=TRAV4)
+        DO ICLASS=1,NCLASS
+          CALL OS( 'X=X+Y   ' , X=TRAV4, Y=SED_TRA%ADR(ICLASS)%P )
+        END DO
+      END IF
+
 !
 ! 1. FLOCCULATION
 !
@@ -102,24 +120,37 @@
         IF(FLOC_TYPE.EQ.1) THEN
 !
 !         APPLY REDUCTION DUE TO TURBULENT BREAKUP OF FLOCS
+!         ONLY FOR COHESIVE SEDIMENTS
 !
-          CALL WCTURB(WCHU,WCHU0,U,V,W,H,RUGOF,LISRUF,
+          DO ICLASS=1,NCLASS
+            IF(TYPE_OF_SEDIMENT(ICLASS)==SED_CO) THEN
+              CALL WCTURB(WCHU%ADR(ICLASS)%P%R,WCHU0(ICLASS),
+     &                U,V,W,H,RUGOF,LISRUF,
      &                TRAV1,TRAV2,TRAV3, S,MESH3D,IELM3,NPOIN2,
      &                NPLAN,TURBA,TURBB,MSK,MASKEL,UETCAR)
+            ENDIF
+          END DO
 !
         ELSEIF(FLOC_TYPE.EQ.2) THEN
 !
 !         SOULSBY FLOC MODEL
 !
+
           IF(HINDER) THEN
-            CALL OS('X=-(Y,C)',X=TRAV1,Y=TA%ADR(NTRAC)%P,C=CINI)
+! TRAV4: total concentration including non-cohesive classes
+! TRAV1: is limited to the hindering concentration
+            CALL OS('X=-(Y,C)',X=TRAV1,Y=TRAV4,C=CINI)
           ELSE
-            CALL OS('X=Y     ',X=TRAV1,Y=TA%ADR(NTRAC)%P)
+            CALL OS('X=Y     ',X=TRAV1,Y=TRAV4)
           ENDIF
 !
-          CALL SOULSBYFLOC3D(WCHU,TRAV1%R,MESH3D,NPOIN2,
-     &                       NPOIN3,NPLAN,HN,HMIN,UETCAR%R)
+          DO ICLASS=1,NCLASS
+            IF(TYPE_OF_SEDIMENT(ICLASS)==SED_CO) THEN
+              CALL SOULSBYFLOC3D(WCHU%ADR(ICLASS)%P,TRAV1%R,
+     &            MESH3D,NPOIN2,NPOIN3,NPLAN,HN,HMIN,UETCAR%R)
 !
+            ENDIF
+          END DO
         ELSE
 !
           IF(LNG.EQ.1) THEN
@@ -146,8 +177,13 @@
         ! this copy of concentration is a bit unecessary.
         ! Would be better to pass
         ! a pointer and use double array in WCHIND
-        CALL OS('X=Y     ',X=TRAV1,Y=TA%ADR(NTRAC)%P)
-        CALL WCHIND(WCHU,TRAV1,CINI,CGEL,NPOIN3,HIND_TYPE)
+        DO ICLASS=1,NCLASS
+          IF(TYPE_OF_SEDIMENT(ICLASS)==SED_CO) THEN
+! TRAV4: total concentration including non-cohesive classes
+           CALL WCHIND(WCHU%ADR(ICLASS)%P,TRAV4,
+     &          CINI,CGEL,NPOIN3,HIND_TYPE)
+          ENDIF
+        END DO
       ENDIF
 !
 !-----------------------------------------------------------------------

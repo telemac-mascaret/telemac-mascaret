@@ -8,8 +8,9 @@
      & GRADZFX, GRADZFY, GRADZSX, GRADZSY ,
      & TOB    , FLUDPT , FLUER  , TOCD    ,
      & NPOIN3 , NPOIN2 , NPLAN  , KLOG    ,
-     & HMIN   , SEDCO  , SETDEP , SEDNCO  ,
-     & WCS    , MIXTE  , FLUDPTC, FLUDPTNC)
+     & HMIN, SETDEP   )
+!, SEDCO  , SETDEP , SEDNCO  ,
+!     & WCS    , MIXTE  , FLUDPTC, FLUDPTNC)
 !
 !***********************************************************************
 ! TELEMAC3D   V7P0                                   03/06/2014
@@ -76,18 +77,14 @@
 !| KLOG           |-->| CONVENTION FOR SOLID BOUNDARY
 !| LITABF         |-->| FOR BOUNDARY CONDITION BOTTOM
 !| LITABS         |<->| FOR BOUNDARY CONDITION SURFACE (NOT USED)
-!| MIXTE          |-->| LOGICAL, MIXED SEDIMENTS OR NOT
 !| NPLAN          |-->| NUMBER OF PLANES IN THE 3D MESH OF PRISMS
 !| NPOIN2         |-->| NUMBER OF 2D POINTS
 !| NPOIN3         |-->| NUMBER OF 3D POINTS
-!| SEDCO          |-->| LOGICAL FOR COHESIVE SEDIMENT
-!| SEDNCO         |-->| LOGICAL, SEDIMENT NON-COHESIVE OR NOT
 !| SETDEP         |-->| CHOICE OF CONVECTION SCHEME FOR VERTICAL SETTLING
 !| TA             |-->| CONCENTRATION OF SEDIMENTS
 !| TOB            |<->| BOTTOM FRICTION
 !| TOCD           |-->| CRITICAL SHEAR STRESS FOR SEDIMENT DEPOSITION
 !| WC             |-->| SETTLING VELOCITY OF MUD
-!| WCS            |-->| SETTLING VELOCITY OF SAND
 !| X              |-->| COORDINATE
 !| Y              |-->| COORDINATE
 !| Z              |-->| COORDINATE
@@ -102,7 +99,6 @@
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
       INTEGER, INTENT(IN) :: NPOIN3,NPOIN2,NPLAN,KLOG,SETDEP
-      LOGICAL, INTENT(IN) :: SEDCO, SEDNCO, MIXTE
 !
 !     BOTTOM
 !     ****
@@ -138,16 +134,14 @@
       DOUBLE PRECISION, INTENT(IN) :: HN(NPOIN2)
       DOUBLE PRECISION, INTENT(INOUT) :: TOB(NPOIN2)
       DOUBLE PRECISION, INTENT(INOUT) :: FLUDPT(NPOIN2), FLUER(NPOIN2)
-      DOUBLE PRECISION, INTENT(INOUT) :: FLUDPTC(NPOIN2)
-      DOUBLE PRECISION, INTENT(INOUT) :: FLUDPTNC(NPOIN2)
 !
       DOUBLE PRECISION, INTENT(IN) :: TOCD
-      DOUBLE PRECISION, INTENT(IN) :: WCS(NPOIN3)
       DOUBLE PRECISION, INTENT(IN) :: HMIN
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
-      INTEGER I,I3D
+      INTEGER I,I3D, ICLASS
+      DOUBLE PRECISION PROB
 !
       INTRINSIC MAX
 !
@@ -155,16 +149,19 @@
 !
 !     COMPUTES THE DEPOSITION PROBABILITY
 !
-      IF(SEDCO) THEN
 !
 !       COHESIVE SEDIMENT (Here FLUDPT >0)
 !
+        PROB=1.D0
+        IF(TYPE_OF_SEDIMENT(ICLASS)==SED_CO) 
+     &     PROB=MAX(1.D0-(TOB(I)/MAX(TOCD,1.D-6)),0.D0)
+
         IF(SIGMAG.OR.OPTBAN.EQ.1) THEN
           DO I=1,NPOIN2
             IF(IPBOT%I(I).NE.NPLAN-1) THEN
 !             DEPOSITION ON THE FIRST FREE PLANE WITH LOCAL VELOCITY
               I3D=I+IPBOT%I(I)*NPOIN2
-              FLUDPT(I) = WC(I3D)*MAX(1.D0-TOB(I)/MAX(TOCD,1.D-6),0.D0)
+              FLUDPT(I) = WC(I3D)*PROB
             ELSE
 !             TIDAL FLAT
               FLUDPT(I) = 0.D0
@@ -172,62 +169,10 @@
           ENDDO
         ELSE
           DO I=1,NPOIN2
-            FLUDPT(I) = WC(I)*MAX(1.D0-(TOB(I)/MAX(TOCD,1.D-6)),0.D0)
+            FLUDPT(I) = WC(I)*PROB
           ENDDO
         ENDIF
 !
-      ENDIF
-
-      IF(SEDNCO) THEN
-!
-!       NON COHESIVE SEDIMENT
-!
-        IF(SIGMAG.OR.OPTBAN.EQ.1) THEN
-          DO I=1,NPOIN2
-            IF(IPBOT%I(I).NE.NPLAN-1) THEN
-!             DEPOSITION ON THE FIRST FREE PLANE WITH LOCAL VELOCITY
-              FLUDPT(I) = WC(I)
-            ELSE
-!             TIDAL FLAT
-              FLUDPT(I) = 0.D0
-            ENDIF
-          ENDDO
-        ELSE
-          DO I=1,NPOIN2
-            FLUDPT(I) = WC(I)
-          ENDDO
-        ENDIF
-!
-      ENDIF
-
-      IF(MIXTE) THEN
-
-        IF(SIGMAG.OR.OPTBAN.EQ.1) THEN
-          DO I=1,NPOIN2
-            IF(IPBOT%I(I).NE.NPLAN-1) THEN
-!             DEPOSITION ON THE FIRST FREE PLANE WITH LOCAL VELOCITY
-              I3D = I+IPBOT%I(I)*NPOIN2
-              FLUDPTC(I) = WC(I3D)*MAX(1.D0-TOB(I)/MAX(TOCD,1.D-6),0.D0)
-              FLUDPTNC(I)= WCS(I)
-              FLUDPT(I)  = FLUDPTC(I)+FLUDPTNC(I)
-            ELSE
-!             TIDAL FLAT
-              FLUDPT(I)   = 0.D0
-              FLUDPTC(I)  = 0.D0
-              FLUDPTNC(I) = 0.D0
-            ENDIF
-          ENDDO
-        ELSE
-          DO I=1,NPOIN2
-            FLUDPTC(I)  = WC(I)*MAX(1.D0-(TOB(I)/MAX(TOCD,1.D-6)),0.D0)
-            FLUDPTNC(I) = WCS(I)
-            FLUDPT(I)   = FLUDPTC(I)+FLUDPTNC(I)
-          ENDDO
-        ENDIF
-!
-      ENDIF
-!
-
 !-----------------------------------------------------------------------
 !
 !     COMPUTATION OF THE TRACER FLUX ON THE BOTTOM
