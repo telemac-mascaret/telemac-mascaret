@@ -693,7 +693,8 @@ files: declarations_sisyphe.f
   vitchu_sisyphe.f
   init_sediment.f
   layer.f
-  bed_massbalance.f
+  bed_update.f
+  suspension_deposit.f
   fluxpr_sisyphe.f
   flusec_sisyphe.f
   calcuw.f
