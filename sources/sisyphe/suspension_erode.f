@@ -1,109 +1,141 @@
-!                    ****************
+!            ****************************
              SUBROUTINE SUSPENSION_ERODE
-!                    ****************
+!            ****************************
+!***********************************************************************
+! SISYPHE   V7P3                                             28/03/2017
+!***********************************************************************
+!
+!brief    COMPUTES FIRST LAYER DEPOSITION;
+!+
+!
+!history  R. WALTHER (ARTELIA), J. FONTAINE (EDF-LNHE)
+!+        28/03/2017
+!+        V7P3
+!+  Creation of the subroutine.
+!
+!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+!| CA             |-->| BOTTOM CONCENTRATION
+!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+!
 !
       USE BIEF
-      USE DECLARATIONS_TELEMAC
-      USE DECLARATIONS_XXXX
-
+      USE DECLARATIONS_SISYPHE
+      USE DECLARATIONS_SPECIAL
       IMPLICIT NONE
-      INTEGER LNG,LU
-      COMMON/INFO/LNG,LU
 !
-C-----------------------------------------------------------------------
+!+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+!
+
+!
+!+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+!
       INTEGER IPOIN,ILAYER,ISAND,IMUD
       DOUBLE PRECISION QER_MUD(NMUD),QER_SAND(NSAND),TEMPS(NSAND)
-      DOUBLE PRECISION TOC_MIXTE(NPOIN,NSAND),QE_MOY(NSAND)
+      DOUBLE PRECISION TOC_MIX(NPOIN,NSAND),QE_MOY(NSAND)
       DOUBLE PRECISION FLUER_PUR_MUD(NPOIN),FLUER_PUR_SAND(NSAND,NPOIN)
       DOUBLE PRECISION FLUER_MIX(NSAND,NPOIN)
-	  DOUBLE PRECISION FLUER_MUD(NMUD,NPOIN),FLUER_SAND(NSAND,NPOIN)
+      DOUBLE PRECISION FLUER_MUD(NMUD,NPOIN),FLUER_SAND(NSAND,NPOIN)
       DOUBLE PRECISION CHECK_POSITIF_MUD_TOT1,CHECK_POSITIF_MUD_TOT2
-	  DOUBLE PRECISION CHECK_POSITIF_MUD,CHECK_POSITIF_SAND
-	  DOUBLE PRECISION FLUER_MIX_TOT
+      DOUBLE PRECISION CHECK_POSITIF_MUD,CHECK_POSITIF_SAND
+      DOUBLE PRECISION FLUER_MIX_TOT
 !
-C
-
-      DO IPOIN=1,NPOIN 
+      DO ISAND = 1,NSAND
+        ! COMPUTE EQUILIBRIUM CONCENTRATION
+        CALL SUSPENSION_COMPUTE_CAE(T4,HN,FDM,FD90,NPOIN,CHARR,XMVE,
+     &                       XMVS,VCE,GRAV,HMIN,ZERO,
+     &                       ZREF,AC,FLUER,CSTAEQ,QS_C,ICQ,U2D,V2D,
+     &                       CSRATIO,T14,DEBUG)
+        DO IPOIN = 1,NPOIN
+          CAE(ISAND,IPOIN) = CSTAEQ%R(IPOIN)
+        ENDDO
+      ENDDO
 !
-         DO IMUD=1,NMUD
-             QER_MUD(IMUD)=0.D0
-         ENDDO
-         DO ISAND=1,NSAND
-             QER_SAND(ISAND)=0.D0
-             TEMPS(ISAND)=DT
-         ENDDO
+      DO IPOIN = 1,NPOIN
 !
-         DO ILAYER=NLAYER,1,-1
+        DO IMUD = 1,NMUD
+          QER_MUD(IMUD) = 0.D0
+        ENDDO
 
-!**** calcul de la contrainte modifiee par le melange		   
-		   DO ISAND = 1,NSAND
-!		     TOC_SAND(ISAND) est calcule dans init_sediment
-             IF(RATIO_MUD_SAND(ILAYER,IPOIN).LE.0.3D0)THEN
-              TOC_MIXTE(ILAYER,IPOIN)=TOC_SAND(ISAND,ILAYER,IPOIN)
-             ELSEIF(RATIO_MUD_SAND(ILAYER,IPOIN)).GE.0.5D0)THEN
-              TOC_MIXTE(ILAYER,IPOIN)=TOC_VAS(ILAYER,IPOIN)
-             ELSE
-              TOC_MIXTE(ILAYER,IPOIN)=
-		&	  (RATIO_MUD_SAND(ILAYER,IPOIN)-0.3D0)/(0.5-0.3)*
-		&     (TOC_VAS(ILAYER,IPOIN)-TOC_SAND(ISAND)+TOC_SAND(ISAND)
- 	         ENDIF
- 	       ENDDO
-
-           DO ISAND=1,NSAND
-!***flux de sable en sable pur
-            CALL SUSPENSION_COMPUTE_CAE
-	        CAE(ISAND,IPOIN)=!!!!!!!!!!!!!!! CALL SUSPENSION_ERODE.F mais supprimer AVA
-            FLUER_PUR_SAND(ISAND,IPOIN)=CAE(ISAND,IPOIN)*WSAB(ISAND)
-           ENDDO
-!***flux de vase en vase pure (PARTHENIADES)
-!******Meme flux pour toutes les classes de vase
-           IF(TOCW_SEDI(IPOIN).GT.TOC_VAS(ILAYER,IPOIN))THEN
-		      FLUER_PUR_MUD(IPOIN)=0.0002D0 * (TOCW_SEDI(IPOIN)/TOC_VAS(ILAYER,IPOIN) - 1.D0)
-           ELSE
-              FLUER_PUR_MUD(IPOIN)=0.D0
-           ENDIF 		   
-
-!******calcul des flux de sable et vase en melange sable-vase     
-          FLUER_MIX_TOT=0.D0
-
-          DO ISAND=1,NSAND
+        DO ISAND = 1,NSAND
+          QER_SAND(ISAND) = 0.D0
+          TEMPS(ISAND) = DT
+        ENDDO
 !
-            IF(TOCW_SEDI(IPOIN).GT.TOC_MIXTE(ILAYER,IPOIN))THEN
+        DO ILAYER = 1,NOMBLAY
+
+          ! COMPUTE CRITICAL SHEAR STRESS FOR MIXTURE
+          DO ISAND = 1,NSAND
+!		       TOC_SAND(ISAND) IS COMPUTED IN INIT_SEDIMENT
+            IF(RATIO_MUD_SAND(ILAYER,IPOIN).LE.0.3D0)THEN
+              TOC_MIX(ILAYER,IPOIN) = TOC_SAND(ISAND,ILAYER,IPOIN)
+            ELSEIF(RATIO_MUD_SAND(ILAYER,IPOIN).GE.0.5D0)THEN
+              TOC_MIX(ILAYER,IPOIN) = TOC_MUD(ILAYER,IPOIN)
+            ELSE
+              TOC_MIX(ILAYER,IPOIN) =
+      &       (RATIO_MUD_SAND(ILAYER,IPOIN)-0.3D0)/(0.5-0.3)*
+      &       (TOC_MUD(ILAYER,IPOIN)-TOC_SAND(ISAND)) + TOC_SAND(ISAND)
+            ENDIF
+          ENDDO
+
+          DO ISAND = 1,NSAND
+            FLUER_PUR_SAND(ISAND,IPOIN) = CAE(ISAND,IPOIN)*WSAB(ISAND)
+          ENDDO
+!
+! PUR MUD FLUX
+          IF(TOB(IPOIN).GT.TOC_MUD(ILAYER,IPOIN))THEN
+            FLUER_PUR_MUD(IPOIN) = PARTHENIADES
+     &     * (TOB(IPOIN)/TOC_MUD(ILAYER,IPOIN) - 1.D0)
+          ELSE
+            FLUER_PUR_MUD(IPOIN) = 0.D0
+          ENDIF
+
+! COMPUTE MIX FLUXES SAND-MUD
+          FLUER_MIX_TOT = 0.D0
+          FLUER_MIX(ISAND,IPOIN) = FLUER_PUR_MUD(IPOIN)
+          DO ISAND = 1,NSAND
+!
+            IF(TOB(IPOIN).GT.TOC_MIX(ILAYER,IPOIN))THEN
               IF(RATIO_MUD_SAND(ILAYER,IPOIN).LE.0.3D0)THEN
-!-------------FRACTION DE VASE < 30%, LES FLUX SONT SEMBLABLES A DU SABLE PUR
+!                MUD RATIO < 30%, (PURE SAND FLUX)
                  FLUER_MIX(ISAND,IPOIN)= FLUER_PUR_SAND(ISAND,IPOIN)
-C-------------FRACTION DE VASE > 50%, LES FLUX SONT SEMBLABLES A DE LA VASE PURE
+!                MUD RATIO > 50%, (PURE MUD FLUX)
               ELSEIF(RATIO_MUD_SAND(ILAYER,IPOIN).GE.0.5D0)THEN
-                 FLUER_MIX(ISAND,IPOIN)= FLUER_PUR_MUD(IPOIN)
-C-------------FRACTION DE VASE >30% ET <50%, INTERPOLATION DES FLUX
+                 FLUER_MIX(ISAND,IPOIN) = FLUER_PUR_MUD(IPOIN)
+!                MUD RATIO >30% AND <50%, (INTERPOLATION)
               ELSE
-                 FLUER_MIX(ISAND,IPOIN)=(RATIO_MUD_SAND(ILAYER,IPOIN)-0.3D0)/
-     &           (0.5D0-0.3D0)*(FLUER_PUR_MUD(IPOIN)-FLUER_PUR_SAND(ISAND,IPOIN))+FLUER_PUR_SAND(ISAND,IPOIN)
+                 FLUER_MIX(ISAND,IPOIN) = (RATIO_MUD_SAND(ILAYER,IPOIN)
+     &            -0.3D0)/(0.5D0-0.3D0)
+     &            *(FLUER_PUR_MUD(IPOIN)-FLUER_PUR_SAND(ISAND,IPOIN))
+     &            +FLUER_PUR_SAND(ISAND,IPOIN)
               ENDIF
             ELSE
-              FLUER_MIX(ISAND,IPOIN)=0.D0
+              FLUER_MIX(ISAND,IPOIN) = 0.D0
             ENDIF
- 
-            FLUER_MIX_TOT=FLUER_MIX_TOT+FLUER_MIX(ISAND,IPOIN)*RATIO_SAND(ISAND,ILAYER,IPOIN)
+!
+            FLUER_MIX_TOT = FLUER_MIX_TOT
+     &      + FLUER_MIX(ISAND,IPOIN)*RATIO_SAND(ISAND,ILAYER,IPOIN)
 
-          ENDDO 
-
-          IF(FLUER_MIX_TOT.LE.0.D0.AND.MASS_SAND_TOT(ILAYER,IPOIN).GE.MIN_SED_MASS_COMP) GOTO 10
+          ENDDO
+!
+          IF(NSAND.EQ.0.AND.NMUD.GT.0) THEN
+!         BE AWARE HERE WE IMPOSE FLUER_MIX IF WE ONLY HAVE MUD
+!         THIS IS OVERWRITE IF WE HAVE SAND
+          IF(FLUER_MIX_TOT.LE.0.D0.AND.MASS_MIX_TOT(ILAYER,IPOIN).GE.MIN_SED_MASS_COMP) GOTO 10
 
           DO ISAND=1,NSAND
-	  
+
              QE_MOY(ISAND)= FLUER_MIX(ISAND,IPOIN)*RATIO_SAND(ISAND,ILAYER,IPOIN)*TEMPS(ISAND)
 
              IF(QE_MOY(ISAND).LE.0.D0) GOTO 5
-           
+
              IF(QE_MOY(ISAND).LT.(MASS_MUD_TOT(ILAYER,IPOIN)*RATIO_SAND(ISAND,ILAYER,IPOIN)+MASS_SAND(ISAND,ILAYER,IPOIN))) THEN
 
-C              
+C
               CHECK_POSITIF_MUD_TOT1 = MIN(MASS_MUD_TOT(ILAYER,IPOIN),QE_MOY(ISAND)*RATIO_MUD_SAND(ILAYER,IPOIN))
               CHECK_POSITIF_MUD_TOT2 = 0.D0
 			  DO IMUD = 1,NMUD
 			    CHECK_POSITIF_MUD = MIN(MASS_MUD(IMUD,ILAYER,IPOIN),CHECK_POSITIF_MUD_TOT1*RATIO_MUD(IMUD,ILAYER,IPOIN))
-				MASS_MUD(IMUD,ILAYER,IPOIN)= MASS_MUD(IMUD,ILAYER,IPOIN)- (CHECK_POSITIF_MUD*RATIO_MUD(IMUD,ILAYER,IPOIN))			  
+				MASS_MUD(IMUD,ILAYER,IPOIN)= MASS_MUD(IMUD,ILAYER,IPOIN)- (CHECK_POSITIF_MUD*RATIO_MUD(IMUD,ILAYER,IPOIN))
                 QER_MUD(IMUD) = QER_MUD(IMUD) + (CHECK_POSITIF_MUD*RATIO_MUD(IMUD,ILAYER,IPOIN))
 				CHECK_POSITIF_MUD_TOT2 = CHECK_POSITIF_MUD_TOT2 + CHECK_POSITIF_MUD
 			  ENDDO
@@ -117,7 +149,7 @@ C
 
 C
              ELSE
-C   
+C
               CHECK_POSITIF_MUD_TOT1 = MIN(MASS_MUD_TOT(ILAYER,IPOIN),MASS_MUD_TOT(ILAYER,IPOIN)*RATIO_SAND(ISAND,ILAYER,IPOIN))
               CHECK_POSITIF_MUD_TOT2 = 0.D0
 			  DO IMUD = 1,NMUD
@@ -126,34 +158,34 @@ C
 			    QER_MUD(IMUD) = QER_MUD(IMUD) + CHECK_POSITIF_MUD
 				CHECK_POSITIF_MUD_TOT2 = CHECK_POSITIF_MUD_TOT2 + CHECK_POSITIF_MUD
 			  ENDDO
-C              
+C
               CHECK_POSITIF_SAND = MAX(MASS_SAND(ISAND,ILAYER,IPOIN),0.D0)
 	          MASS_SAND(ISAND,ILAYER,IPOIN) = MASS_SAND(ISAND,ILAYER,IPOIN)-CHECK_POSITIF_SAND
 			  QER_SAND(ISAND) = QER_SAND(ISAND)+ CHECK_POSITIF_SAND
             ENDIF
-C              
-              TEMPS(ISAND)= TEMPS(ISAND)-((CHECK_POSITIF_MUD_TOT2+CHECK_POSITIF_SAND)/(QE_MOY(ISAND)/DT))   
+C
+              TEMPS(ISAND)= TEMPS(ISAND)-((CHECK_POSITIF_MUD_TOT2+CHECK_POSITIF_SAND)/(QE_MOY(ISAND)/DT))
 
            ENDIF
-5     CONTINUE	       
+5     CONTINUE
       ENDDO ! fin boucle isable
-      
+
       DO ISAND=1,NSAND
       IF(TEMPS(ISAND).LE.0.D0) GOTO 10
       ENDDO
 
 C
-         ENDDO ! fin boucle NLAYER
+         ENDDO ! fin boucle NOMBLAY
 10    CONTINUE
 
 		DO IMUD = 1,NMUD
 		  FLUER_MUD(IMUD,IPOIN)= MAX(QER_MUD(IMUD)/DT,0.D0)
 	    ENDDO
         DO ISAND=1,NSAND
-          FLUER_SAND(ISAND,IPOIN)=MAX(QER_SABLE(ISAND)/DT,0.D0) 
+          FLUER_SAND(ISAND,IPOIN)=MAX(QER_SABLE(ISAND)/DT,0.D0)
 !quand il y aura du bedload
 		  !!!          FLUER_MUD(IMUD,IPOIN)= FLUER_MUD(IMUD,IPOIN)+FLUER_BEDLOAD_MUD(IMUD,IPOIN)
-        ENDDO 
+        ENDDO
 C
       ENDDO ! fin boucle ipoin
 

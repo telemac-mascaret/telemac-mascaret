@@ -36,8 +36,8 @@
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
-      LAYER_DEPOSIT_SAND = NOMBLAY
-      LAYER_DEPOSIT_MUD = NOMBLAY
+      LAYER_DEPOSIT_SAND = 1
+      LAYER_DEPOSIT_MUD = 1
       ISAND = 0
       IMUD = 0
 
