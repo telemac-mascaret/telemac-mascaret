@@ -128,13 +128,16 @@
       INTEGER            :: I,J
       INTEGER            :: ILAYER,IMUD,ISAND
       DOUBLE PRECISION   :: DENS,DSTAR
-      DOUBLE PRECISION   :: CHECK_RS,CHECK_RM,RATIO_MUD_VOL
+      DOUBLE PRECISION   :: CHECK_RS,CHECK_RM
+      DOUBLE PRECISION   :: RATIO_MUD_VOL !ratio of mud volume to volume of porosity of sand
       DOUBLE PRECISION   :: MASS_SAND_TOT,MASS_MUD_TOT,MASS_TOT
+      LOGICAL            :: BED_MIXED_GRADED
 !======================================================================!
 !======================================================================!
 !                               PROGRAM                                !
 !======================================================================!
 !======================================================================!
+      BED_MIXED_GRADED=.FALSE.
 !
 !  ------ BED COMPOSITION
 !
@@ -155,153 +158,158 @@
      &                               ZR%R,AVA0,CONC,DEBU,.FALSE.)
 !
       ELSE
-!        IF(BED_MIX_GRADED) THEN 
-!! THIS CONDITION IMPLIES THAT NSAND>1 AND/OR NMUD>1
-!!
-!! INITIALISATION OF RATIO_SAND AND RATIO_MUD 
-!!
-!          IF(NSAND.EQ.1) THEN
-!            DO ILAYER=1,NOMBLAYER
-!              DO I=1,NPOIN
-!                RATIO_SAND(NSAND,ILAYER,I)=1.D0
-!              ENDDO
-!            ENDDO
-!          ELSEIF(NMUD.EQ.1) THEN
-!            DO ILAYER=1,NOMBLAYER
-!              DO I=1,NPOIN
-!                RATIO_MUD(NMUD,ILAYER,I)=1.D0
-!              ENDDO
-!            ENDDO
-!          ENDIF
-!! 1) USERS DEFINES WHICH RATIO IN WHICH LAYER
-!!
-!!    FOR SAND
-!!    FIRST LAYER
+        IF(BED_MIXED_GRADED) THEN 
+! THIS CONDITION IMPLIES THAT NSAND>1 AND/OR NMUD>1
+!
+! INITIALISATION OF RATIO_SAND AND RATIO_MUD 
+!
+          IF(NSAND.EQ.1) THEN
+            DO ILAYER=1,NOMBLAYER
+              DO I=1,NPOIN
+                RATIO_SAND(NSAND,ILAYER,I)=1.D0
+              ENDDO
+            ENDDO
+          ELSEIF(NMUD.EQ.1) THEN
+            DO ILAYER=1,NOMBLAYER
+              DO I=1,NPOIN
+                RATIO_MUD(NMUD,ILAYER,I)=1.D0
+              ENDDO
+            ENDDO
+          ENDIF
+! 1) USERS DEFINES WHICH RATIO IN WHICH LAYER
+!
+!    FOR SAND
+!    FIRST LAYER
 !          DO I=1,NPOIN
 !            RATIO_SAND(1,1,I)=...
 !            RATIO_SAND(2,1,I)=...
 !            ...
 !            RATIO_SAND(NSAND,1,I)=...
-!!
-!!    SECOND LAYER
+!
+!    SECOND LAYER
 !            RATIO_SAND(1,2,I)=...
 !            RATIO_SAND(2,2,I)=...
 !            ...
 !            RATIO_SAND(NSAND,2,I)=...
-!!            
-!!    NOMBLAYER 
+!            
+!    NOMBLAYER 
 !            RATIO_SAND(1,NOMBLAY,I)=...
 !            RATIO_SAND(2,NOMBLAY,I)=...
 !            ...
 !            RATIO_SAND(NSAND,NOMBLAY,I)=...
-!!    FOR MUD 
-!!    FIRST LAYER
+!    FOR MUD 
+!    FIRST LAYER
 !            RATIO_MUD(1,1,I)=...
 !            RATIO_MUD(2,1,I)=...
 !            ...
 !            RATIO_MUD(NSAND,1,I)=...
-!!
-!!    SECOND LAYER
+!
+!    SECOND LAYER
 !            RATIO_MUD(1,2,I)=...
 !            RATIO_MUD(2,2,I)=...
 !            ...
 !            RATIO_MUD(NSAND,2,I)=...
-!!            
-!!    NOMBLAYER 
+!            
+!    NOMBLAYER 
 !            RATIO_MUD(1,NOMBLAY,I)=...
 !            RATIO_MUD(2,NOMBLAY,I)=...
 !            ...
 !            RATIO_MUD(NMUD,NOMBLAY,I)=...
-!!
+!
 !          ENDDO  
-!!         
-!!  CHECK THE RATIOS
-!          DO I=1,NPOIN
-!            DO ILAYER=1,NLAYER
-!              CHECK_RS=0.D0
-!              CHECK_RM=0.D0
-!              DO ISAND=1,NSAND
-!                CHECK_RS=CHECK_RS+RATIO_SAND(ISAND,ILAYER,I)
-!              ENDDO
-!              IF(CHECK_RS.NE.1.D0) THEN !TO CHANGE WITH EPSILON COND!!
-!                 WRITE(LU,*)'SUM OF SAND RATE COEFF MUST BE EQUAL TO 1!'
-!              ENDIF
-!              DO IMUD=1,NMUD
-!                CHECK_RM=CHECK_RM+RATIO_MUD(IMUD,ILAYER,I)
-!              ENDDO
-!              IF(CHECK_RM.NE.1.D0) THEN !TO CHANGE WITH EPSILON COND!!
-!                 WRITE(LU,*)'SUM OF MUD RATE COEFF MUST BE EQUAL TO 1!'
-!              ENDIF
-!            ENDDO
-!          ENDDO
-!!
-!! 2) USERS DEFINE LAYER THICKNESS
-!!   a. every layer has the same thickness
+!         
+!  CHECK THE RATIOS
+          DO I=1,NPOIN
+            DO ILAYER=1,NLAYER
+              CHECK_RS=0.D0
+              CHECK_RM=0.D0
+              DO ISAND=1,NSAND
+                CHECK_RS=CHECK_RS+RATIO_SAND(ISAND,ILAYER,I)
+              ENDDO
+              IF(ABS(CHECK_RS-1.D0).GE.1.D-8) THEN 
+                 WRITE(LU,*)'SUM OF SAND RATE COEFF MUST BE EQUAL TO 1!'
+                 CALL PLANTE(1)
+                 STOP
+              ENDIF
+              DO IMUD=1,NMUD
+                CHECK_RM=CHECK_RM+RATIO_MUD(IMUD,ILAYER,I)
+              ENDDO
+              IF(ABS(CHECK_RM-1.D0).GE.1.D-8) THEN 
+                 WRITE(LU,*)'SUM OF MUD RATE COEFF MUST BE EQUAL TO 1!'
+                 CALL PLANTE(1)
+                 STOP
+              ENDIF
+            ENDDO
+          ENDDO
+!
+! 2) USERS DEFINE LAYER THICKNESS
+!   a. every layer has the same thickness
 !          DO ILAYER=1,NOMBLAY
 !            DO IPOIN=1,NPOIN
 !               ES(IPOIN,ILAYER)=...
 !            ENDDO
 !          ENDDO
-!!   b. different thickness for layers
+!   b. different thickness for layers
 !          DO IPOIN=1,NPOIN
 !            ES(IPOIN,1)=...
 !            ES(IPOIN,2)=...
 !            ...
 !            ES(IPOIN,NOMBLAY)=...
 !          ENDDO 
-!!
-!! 3) USERS DEFINE RATIO_MUD_SAND
-!!
-!!   a. every layer has the same ratio_mud_sand
+!
+! 3) USERS DEFINE RATIO_MUD_SAND
+!
+!   a. every layer has the same ratio_mud_sand
 !          DO ILAYER=1,NOMBLAY
 !            DO IPOIN=1,NPOIN
 !               RATIO_MUD_SAND(ILAYER,IPOIN)=...
 !            ENDDO
 !          ENDDO
-!!   b. different ratio for layers
+!   b. different ratio for layers
 !          DO IPOIN=1,NPOIN
 !            RATIO_MUD_SAND(1,IPOIN)=...
 !            RATIO_MUD_SAND(2,IPOIN)=... 
 !            ...
 !            RATIO_MUD_SAND(NOMBLAY,IPOIN)=...
 !          ENDDO 
-!!
-!! 4) MASS COMPUTATION
-!!
-!        DO I=1,NPOIN
-!          DO ILAYER = 1,NOMBLAY
-!            RATIO_MUD_VOL=RATIO_MUD_SAND(ILAYER,I)*XMVS
-!     &      /(CONC_VASE(ILAYER)*XKV*(1.D0-RATIO_MUD_SAND(ILAYER,I)))
-!            IF (RATIO_MUD_VOL.GT.1.D0) THEN
-!              MASS_TOT = ES(I,ILAYER)/
-!     &        ((1.D0-RATIO_MUD_SAND(ILAYER,I))/XMVS+
-!     &        RATIO_MUD_SAND(ILAYER,I)/CONC_VASE(ILAYER))
-!              DO IMUD = 1,NMUD
-!                MASS_MUD(IMUD,ILAYER,I) = 
-!     &          RATIO_MUD_SAND(ILAYER,I)*RATIO_MUD(IMUD,ILAY,I)*MASS_TOT
-!              ENDDO
-!              DO ISAND = 1,NSAND
-!                MASS_SAND(ISAND,ILAYER,I) =
-!     &          (1.D0-RATIO_MUD_SAND(ILAYER,I))*MASS_TOT*
-!     &          RATIO_SAND(NSAND,NOMBLAY,I)
-!              ENDDO
-!            ELSE ! all mud fits inside porosity 
-!              MASS_SAND_TOT = XMVS*(1.D0-XKV)*ES(I,ILAYER)
-!              MASS_MUD_TOT = MASS_SAND_TOT/
-!     &                     (1.D0-RATIO_MUD_SAND(ILAYER,I))
-!            ENDIF
-!            DO IMUD = 1,NMUD
-!              MASS_MUD(IMUD,ILAYER,I) = 
-!     &        RATIO_MUD(NMUD,NOMBLAY,NPOIN)*MASS_MUD_TOT
-!            ENDDO
-!            DO ISAND = 1,NSAND
-!              MASS_SAND(ISAND,ILAYER,I) = 
-!     &        RATIO_SAND(NSAND,NOMBLAY,NPOIN)*MASS_SAND_TOT
-!            ENDDO
-!          ENDDO
-!        ENDDO
-!!
-!        ENDIF !(BED_MIX_GRADED)
+!
+! 4) MASS COMPUTATION
+!
+        DO I=1,NPOIN
+          DO ILAYER = 1,NOMBLAY
+            RATIO_MUD_VOL=RATIO_MUD_SAND(ILAYER,I)*XMVS
+     &      /(CONC_VASE(ILAYER)*XKV*(1.D0-RATIO_MUD_SAND(ILAYER,I)))
+            IF (RATIO_MUD_VOL.GT.1.D0) THEN
+              MASS_TOT = ES(I,ILAYER)/
+     &        ((1.D0-RATIO_MUD_SAND(ILAYER,I))/XMVS+
+     &        RATIO_MUD_SAND(ILAYER,I)/CONC_VASE(ILAYER))
+              DO IMUD = 1,NMUD
+                MASS_MUD(I,ILAYER,IMUD) = 
+     &          RATIO_MUD_SAND(ILAYER,I)*RATIO_MUD(IMUD,ILAYER,I)
+     &          *MASS_TOT
+              ENDDO
+              DO ISAND = 1,NSAND
+                MASS_SAND(ISAND,ILAYER,I) =
+     &          (1.D0-RATIO_MUD_SAND(ILAYER,I))*MASS_TOT*
+     &          RATIO_SAND(ISAND,ILAYER,I)
+              ENDDO
+            ELSE ! all mud fits inside porosity 
+              MASS_SAND_TOT = XMVS*(1.D0-XKV)*ES(I,ILAYER)
+              MASS_MUD_TOT = MASS_SAND_TOT/
+     &                     (1.D0-RATIO_MUD_SAND(ILAYER,I))
+            ENDIF
+            DO IMUD = 1,NMUD
+              MASS_MUD(I,ILAYER,IMUD) = 
+     &        RATIO_MUD(IMUD,ILAYER,I)*MASS_MUD_TOT
+            ENDDO
+            DO ISAND = 1,NSAND
+              MASS_SAND(ISAND,ILAYER,I) = 
+     &        RATIO_SAND(ISAND,ILAYER,I)*MASS_SAND_TOT
+            ENDDO
+          ENDDO
+        ENDDO
+!
+        ENDIF !(BED_MIX_GRADED)
 !
 !     NON-COHESIVE, MULTI-CLASSES
 !
@@ -334,10 +342,10 @@
           ENDDO
         ENDIF
 !
-      ENDIF
+      ENDIF !(NSICLA)
 !
       IF(LGRAFED) THEN
-        DO I=1, NSICLA
+        DO I=1,NSICLA
           FRACSED_GF(I)=AVA0(I)
         ENDDO
       ENDIF
@@ -348,11 +356,11 @@
         DENS = (XMVS - XMVE) / XMVE
         DO I = 1, NSICLA
           CALL VITCHU_SISYPHE(XWC(I),DENS,FDM(I),GRAV,VCE)
-          IF(BED_MIXTE_GRADED)THEN
+          IF(BED_MIXED_GRADED) THEN
 !            calcul de la vitesse de chute en 2d ou au fond
 !            si T3D: la vitesse de chute est calculée en 3D puis repassée à sisyphe pour le fond		
-            IF(TYPE_OF_SEDIMENT.EQ.SED_NCO)THEN
-             CALL VITCHU_SISYPHE(XWC(I),DENS,FDM(I),GRAV,VCE)
+            IF(TYPE_OF_SEDIMENT.EQ.SED_NCO) THEN
+              CALL VITCHU_SISYPHE(XWC(I),DENS,FDM(I),GRAV,VCE)
             ELSE
 !           par defaut 1mm/s pour toutes les classes de vase
               XWC(I)= 0.001D0
@@ -389,9 +397,9 @@
 !
       IF(MIXTE) TOCE_SABLE=AC(1)*FDM(1)*GRAV*(XMVS - XMVE)
      
-      IF(BED_MIXTE_GRADED)THEN
+      IF(BED_MIXED_GRADED) THEN
         DO ISAND = 1,NSAND
-          TOC_SAND(ISAND)= AC(ISAND)*FDM(ISAND)*GRAV*(XMVS - XMVE)
+          TOCE_SAND(ISAND)= AC(ISAND)*FDM(ISAND)*GRAV*(XMVS - XMVE)
         ENDDO
       ENDIF
 !
