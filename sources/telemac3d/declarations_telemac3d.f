@@ -2375,6 +2375,25 @@
 !
 !
       TYPE(BIEF_OBJ), TARGET :: ZREF
+      !
+      !
+!
+!     NUMBER OF SEDIMENTS
+!
+      INTEGER :: NCLASS
+!
+!     SEDIMENT TRACERS (One per class of sediment)
+!
+      TYPE(BIEF_OBJ), TARGET :: SED_TRA
+!
+!     SEDIMENT TRACERS (One per class of sediment)
+!
+      INTEGER, ALLOCATABLE :: TYPE_OF_SEDIMENT(:)
+!
+!     PARAMETER for type of sediment
+!
+      INTEGER, PARAMETER :: SED_CO = 0
+      INTEGER, PARAMETER :: SED_NCO = 1
 !
 !-----------------------------------------------------------------------
 !
