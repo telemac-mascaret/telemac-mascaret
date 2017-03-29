@@ -98,6 +98,7 @@
       INTEGER ITRAC,ITAB,IELM,IELV,IELH,STATUT,NTR,I,NSEG,SIZ,K
       LOGICAL YESWEAK,YESLIPS
       CHARACTER(LEN=1) TYPDIA, TYPEXT
+      INTEGER IERR
 !
 !-----------------------------------------------------------------------
 !
@@ -562,6 +563,36 @@
         CALL BIEF_ALLVEC(2, LIPBOL, 'LIPBOL', 0, 1, 0,MESH3D)
         CALL BIEF_ALLVEC(2, LIPBOS, 'LIPBOS', 0, 1, 0,MESH2D)
       ENDIF
+
+      ! Defining sediment traces information
+      IF(SEDI) THEN
+        ! Two sediment one cohesif one non cohesif
+        IF(MIXTE) THEN
+          NCLASS = 2
+        ELSE
+          NCLASS = 1
+        ENDIF
+        ALLOCATE(TYPE_OF_SEDIMENT(NCLASS),STAT=IERR)
+        CALL CHECK_ALLOCATE(IERR,'TYPE_OF_SEDIEMENT')
+        ! Indentify type of sediment tracer
+        IF(MIXTE) THEN
+          TYPE_OF_SEDIMENT(1) = SED_CO
+          TYPE_OF_SEDIMENT(2) = SED_NCO
+        ELSE IF(SEDCO) THEN
+          TYPE_OF_SEDIMENT(1) = SED_CO
+        ELSE
+          TYPE_OF_SEDIMENT(1) = SED_NCO
+        ENDIF
+
+        CALL ALLBLO(SED_TRA, 'SEDTRA')
+        CALL BIEF_ALLVEC_IN_BLOCK(sed_tra,NCLASS,1,'SEDTRA',IELM3 ,
+     &                            1,1,MESH3D)
+      ELSE
+        NCLASS = 0
+        CALL ALLBLO(SED_TRA, 'SEDTRA')
+        CALL BIEF_ALLVEC_IN_BLOCK(sed_tra,1,1,'SEDTRA',0 ,
+     &                            1,0,MESH3D)
+      ENDIF
 !
 !=======================================================================
 !
@@ -608,8 +639,15 @@
      &                          1, 'TRN   ', IELM, 1, STATUT,MESH3D)
       CALL BIEF_ALLVEC_IN_BLOCK(TAC,    NTRAC,
      &                          1, 'TAC   ', IELM, 1, STATUT,MESH3D)
-      CALL BIEF_ALLVEC_IN_BLOCK(TA,     MAX(NTRAC,1),
-     &                          1, 'TA    ', IELM, 1, STATUT,MESH3D)
+      ! CLASSER FOR SEDIMENT ARE ALLOCATED ELSEWHERE
+      IF(NTRAC.GT.NCLASS) THEN
+        CALL BIEF_ALLVEC_IN_BLOCK(TA,     MAX(NTRAC-NCLASS,1),
+     &                            1, 'TA    ', IELM, 1, STATUT,MESH3D)
+      ENDIF
+      DO I=1,NCLASS
+        CALL ADDBLO(TA,SED_TRA%ADR(I)%P)
+      ENDDO
+
       CALL BIEF_ALLVEC_IN_BLOCK(S0TA,   NTRAC,
      &                          1, 'S0TA  ', IELM, 1, STATUT,MESH3D)
       CALL BIEF_ALLVEC_IN_BLOCK(S1TA,   NTRAC,
@@ -1357,24 +1395,13 @@
       ENDIF
 !
 ! use ncouch + 1 directly
-      IF(TASSE .AND. SEDI) NPFMAX = NCOUCH + 1
-!
-!   CV   IF((GIBSON.OR.TASSE).AND.SEDI) THEN
-!      IF(NCOUCH.GT.1) THEN
-!        CALL BIEF_ALLVEC(1,EPAI,'EPAI  ',NCOUCH*NPOIN2,1,0,MESH3D)
-!      ELSE
-!        CALL BIEF_ALLVEC(1,EPAI,'EPAI  ',0,                1,0,MESH3D)
-!      ENDIF
 !
       IF(TASSE.AND.SEDI) THEN
+        NPFMAX = NCOUCH + 1
         CALL BIEF_ALLVEC(1, IVIDE, 'IVIDE ', NPFMAX*NPOIN2, 1,0,MESH3D)
-      ELSE
-        CALL BIEF_ALLVEC(1, IVIDE, 'IVIDE ', 0,             1,0,MESH3D)
-      ENDIF
-!
-      IF(TASSE.AND.SEDI) THEN
         CALL BIEF_ALLVEC(1, TEMP, 'TEMP  ', NCOUCH*NPOIN2, 1,0,MESH3D)
       ELSE
+        CALL BIEF_ALLVEC(1, IVIDE, 'IVIDE ', 0,             1,0,MESH3D)
         CALL BIEF_ALLVEC(1, TEMP, 'TEMP  ', 0,             1,0,MESH3D)
       ENDIF
 !
@@ -1385,23 +1412,14 @@
         CALL BIEF_ALLVEC(1, HDEP,  'HDEP  ', IELM2H, 1, 1,MESH2D)
         CALL BIEF_ALLVEC(1, FLUER, 'FLUER ', IELM2H, 1, 1,MESH2D)
         CALL BIEF_ALLVEC(1, PDEPO, 'PDEPO ', IELM2H, 1, 1,MESH2D)
-! CV ...
         CALL BIEF_ALLVEC(1, FLUDP, 'FLUDP ', IELM2H, 1, 1,MESH2D)
         CALL BIEF_ALLVEC(1, FLUDPT,'FLUDPT', IELM2H, 1, 1,MESH2D)
         CALL BIEF_ALLVEC(1, ZF_S,  'ZF_S  ', IELM2H, 1, 1,MESH2D)
         CALL BIEF_ALLVEC(1, ESOMT, 'ESOMT ', IELM2H, 1, 1,MESH2D)
 !
 !
-! Pour modele multi multicouche
-! ?
-!      IF(NCOUCH. GT.1) THEN
-!         CALL BIEF_ALLVEC(1, CONC, 'CONC  ', NCOUCH, 1, 0,MESH2D)
-!         CALL BIEF_ALLVEC(1, TOCE, 'TOCE  ', NCOUCH, 1, 0,MESH2D)
-!      ELSE
-!        CALL BIEF_ALLVEC(1, CONC, 'CONC  ',      0, 1, 0,MESH2D)
-!        CALL BIEF_ALLVEC(1, TOCE, 'TOCE  ',      0, 1, 0,MESH2D)
-!      ENDIF
-! 7.0 Big change
+! For multi lyaer model
+!
 !
         ALLOCATE(CONC(NPOIN2,NCOUCH))
         ALLOCATE(EPAI(NPOIN2,NCOUCH))           ! MUD BED LAYER THICKNESS
@@ -1423,7 +1441,6 @@
           LAYTHI%ADR(K)%P%MAXDIM1=NPOIN2
           LAYTHI%ADR(K)%P%DIM1=NPOIN2
         ENDDO
-!...CV
         CALL BIEF_ALLVEC(1, ZR,    'ZR    ', IELM2H, 1, 1,MESH2D)
         CALL BIEF_ALLVEC(2, NPF,   'NPF   ', IELM2H, 1, 1,MESH2D)
       ELSE
