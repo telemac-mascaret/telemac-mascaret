@@ -408,6 +408,8 @@
       ALLOCATE(BEDFLO(MAXBLB))
       ALLOCATE(BEDQAREA(MAXBLB))
       ALLOCATE(OPTADV_TR(MAXTRA))
+! so far maxtra, may be better maxclass, but not there yet...
+      ALLOCATE(WCHU0(MAXTRA))
 !
 !     INITIALISING
 !
@@ -451,6 +453,8 @@
       NIT       = MAX(MOTINT(ADRESS(1, 1)),0)
       NPLAN     = MAX(MOTINT(ADRESS(1, 2)),2)
       NTRAC     = MAX(MOTINT(ADRESS(1, 3)),0)
+! RK as long as there is no number of tracer
+      NCLASS    = NTRAC
 !
 !     IF COUPLING WITH WAQTEL NTRAC WILL INCREASE AUTOMATICALLY
 !     DO THE SAME WITH SEDI
@@ -1512,7 +1516,10 @@
 !
       TURBA     = MOTREA(ADRESS(2,59))
       TURBB     = MOTREA(ADRESS(2,60))
-      WCHU0     = MOTREA(ADRESS(2,61))
+        DO I=1,NCLASS
+! is this OK? 
+          WCHU0(I)  = MOTREA(ADRESS(2,61)+I-1)
+        ENDDO
       IF(SEDI.AND.WCHU0.LT.0.D0) THEN
         IF(LNG.EQ.1) THEN
           WRITE(LU,*)'VITESSE DE CHUTE NEGATIVE'

@@ -10,13 +10,13 @@
      &  LITABS , KLOG    , NPOIN3 , NPOIN2  , NPLAN  ,
      &  NCOUCH , ITURBV  , DT     , RHO0    ,  RHOS  ,
      &  TOCD   , MPART   , TOCE   , UETCAR  , GRAV   ,
-     &  SEDCO  , DMOY    , CREF   , ZREF    , CF     ,
+     &  DMOY    , CREF   , ZREF    , CF     ,
      &  AC     , KSPRATIO, ICR    , ICQ     , RUGOF  ,
      &  SETDEP , HMIN    , 
 !WCS    , EPAICO  , EPAINCO,
 !     &  MIXTE  , SEDNCO  , FLUDPTC, FLUDPTNC, FLUERC ,
 !     &  FLUERNC, 
-     & NCLASS   , ITRAC, ICLASS)
+     & NCLASS   , ITRAC, ICLASS, TYPE_OF_SEDIMENT,SED_CO)
 !
 !***********************************************************************
 ! TELEMAC3D   V7P0                                   21/08/2010
@@ -102,7 +102,6 @@
 !| NPLAN          |-->| NUMBER OF PLANES IN THE 3D MESH OF PRISMS
 !| NPOIN2         |-->| NUMBER OF POINTS IN 2D
 !| NPOIN3         |-->| NUMBER OF POINTS IN 3D
-!| NTRAC          |-->| NUMBER OF TRACERS
 !| RHO0           |-->| WATER DENSITY (REFERENCE)
 !| RHOS           |-->| MASSE VOLUMIQUE DU SEDIMENT
 !| RUGOF          |-->| FRICTION COEFFICIENT
@@ -123,12 +122,14 @@
       USE BIEF
       USE INTERFACE_TELEMAC3D, EX_CLSEDI => CLSEDI
       USE DECLARATIONS_SPECIAL
-      USE DECLARATIONS_TELEMAC3D, ONLY: KARMAN,PRANDTL,FICT
+      USE DECLARATIONS_TELEMAC3D, ONLY: KARMAN,PRANDTL,FICT,KFROT
+      USE DECLARATIONS_TELEMAC3D, ONLY: T2_01,T2_02,T2_03,T2_04,T2_05
+      USE DECLARATIONS_TELEMAC3D, ONLY: DNUVIH
       IMPLICIT NONE
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
-      INTEGER, INTENT(IN) :: NPOIN2,NPOIN3,KLOG,ICQ, ITRAC, NTRAC
+      INTEGER, INTENT(IN) :: NPOIN2,NPOIN3,KLOG,ICQ, ITRAC
       INTEGER, INTENT(IN) :: NCOUCH,ITURBV,NPLAN,ICR
 !
       DOUBLE PRECISION, INTENT(INOUT) :: ATABOF(NPOIN2), BTABOF(NPOIN2)
@@ -157,7 +158,8 @@
       DOUBLE PRECISION, INTENT(IN) :: MPART, TOCE(NPOIN2,NCOUCH)
 !
       INTEGER, INTENT(INOUT)       :: LITABF(NPOIN2), LITABS(NPOIN2)
-      INTEGER, INTENT(IN)          :: SETDEP
+      INTEGER, INTENT(IN)          :: SETDEP, TYPE_OF_SEDIMENT(NCLASS)
+      INTEGER, INTENT(IN)          :: SED_CO,NCLASS,ICLASS
       DOUBLE PRECISION, INTENT(IN) :: AC, KSPRATIO
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -171,13 +173,23 @@
 !
 !
 ! TOBW: wave induced shear stress
+! FW, IKS
 
+! calculation of friction from sisyphe routine
+! new: no impact of waves (HOULE set to false) OK for you TOM?
+! I am not sure if it always works without Nikuradse
+! temporaeres 2D Feld
         CALL TOB_SISYPHE
-     &    (TOB,TOBW, MU, KS, KSP,KSR,CF, FW,
-     &     CHESTR, UETCAR, CF_TEL,KS_TEL, CODE ,
-     &     KFROT, ICR, KSPRATIO,HOULE,
-     &     GRAV,XMVE,  XMVS, VCE, KARMAN,ZERO,
-     &     HMIN,HN, ACLADM, UNORM,UW, TW, NPOIN,KSPRED,IKS)
+     &    (TOB,T2_01, MU, RUGOF, KSP,T2_05,CF, T2_01,
+!     &     CHESTR, UETCAR, CF_TEL,KS_TEL, CODE ,
+     &     RUGOF, UETCAR,CF,RUGOF,'TELEMAC3D',
+     &     KFROT, ICR, KSPRATIO,
+! instead of HOULE COUROU, is that right?? HOULE is the keyword "effect of waves" in sisyphe
+     &     .FALSE.,
+     &     GRAV,RHO0,  RHOS, DNUVIH, KARMAN,ZERO,
+! no roughness predictor: KSPRED=NO, flat bed IKS=1
+     &     HMIN,HN,DMOY,T2_02,T2_03,T2_04,NPOIN2,.FALSE.,1)
+!     &     HMIN,HN, DMOY, UNORM,UW, TW, NPOIN,KSPRED,IKS)
 
 
 !      DO IPOIN=1,NPOIN2
@@ -208,6 +220,30 @@
 ! Should be done in Sisyphe but called here, otherwise the FLUER is too late
 !       CALL SUSPENSION_EROD()
 
+! cohesive
+      IF(TYPE_OF_SEDIMENT(ICLASS)==SED_CO) THEN
+        CALL SUSPENSION_EROSION_COH()
+! parameter list from sisyphe
+!     &(TAUP,NPOIN,XMVS,PARTHENIADES,ZERO,
+!     & FLUER,TOCE_VASE,NOMBLAY,DT,MS_VASE)
+! MS_VASE: mass per layer MS_VASE(npoin2,nlayer)
+     &(TOB,NPOIN2,RHOS,MPART,ZERO,
+     & FLUER,TOCE,NCOUCH,DT,MS_VASE)
+! new routine from Artelia?? because consolidation needs to be taken into account
+
+      ELSE
+! non-cohesive
+        CALL SUSPENSION_EROSION()
+! parameterlist from sisyphe:
+!     &(TAUP,HN,FDM,FD90,AVA,NPOIN,CHARR,XMVE,XMVS,VCE,GRAV,HMIN,XWC,
+!     & ZERO,ZREF,AC,FLUER,CSTAEQ,QSC,ICQ,U2D,V2D,CSRATIO,T14,DEBUG)
+! dmoy ist die mittlere Korngroesse... es muss aber die aktuelle sein... wo bekomme 
+! ich die denn her in T3D??
+     &(TOB,HN,FDM,FD90,AVA,NPOIN2,CHARR,RHO0,RHOS,VCE,GRAV,HMIN,XWC,
+     & ZERO,ZREF,AC,FLUER,CREF,QSC,ICQ,U2D,V2D,CSRATIO,T2_01,DEBUG)
+      ENDIF
+
+
 !      CALL SEDI3D_EROD !
 !     &  (CONC,EPAI,FLUER,TOB,DENSI,
 !     &  MPART,DT,NPOIN2,NCOUCH,TOCE,
@@ -228,7 +264,7 @@
      &            GRADZFX, GRADZFY, GRADZSX, GRADZSY ,
      &            TOB%R  , FLUDPT , FLUER  , TOCD    ,
      &            NPOIN3 , NPOIN2 , NPLAN  , KLOG    ,
-     &            HMIN, SETDEP )
+     &            HMIN, SETDEP, ICLASS,NCLASS,TYPE_OF_SEDIMENT,SED_CO )
 !
 !-----------------------------------------------------------------------
 !

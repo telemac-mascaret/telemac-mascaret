@@ -55,7 +55,6 @@
 !| DENLAW         |-->| CHOICE OF DENSITY LAW (SEE ABOVE)
 !| IND_S          |-->| INDEX FOR SALINITY
 !| IND_T          |-->| INDEX FOR TEMPERATURE
-!| MIXTE          |-->| LOGICAL, MIXED SEDIMENTS OR NOT
 !| NTRAC          |-->| NUMBER OF ACTIVE TRACERS
 !| RHO            |<->| WATER DENSITY
 !| RHO0           |-->| AVERAGE WATER DENSITY IN THE DOMAIN
@@ -78,7 +77,7 @@
       TYPE(BIEF_OBJ), INTENT(INOUT) :: DELTAR
       TYPE(BIEF_OBJ), INTENT(IN)    :: TA,SED_TRA
       TYPE(BIEF_OBJ), INTENT(INOUT) :: RHO
-      LOGICAL, INTENT(IN)           :: SEDI, MIXTE
+      LOGICAL, INTENT(IN)           :: SEDI
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
@@ -188,7 +187,7 @@
 !
       IF(SEDI) THEN
         DO ICLASS = 1,NCLASS
-          CALL OS('X=X+CY  ',X=DELTAR,Y=SED_TA%ADR(ICLASS)%P,
+          CALL OS('X=X+CY  ',X=DELTAR,Y=SED_TRA%ADR(ICLASS)%P,
      &                       C=(RHOS-RHO0)/(RHO0*RHOS))
         END DO
       ENDIF

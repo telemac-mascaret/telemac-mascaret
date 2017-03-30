@@ -3,14 +3,12 @@
 !                    *****************
 !
      &(ATABOF , BTABOF , ATABOS , BTABOS  ,
-     & LITABF , LITABS , TA     , WC      ,
+     & LITABF , LITABS , SED_TRA     , WC      ,
      & X      , Y      , Z      , HN      ,
      & GRADZFX, GRADZFY, GRADZSX, GRADZSY ,
      & TOB    , FLUDPT , FLUER  , TOCD    ,
      & NPOIN3 , NPOIN2 , NPLAN  , KLOG    ,
-     & HMIN, SETDEP   )
-!, SEDCO  , SETDEP , SEDNCO  ,
-!     & WCS    , MIXTE  , FLUDPTC, FLUDPTNC)
+     & HMIN, SETDEP,ICLASS,NCLASS,TYPE_OF_SEDIMENT,SED_CO)
 !
 !***********************************************************************
 ! TELEMAC3D   V7P0                                   03/06/2014
@@ -127,7 +125,7 @@
 !     OTHER ARRAYS
 !
       DOUBLE PRECISION, INTENT(IN) :: X(NPOIN3), Y(NPOIN3), Z(NPOIN3)
-      DOUBLE PRECISION, INTENT(IN) :: TA(NPOIN3)
+      DOUBLE PRECISION, INTENT(IN) :: SED_TRA(NPOIN3)
       DOUBLE PRECISION, INTENT(IN) :: WC(NPOIN3)
       DOUBLE PRECISION, INTENT(IN) :: GRADZFX(NPOIN2), GRADZFY(NPOIN2)
       DOUBLE PRECISION, INTENT(IN) :: GRADZSX(NPOIN2), GRADZSY(NPOIN2)
@@ -137,10 +135,12 @@
 !
       DOUBLE PRECISION, INTENT(IN) :: TOCD
       DOUBLE PRECISION, INTENT(IN) :: HMIN
+      INTEGER, INTENT(IN) :: TYPE_OF_SEDIMENT(NCLASS),ICLASS,SED_CO
+      INTEGER, INTENT(IN) :: NCLASS
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
-      INTEGER I,I3D, ICLASS
+      INTEGER I,I3D
       DOUBLE PRECISION PROB
 !
       INTRINSIC MAX
