@@ -4,7 +4,7 @@
 !
      &(PART,LOOPCOUNT,GRAFCOUNT,LISTCOUNT,TELNIT,
      & U_TEL,V_TEL,H_TEL,HN_TEL,HPROP_TEL,ZF_TEL,UETCAR,CF_TEL,KS_TEL,
-     & CONSTFLOW,NSIS_CFD,SISYPHE_CFD,CODE,PERICOU,
+     & CODE,PERICOU,
      & U3D,V3D,T_TEL,VISC_TEL,DT_TEL,CHARR_TEL,SUSP_TEL,
      & FLBOR_TEL,SOLSYS,DM1,UCONV_TEL,VCONV_TEL,ZCONV,
      & THETAW_TEL,HW_TEL,TW_TEL,UW_TEL,API_ITER)
@@ -162,7 +162,6 @@
 !|                |   | SUBROUTINE. SINON, INDIQUE LA PARTIE DE LA
 !|                |   | SUBROUTINE DANS LAQUELLE ON PASSE
 !| PERICOU        |-->| COUPLING PERIOD FOR BEDLOAD
-!| SISYPHE_CFD    |<->| LOGICAL, CONSTANT FLOW DISCHARGE OR NOT
 !| SOLSYS         |-->|1 OR 2. IF 2 ADVECTION FIELD IS UCONV + DM1*GRAD(ZCONV)
 !| SUSP_TEL       |<->|LOGICAL, SUSPENDED LOAD OR NOT: Sent to TELEMAC-2D
 !| TELNIT         |-->| NUMBER OF TELEMAC ITERATIONS
@@ -197,8 +196,6 @@
       TYPE(BIEF_OBJ),    INTENT(IN)    :: U_TEL,V_TEL,H_TEL,HN_TEL
       TYPE(BIEF_OBJ),    INTENT(IN)    :: HPROP_TEL
       TYPE(BIEF_OBJ),    INTENT(INOUT) :: ZF_TEL,UETCAR,KS_TEL
-      INTEGER,           INTENT(INOUT) :: NSIS_CFD
-      LOGICAL,           INTENT(INOUT) :: CONSTFLOW,SISYPHE_CFD
       TYPE(BIEF_OBJ),    INTENT(IN)    :: U3D,V3D,VISC_TEL
       TYPE(BIEF_OBJ),    INTENT(INOUT) :: CF_TEL
       DOUBLE PRECISION,  INTENT(IN)    :: T_TEL
@@ -238,11 +235,6 @@
       INTEGER, ALLOCATABLE :: NULLT(:)
       DOUBLE PRECISION, ALLOCATABLE :: NULLD(:)
 !
-!     SAVES LOCAL VARIABLES
-!     NUMEN0 : 1ST RECORD TO READ
-      INTEGER :: NUMEN0
-      INTEGER :: RECORD
-      INTEGER :: DEBUT,FIN
 !
 !     VARIABLES TO READ IF COMPUTATION IS CONTINUED
 !     --------------------------------
@@ -539,8 +531,6 @@
         MASS_GF   = 0.D0
 !
 !
-!----   DETERMINES THE NUMBER OF EVENTS (1ST LOOP)       : NCALCU
-!                      NUMBER OF TIMESTEPS (2ND LOOP)    : NIDT
 !                      TOTAL NUMBER OF TIMESTEPS         : NIT
 !                      INITIAL TIME                      : AT0
 !                      TIMESTEP                          : DT
@@ -551,8 +541,6 @@
        IF(PART==0.OR.PART==2) THEN
           AT0=T_TEL
           DT = DT_TEL
-          NCALCU = 1
-          NIDT   = 1
           NIT=TELNIT
 !       VALIDATES AGAINST THE LAST TIMESTEP
 !PTRK -- VALNIT has to be checked if the computation is efficient!
@@ -681,7 +669,7 @@
         IF(.NOT.DEBU) THEN
         CALL CONDIM_SISYPHE
      &        (U2D%R,V2D%R,QU%R,QV%R,HN%R,ZF%R,Z%R,ESOMT%R,THETAW%R,
-     &         Q%R,HW%R,TW%R,MESH%X%R,MESH%Y%R,NPOIN,AT0,PMAREE)
+     &         Q%R,HW%R,TW%R,MESH%X%R,MESH%Y%R,NPOIN,AT0)
         ENDIF
         IF(DEBUG.GT.0) WRITE(LU,*) 'END_CONDIM_SISYPHE'
 !
@@ -765,7 +753,7 @@
 !
         IF(DEBUG.GT.0) WRITE(LU,*) 'INIT_SEDIMENT'
         CALL INIT_SEDIMENT(NSICLA,ELAY,ZF,ZR,NPOIN,
-     &                     AVAIL,FRACSED_GF,AVA0,LGRAFED,CALWC,
+     &                     AVAIL,FRACSED_GF,AVA0,CALWC,
      &                     XMVS,XMVE,GRAV,VCE,XWC,FDM,CALAC,AC,
      &                     SEDCO,ES,ES_SABLE,ES_VASE,
      &                     NCOUCH_TASS,CONC_VASE,
@@ -956,7 +944,7 @@
               IF(DEBUG.GT.0) WRITE(LU,*) 'CONDIM_SISYPHE'
               CALL CONDIM_SISYPHE
      &        (U2D%R,V2D%R,QU%R,QV%R,HN%R,ZF%R,Z%R,ESOMT%R,THETAW%R,
-     &        Q%R,HW%R,TW%R,MESH%X%R,MESH%Y%R,NPOIN,AT0,PMAREE)
+     &        Q%R,HW%R,TW%R,MESH%X%R,MESH%Y%R,NPOIN,AT0)
               IF(DEBUG.GT.0) WRITE(LU,*) 'END_CONDIM_SISYPHE'
 !
 !             NOTE : NAME FOR SISHYD SET TO ' ' IF COUPLING
@@ -1122,7 +1110,7 @@
      &         OPTBAN,LS0,BETA,FD90,FDM,GRAV,HIDI,HMIN,
      &         VCE,CSF_SABLE,XMVE,XMVS,XWC,PI,KARMAN,ZERO,
      &         KARIM_HOLLY_YANG,MSK,SUSP,VF,ENTET,
-     &         CONST_ALAYER,LCONDIS,LGRAFED,MESH,
+     &         CONST_ALAYER,MESH,
      &         ELAY,LIEBOR,LIMTEC,MASKTR,
      &         IT1,T1,T2,T3,T4,T5,T6,T7,T8,T9,
      &         T10,T11,T12,T13,UNORM,AC,AT0,DTS,ELAY0,FRACSED_GF,
@@ -1350,7 +1338,7 @@
      &                       IELMU_SIS,VCUMU,DTS,NPTFR,ENTETS,
      &                       ZFCL_C,ZFCL_S,ZFCL_MS,
      &                       QSCLXC,QSCLYC,NSICLA,VOLTOT,DZF_GF,MASS_GF,
-     &                       LGRAFED,NUMLIQ%I,NFRLIQ,FLBCLA,VF,LT,NIT,
+     &                       NUMLIQ%I,NFRLIQ,FLBCLA,VF,LT,NIT,
      &                       NPOIN,VOLU2D,CSF_SABLE,MASDEP,MASDEPT,
      &                       CHARR,SUSP,SLIDE)
           ENDIF

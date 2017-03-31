@@ -383,8 +383,6 @@
 !
 !-----------------------------------------------------------------------
 !
-!     FOR SISYPHE : GRAIN FEEDING AND CONSTANT FLOW DISCHARGE
-      INTEGER :: ISIS_CFD
 !     FRICTION DATA
       INTEGER :: KFROT_TP
 !
@@ -1509,12 +1507,6 @@
 !
       ENDIF
 !
-!     INITIALISES CONSTANT FLOW DISCHARGE (SEE SISYPHE)
-!     ------------------------------------------------------------------
-!
-      SIS_CPL%SISYPHE_CFD   = .FALSE.
-      SIS_CPL%CONSTFLOW = .FALSE.
-      SIS_CPL%NSIS_CFD      = 1
 !
       IF(INCLUS(COUPLING,'SISYPHE')) THEN
 !
@@ -1538,8 +1530,7 @@
           CALL CONFIG_CODE(2)
           IF(DEBUG.GT.0) WRITE(LU,*) 'PREMIER APPEL DE SISYPHE'
           CALL SISYPHE(0,LT,LEOPRD,LISPRD,NIT,U,V,H,H,H,ZF,CF,CF,CHESTR,
-     &                 SIS_CPL%CONSTFLOW,SIS_CPL%NSIS_CFD,
-     &                 SIS_CPL%SISYPHE_CFD,CODE1,PERCOU,
+     &                 CODE1,PERCOU,
      &                 U,V,AT,VISC,DT,SIS_CPL%CHARR,SIS_CPL%SUSP,
 !                                     CHARR,SUSP : RETURNED BY SISYPHE
 !                                                  BUT THEN GIVEN TO IT
@@ -1701,14 +1692,6 @@
         CALL OS('X=Y     ',X=FN,Y=F)
       ENDIF
 !     CALL OS( 'X=Y     ' , FN , F , F , C )
-!
-!=======================================================================
-!
-! NEW COUPLING WITH SISYPHE FOR CONSTANT FLOW DISCHARGE
-!
-      IF(SIS_CPL%SISYPHE_CFD.AND.SIS_CPL%CONSTFLOW) GOTO 999
-!
-      DO ISIS_CFD=1,SIS_CPL%NSIS_CFD
 !
 !=======================================================================
 !
@@ -2702,13 +2685,6 @@
         LISPRD=1
       ENDIF
 !
-! FH-BMD
-!=============================================
-!     FOR NEW COUPLING
-      ENDDO ! ISIS_CFD
-      IF (SIS_CPL%SISYPHE_CFD) SIS_CPL%CONSTFLOW = .TRUE.
-999   CONTINUE
-!
 !=======================================================================
 !
 !     COUPLING WITH SISYPHE
@@ -2722,8 +2698,7 @@
 !
           IF(DEBUG.GT.0) WRITE(LU,*) 'CALLING SISYPHE, CHARRIAGE'
           CALL SISYPHE(1,LT,LEOPRD_CHARR,LISPRD,NIT,U,V,H,HN,HPROP,ZF,
-     &                 CF,CF,CHESTR,SIS_CPL%CONSTFLOW,SIS_CPL%NSIS_CFD,
-     &                 SIS_CPL%SISYPHE_CFD,CODE1,
+     &                 CF,CF,CHESTR,CODE1,
      &                 PERCOU,U,V,AT,VISC,DT*PERCOU,SIS_CPL%CHARR,SUSP1,
      &                 FLBOR,SOLSYS,DM1,USIS,VSIS,ZCONV,
      &                 DIRMOY,HM0,TPR5,ORBVEL)
@@ -2735,9 +2710,8 @@
 !
           IF(DEBUG.GT.0) WRITE(LU,*) 'CALLING SISYPHE, SUSPENSION'
           CALL SISYPHE(1,LT,LEOPRD,LISPRD,NIT,U,V,H,HN,HPROP,ZF,
-     &                 CF,CF,CHESTR,SIS_CPL%CONSTFLOW,SIS_CPL%NSIS_CFD,
-     &                 SIS_CPL%SISYPHE_CFD,CODE1,
-     &                 1,U,V,AT,VISC,DT,CHARR_TEL,SIS_CPL%SUSP,
+     &                 CF,CF,CHESTR,
+     &                 CODE1,1,U,V,AT,VISC,DT,CHARR_TEL,SIS_CPL%SUSP,
      &                 FLBOR,SOLSYS,DM1,USIS,VSIS,ZCONV,
      &                 DIRMOY,HM0,TPR5,ORBVEL)
           IF(DEBUG.GT.0) WRITE(LU,*) 'FIN APPEL DE SISYPHE, SUSPENSION'

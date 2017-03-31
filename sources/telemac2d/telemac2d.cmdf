@@ -497,12 +497,12 @@ files: bief_def.f
   bief_ininds.f
   cpikle2.f
   bief_nbsegel.f
-  mxptel31.f
-  mxptel.f
-  cpikle3.f
-  read_mesh_conn.f
   corrxy.f
   read_mesh_coord.f
+  cpikle3.f
+  read_mesh_conn.f
+  mxptel31.f
+  mxptel.f
   almesh.f
   bief_close_files.f
   bief_open_files.f
@@ -559,9 +559,9 @@ files: interface_hermes.f
   lit.F
   ecri2.f
   get_mesh_l2g_numbering.f
+  get_mesh_coord.f
   get_mesh_connectivity.f
   get_bnd_ipobo.f
-  get_mesh_coord.f
   close_bnd.f
   close_mesh.f
   open_mesh.f
@@ -647,7 +647,6 @@ files: declarations_sisyphe.f
   interface_sisyphe_suspension.f
   interface_sisyphe.f
   maxslope.f
-  condis_sisyphe.f
   init_constant.F
   disimp.f
   read_fic_conc.f
@@ -678,7 +677,7 @@ files: declarations_sisyphe.f
   suspension_fredsoe.f
   suspension_bijker.f
   init_transport.f
-  corstr_sisyphe.f
+  predes.f
   suspension_dispersion.f
   suspension_erosion_coh.f
   suspension_evol.f
@@ -692,14 +691,13 @@ files: declarations_sisyphe.f
   suspension_depot.f
   suspension_computation.f
   suspension_main.f
+  rescue_sisyphe.f
   nestor_interface.f
   noerod.f
   bilan_sisyphe.f
-  predes.f
-  sis_arret.f
+  corstr_sisyphe.f
   condim_sisyphe.f
   tassement_2.f
-  rescue_sisyphe.f
   tassement.f
   bedload_diffin.f
   bedload_nerbed_vf.f
@@ -711,7 +709,6 @@ files: declarations_sisyphe.f
   bedload_effpnt.f
   bedload_solidischarge.f
   bedload_main.f
-  rescue_sisyphe_notperma.f
   coefro_sisyphe.f
   ride.f
   ride_vr.f
@@ -1003,10 +1000,10 @@ files: declarations_tomawac.f
   qbbj78.f
   qbrek1.f
   qveg.f
+  gammln.f
   foncro.f
   bornes.f
   qgauss.f
-  gammln.f
   qbrek3.f
   qbrek2.f
   qwind3.f

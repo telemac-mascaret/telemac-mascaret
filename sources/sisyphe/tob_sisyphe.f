@@ -142,7 +142,7 @@
      &                  GRAV,XMVE,XMVS,VCE,
      &                  HMIN,HN,ACLADM,UNORM,UW,TW,NPOIN)
         CALL COEFRO_SISYPHE(CF,HN,KFROT,KS,GRAV,NPOIN,HMIN,KARMAN)
-        IF(CODE(1:7).EQ.'TELEMAC') CALL OS('X=Y     ', X=KS_TEL, Y=KS)
+        CALL OS('X=Y     ', X=KS_TEL, Y=KS)
 !
       ELSE
 !
@@ -150,11 +150,7 @@
 ! -- > issued from Telemac if coupling
 ! -- > from the steering file of Sisyphe
 !
-        IF(CODE(1:7).EQ.'TELEMAC') THEN
-          CALL OV('X=Y     ',CF%R,CF_TEL%R,CF_TEL%R,0.D0,CF%DIM1)
-        ELSE
-          CALL COEFRO_SISYPHE(CF,HN,KFROT,CHESTR,GRAV,NPOIN,HMIN,KARMAN)
-        ENDIF
+        CALL OV('X=Y     ',CF%R,CF_TEL%R,CF_TEL%R,0.D0,CF%DIM1)
         DO I =1,NPOIN
           A = -KARMAN*SQRT(2.D0/MAX(CF%R(I),ZERO))
           KS%R(I)=CSTE*HN%R(I)*EXP(A)

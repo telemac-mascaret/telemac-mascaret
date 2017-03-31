@@ -4,7 +4,7 @@
 !
      & (U      , V       , QU    , QV   , H    , ZF , Z ,
      &  ESOMT  , THETAWR ,  Q    , HWR  , TWR  ,
-     &  X      , Y       , NPOIN , AT   , PMAREE)
+     &  X      , Y       , NPOIN , AT   )
 !
 !***********************************************************************
 ! SISYPHE   V6P1                                   21/07/2011
@@ -77,7 +77,6 @@
 !| H              |<->| WATER DEPTH
 !| HWR            |<->| WAVE HEIGHT
 !| NPOIN          |-->| NUMBER OF 2D POINTS
-!| PMAREE         |-->| TIDAL PERIOD
 !| Q              |<->| FLOW RATE
 !| THETAWR        |<->| WAVE DIRECTION (WRT OY AXIS)
 !| TWR            |<->| WAVE PERIOD
@@ -98,7 +97,7 @@
       INTEGER, INTENT(IN)::NPOIN
 !
       DOUBLE PRECISION, INTENT(IN):: X(NPOIN),Y(NPOIN)
-      DOUBLE PRECISION, INTENT(IN):: AT , PMAREE
+      DOUBLE PRECISION, INTENT(IN):: AT
 ! SEDIMENT
       DOUBLE PRECISION, INTENT(INOUT) ::  ZF(NPOIN)
       DOUBLE PRECISION, INTENT (INOUT)::  ESOMT(NPOIN)

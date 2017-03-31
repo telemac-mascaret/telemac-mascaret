@@ -172,9 +172,9 @@
 !     AT THIS LEVEL LOGICAL UNITS ARE EQUAL TO THE FILE NUMBER
 !
       DO I=1,MAXLU_SIS
-        IF(SIS_FILES(I)%TELNAME.EQ.'SISHYD') THEN
-          SISHYD=I
-        ELSEIF(SIS_FILES(I)%TELNAME.EQ.'SISGEO') THEN
+!        IF(SIS_FILES(I)%TELNAME.EQ.'SISHYD') THEN
+!          SISHYD=I
+        IF(SIS_FILES(I)%TELNAME.EQ.'SISGEO') THEN
           SISGEO=I
         ELSEIF(SIS_FILES(I)%TELNAME.EQ.'SISCLI') THEN
           SISCLI=I
@@ -249,11 +249,11 @@
 !     ICM           = MOTINT( ADRESS(1,  1) )
       ICF           = MOTINT( ADRESS(1,  2) )
       NPAS          = MOTINT( ADRESS(1,  3) )
-      NMAREE        = MOTINT( ADRESS(1,  4) )
+!     NMAREE        = MOTINT( ADRESS(1,  4) )
 !     N1            = MOTINT( ADRESS(1,  5) )
 
-      LEOPR         = MOTINT( ADRESS(1,  6) )
-      LISPR         = MOTINT( ADRESS(1,  7) )
+!     LEOPR         = MOTINT( ADRESS(1,  6) )
+!     LISPR         = MOTINT( ADRESS(1,  7) )
 !     STDGEO IS NOT USED, DELETE FROM DECLARATIONS
       STDGEO        = MOTINT( ADRESS(1,  8) )
 !     LOGDES IS NOT USED, DELETE FROM DECLARATIONS
@@ -313,7 +313,7 @@
       OPDTRA        = MOTINT( ADRESS(1, 35) )
       DEPER         = MOTINT( ADRESS(1, 36) )
       KFROT         = MOTINT( ADRESS(1, 37) )
-      NCONDIS       = MOTINT( ADRESS(1, 38) )
+!     NCONDIS       = MOTINT( ADRESS(1, 38) )
       SLOPEFF       = MOTINT( ADRESS(1, 39) )
       DEVIA         = MOTINT( ADRESS(1, 40) )
       NOMBLAY       = MOTINT( ADRESS(1,251) )
@@ -418,9 +418,9 @@
       SLVSED%ZERO = ZERO
       VCE         = MOTREA( ADRESS(2, 10) )
       HMIN        = MOTREA( ADRESS(2, 11) )
-      DELT        = MOTREA( ADRESS(2, 12) )
-      TPREC       = MOTREA( ADRESS(2, 13) )
-      PMAREE      = MOTREA( ADRESS(2, 14) )
+!     DELT        = MOTREA( ADRESS(2, 12) )
+!     TPREC       = MOTREA( ADRESS(2, 13) )
+!     PMAREE      = MOTREA( ADRESS(2, 14) )
       TETA        = MOTREA( ADRESS(2, 15) )
       BETA        = MOTREA( ADRESS(2, 16) )
       SLVSED%EPS  = MOTREA( ADRESS(2, 17) )
@@ -437,7 +437,7 @@
           XWC(K) = MOTREA( ADRESS(2, 22)+DIMENS(2,22)-1 )
         ENDDO
       ENDIF
-      CRIT_CFD    = MOTREA( ADRESS(2, 23) )
+!     CRIT_CFD    = MOTREA( ADRESS(2, 23) )
       KSPRATIO    = MOTREA( ADRESS(2, 24) )
       PHISED      = MOTREA( ADRESS(2, 25) )
       BETA2       = MOTREA( ADRESS(2, 26) )
@@ -600,7 +600,7 @@
 
 
       BILMA        = MOTLOG( ADRESS(3,  1) )
-      PERMA        = MOTLOG( ADRESS(3,  2) )
+!     PERMA        = MOTLOG( ADRESS(3,  2) )
       BANDEC       = MOTLOG( ADRESS(3,  3) )
       VALID        = MOTLOG( ADRESS(3,  4) )
 !     DTVAR        = MOTLOG( ADRESS(3,  5) )
@@ -609,8 +609,8 @@
       CHARR        = MOTLOG( ADRESS(3,  8) )
       HOULE        = MOTLOG( ADRESS(3, 10) )
       CONST_ALAYER = MOTLOG( ADRESS(3, 11) )
-      LCONDIS      = MOTLOG( ADRESS(3, 12) )
-      LGRAFED      = MOTLOG( ADRESS(3, 13) )
+!     LCONDIS      = MOTLOG( ADRESS(3, 12) )
+!     LGRAFED      = MOTLOG( ADRESS(3, 13) )
 !     USED TO CHECK SIS_FILES(SISPRE)%NAME
       DEBU         = MOTLOG( ADRESS(3, 14) )
       IMP_INFLOW_C = MOTLOG( ADRESS(3, 15) )

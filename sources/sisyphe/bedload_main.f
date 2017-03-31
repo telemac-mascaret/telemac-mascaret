@@ -10,7 +10,7 @@
      & NPOIN, NPTFR, NSICLA, OPTBAN, LS0, BETA, FD90, FDM,
      & GRAV, HIDI, HMIN, VCE, CSF_SABLE, XMVE, XMVS, XWC,
      & PI, KARMAN, ZERO, KARIM_HOLLY_YANG,MSK, SUSP, VF,
-     & ENTET, CONST_ALAYER, LCONDIS, LGRAFED, MESH,
+     & ENTET, CONST_ALAYER, MESH,
      & ELAY, LIEBOR, LIMTEC, MASKTR,
      & IT1, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11,
      & T12,T13,UNORM,AC, AT0, DTS, ELAY0, FRACSED_GF,
@@ -113,8 +113,6 @@
 !| KSORT          |-->| CONVENTION FOR FREE OUTPUT
 !| KSP            |-->| BED SKIN ROUGHNESS
 !| KSR            |-->| RIPPLE BED ROUGHNESS
-!| LCONDIS        |-->| LOGICAL, CONSTANT FLOW DISCHARGE
-!| LGRAFED        |-->| (A SUPPRIMER)
 !| LIEBOR         |<->| TYPE OF BOUNDARY CONDITIONS FOR BED EVOLUTION
 !| LIMTEC         |<->| TECHNICAL BOUNDARY CONDITION (NEUMAN...)
 !| LIQBOR         |-->| TYPE OF BOUNDARY CONDITION FOR QS
@@ -218,7 +216,7 @@
       DOUBLE PRECISION, INTENT(IN)    :: KARIM_HOLLY_YANG
       LOGICAL,          INTENT(IN)    :: MSK, SUSP, VF
       LOGICAL,          INTENT(IN)    :: ENTET, CONST_ALAYER
-      LOGICAL,          INTENT(IN)    :: LCONDIS, LGRAFED,SECCURRENT
+      LOGICAL,          INTENT(IN)    :: SECCURRENT
       LOGICAL,          INTENT(IN)    :: SEDCO(NSICLA),HOULE
       TYPE(BIEF_MESH),  INTENT(INOUT) :: MESH
       TYPE(BIEF_OBJ),   INTENT(INOUT) :: ELAY,FLBCLA
@@ -312,7 +310,7 @@
      &                      KENT,KDIR,KDDL,LOADMETH,
      &                      DTS,FDM(I),FD90(I),HMIN,LS0,GRAV,XMVS,XMVE,
      &                      VCE,VF,ENTETS,MSK,CONST_ALAYER,
-     &                      LCONDIS,MESH,QSCL_C%ADR(I)%P,
+     &                      MESH,QSCL_C%ADR(I)%P,
      &                      T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,
      &                      T13,CSF_SABLE,BREACH,QSCLXC%ADR(I)%P,
      &                      QSCLYC%ADR(I)%P,ZFCL_C%ADR(I)%P,SLOPEFF,

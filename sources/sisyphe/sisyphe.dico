@@ -325,46 +325,6 @@ AIDE1 = 'Name of the file containing the types of boundary conditions.
 This file is filled automatically by the mesh generator through
 colours that are assigned to the computation domain boundary nodes.'
 
-NOM = 'FICHIER HYDRODYNAMIQUE'
-NOM1 = 'HYDRODYNAMIC FILE'
-TYPE = CARACTERE
-INDEX = 29
-MNEMO = 'SIS\_FILES(SISHYD)%NAME'
-TAILLE = 0
-SUBMIT = 'SISHYD-READ;SISHYD;FACUL;BIN;LIT;SELAFIN'
-DEFAUT = ''
-DEFAUT1 = ''
-NIVEAU = 1
-APPARENCE = 'LISTE IS FICHIER'
-RUBRIQUE = 'ENTREES-SORTIES, FICHIERS';'NOMS'
-RUBRIQUE1 = 'INPUT-OUTPUT, FILES';'NAMES'
-AIDE = 'Nom d''un fichier contenant les resultats d''un calcul
-precedent realise sur le meme maillage. L''hydrodynamique
-du calcul sera donnee, soit par le dernier pas de temps
-de ce fichier si le calcul est permanent,
-soit par les pas de temps representant la maree
-ou la crue consideree si le calcul est instationnaire
-Remarque : Si l''on modelise le transport sous l''action
-combinee du courant et de la houle (mot-cle  DE
-TRANSPORT SOLIDE =4) ce fichier doit contenir non
-seulement les donnees hydrodynamiques(hauteur d''eau,vitesses)
-mais aussi les donnees de houle (hauteur de houle, periode de
-houle).Les donnees de houle peuvent toutefois etre imposees
-par l''utilisateur dans le sous programme CONDIM.'
-AIDE1 = 'Name of a file containing the results a previous
-computation  made on the same mesh. The hydrodynamic will
-be given by the last record of the file if the case is
-steady or, if the case is unsteady, by the time steps
-describing the tide or flood.
-Remark :If the bed-load transport under the combined
-action of currents and wave is modelled (keyword
-BED-LOAD TRANSPORT FORMULA set equal to 4), this file
-must contain not only the hydrodynamic data
-(water height, velocities) but also the wave data
-(wave height, wave period).However, the user has also
- the possibility to give the values
-of the wave data in the subroutine CONDIM. '
-
 NOM = 'FICHIER DE HOULE'
 NOM1 = 'WAVE FILE'
 TYPE = CARACTERE
@@ -640,25 +600,6 @@ AIDE = 'Determine si oui ou non le bilan de masse est realise.'
 AIDE1 = 'Determines whether a check of the mass-balance over the domain
 is made or not'
 
-NOM = 'CAS PERMANENT'
-NOM1 = 'STEADY CASE'
-TYPE = LOGIQUE
-INDEX = 2
-DEFAUT = NON
-DEFAUT1 = NO
-RUBRIQUE = 'GENERAL'
-RUBRIQUE1 = 'GENERAL'
-NIVEAU = 1
-AIDE = 'Definit si l''hydrodynamique a prendre en compte est
-permanente ou non. Si la valeur OUI est donnee a ce mot-cle,
-le dernier enregistrement du fichier du calcul precedent
-constituera le champ (h,u,v et eventuellement hauteur et periode
-de houle) a prendre en compte.'
-AIDE1 = 'Specifies steady or unsteady case.If this keyword
-is equal to YES, the last record of the previous computation
-file will give the values of h,u,v and eventually wave height
-and period to be considered.'
-
 NOM = 'BANCS DECOUVRANTS'
 NOM1 = 'TIDAL FLATS'
 TYPE = LOGIQUE
@@ -822,41 +763,6 @@ this key word to zero :
 Warning : it is not then possible to choose the option
 VARIABLE TIME-STEP'
 
-NOM = 'NOMBRE DE PAS DE TEMPS'
-NOM1 = 'NUMBER OF TIME STEPS'
-TYPE = ENTIER
-INDEX = 3
-DEFAUT = 1
-DEFAUT1 = 1
-RUBRIQUE = 'TEMPS'
-RUBRIQUE1 = 'TIME'
-NIVEAU = 1
-COMPORT = 'DISPLAY %CAS PERMANENT% = TRUE'
-AIDE = 'Definit, en permanent, le nombre de pas de temps effectues
-lors de l''execution du code. En non permanent, ce mot-cle
-n''est pas utilise.'
-AIDE1 = 'Specifies, for a steady case, the number of time steps
-performed when running the code. For an unsteady case, this
-keyword is not used.'
-
-NOM = 'NOMBRE DE MAREES OU CRUES'
-NOM1 = 'NUMBER OF TIDES OR FLOODS'
-TYPE = ENTIER
-INDEX = 4
-DEFAUT = 1
-DEFAUT1 = 1
-MNEMO = 'NMAREE'
-RUBRIQUE = 'TEMPS'
-RUBRIQUE1 = 'TIME'
-NIVEAU = 1
-AIDE = 'En non permanent, definit le nombre de marees ou de crues
-effectuees lors de l''execution du code.En permanent, ce mot-cle
-n''est pas utilise.'
-AIDE1 = 'For an unsteady case, specifies the number of tides or
-floods performed when running the code. For a steady case, this
-keyword is not used.'
-
-
 NOM = 'FREE INTEGER 2'
 NOM1 = 'FREE INTEGER 2'
 TYPE = ENTIER
@@ -868,39 +774,6 @@ RUBRIQUE1 = 'USELESS'
 NIVEAU = 1
 AIDE = ' '
 AIDE1 = ' '
-
-NOM = 'PERIODE DE SORTIE GRAPHIQUE'
-NOM1 = 'GRAPHIC PRINTOUT PERIOD'
-TYPE = ENTIER
-INDEX = 6
-DEFAUT = 1
-DEFAUT1 = 1
-RUBRIQUE = 'RESULTATS'
-RUBRIQUE1 = 'RESULTS'
-NIVEAU = 1
-AIDE = 'Determine la periode en nombre de pas de temps d''impression
-des ''VARIABLES POUR LES SORTIES GRAPHIQUES'' (voir ce mot-cle)
-dans le ''FICHIER DES RESULTATS''.'
-AIDE1 = 'Determines, in number of time steps, the printout period for
-the ''VARIABLES FOR GRAPHIC PRINTOUTS'' in the ''RESULTS FILE''.'
-
-NOM = 'PERIODE DE SORTIE LISTING'
-NOM1 = 'LISTING PRINTOUT PERIOD'
-TYPE = ENTIER
-INDEX = 7
-DEFAUT = 1
-DEFAUT1 = 1
-RUBRIQUE = 'RESULTATS'
-RUBRIQUE1 = 'RESULTS'
-NIVEAU = 1
-AIDE = 'Determine la periode en nombre de pas de temps d''impression
-des ''VARIABLES A IMPRIMER'' (voir ce mot-cle).
-La sortie des resultats est effectuee sur le fichier listing
-(fichier cas\_numerodeprocessus.sortie sur station de travail).'
-AIDE1 = 'Determines, in number of time steps, the printout period of
-the ''VARIABLES TO BE PRINTED''.
-The results are printed out on the listing file
-(file cas\_numerodeprocessus.sortie on a workstation).'
 
 NOM = 'MAILLEUR'
 NOM1 = 'MESHING'
@@ -1366,74 +1239,6 @@ AIDE = 'Fixe la valeur minimale de la hauteur d''eau.
 Est utilise lorsque le mot cle BANCS DECOUVRANTS est egal a oui.'
 AIDE1 = 'Sets the minimum value of the water depth.
 Is used when the keyword TIDAL FLATS is equal to yes.'
-
-NOM = 'PAS DE TEMPS'
-NOM1 = 'TIME STEP'
-TYPE = REEL
-INDEX = 12
-DEFAUT = 1.
-DEFAUT1 = 1.
-RUBRIQUE = 'TEMPS'
-RUBRIQUE1 = 'TIME'
-NIVEAU = 1
-COMPORT = 'DISPLAY %CAS PERMANENT% = TRUE'
-AIDE = 'Definit le pas de temps du calcul en secondes en
-permanent. En non permanent, ce pas de temps est donne par le
-pas de sortie graphique du fichier precedent. Mais si aucun
-nom n''est donne pour le ''FICHIER DU CALCUL PRECEDENT'' (les
-variables hydrodynamiques pouvant etre imposees dans CONDIM),
-la valeur du pas de temps donnee dans le fichier des
-parametres est la aussi consideree.
-Remarque : si le mot-cle "PAS DE TEMPS VARIABLE EST EGAL A OUI"
-le pas de temps necessaire a une bonne resolution est calcule
-dans le code et des sous iterations sont realisees.'
-AIDE1 = 'Specifies the time step in seconds in steady case.
-For an unsteady case, this time step is fixed by the graphic
-printout period of the previous computation file, except if
-no name is given for the ''HYDRODYNAMIC FILE'' in
-the steering file.
-Remark : If the keyword ''VARIABLE TIME STEP'' is set equal
-to yes, the time step required for a correct resolution is
-computed in the code and sub-iterations are performed'
-
-NOM = 'TEMPS D''ORIGINE DE L''HYDROGRAMME'
-NOM1 = 'STARTING TIME OF THE HYDROGRAM'
-TYPE = REEL
-INDEX = 13
-MNEMO = 'TPREC'
-DEFAUT = -1000.
-DEFAUT1 = -1000.
-RUBRIQUE = 'TEMPS'
-RUBRIQUE1 = 'TIME'
-NIVEAU = 1
-AIDE = 'Ce mot cle fixe le temps auquel le calcul SISYPHE debute
-sauf en cas de suite de calcul car le temps initial est
-alors lu sur le FICHIER PRECEDENT SEDIMENTOLOGIQUE. En non
-permanent, ce mot cle designe de plus le temps correspondant
-au premier enregistrement a lire dans le "fichier du calcul
-precedent" contenant les donnees hydrodynamiques.'
-AIDE1 = 'this key word specifies the time when SISYPHE computation
-begins except when a computation is continued (the initial time
-is then read on the "previous sendimentological file".
-For an unsteady case, it moreover specifies the time which
-corresponds to the 1st record to be read in the "previous
-computation file"(the file which contains the hydrodynamic
- data).'
-
-NOM = 'PERIODE DE LA MAREE'
-NOM1 = 'TIDE PERIOD'
-TYPE = REEL
-INDEX = 14
-DEFAUT = 44640.
-DEFAUT1 = 44640.
-RUBRIQUE = 'TEMPS'
-RUBRIQUE1 = 'TIME'
-NIVEAU = 1
-COMPORT = 'DISPLAY %CAS PERMANENT% = TRUE'
-AIDE = 'Fixe la valeur de la periode de l''evenement
-(maree ou crue) en non permanent.'
-AIDE1 = 'Sets the period of the event (tide or flood)
-for an unsteady case.'
 
 NOM = 'TETA'
 NOM1 = 'TETA'
@@ -2135,69 +1940,6 @@ NIVEAU = 2
 AIDE = 'epaisseur de couche active constante ou non'
 AIDE1 = 'constant active layer thickness or not'
 
-NOM = 'CONSTANT FLOW DISCHARGE'
-NOM1 = 'CONSTANT FLOW DISCHARGE'
-TYPE = LOGIQUE
-INDEX = 12
-MNEMO = 'LCONDIS'
-DEFAUT = NON
-DEFAUT1 = NO
-RUBRIQUE = 'GENERAL'
-RUBRIQUE1 = 'GENERAL'
-NIVEAU = 2
-AIDE = 'constant flow discharge or not'
-AIDE1 = 'constant flow discharge or not'
-
-NOM = 'GRAIN-FEEDING'
-NOM1 = 'GRAIN-FEEDING'
-TYPE = LOGIQUE
-INDEX = 13
-MNEMO = 'LGRAFED'
-DEFAUT = NON
-DEFAUT1 = NO
-RUBRIQUE = 'GENERAL'
-RUBRIQUE1 = 'GENERAL'
-NIVEAU = 2
-AIDE = 'Now suppressed'
-AIDE1 = 'Now suppressed'
-
-NOM = 'NOMBRE D''ITERATIONS POUR TELEMAC'
-NOM1 = 'NUMBER OF ITERATIONS FOR TELEMAC'
-TYPE = ENTIER
-INDEX = 38
-MNEMO = 'NCONDIS'
-DEFAUT = 500
-DEFAUT1 = 500
-RUBRIQUE = 'GENERAL'
-RUBRIQUE1 = 'GENERAL'
-NIVEAU = 2
-COMPORT = 'DISPLAY %CONSTANT FLOW% = OUI'
-AIDE = 'Nombre d''iteration a effecuter avec telemac pour obtenir
-un nouvel ecoulement quasi stationnaire.
-A utiliser avec l''option constant flow discharge'
-AIDE1 = 'Number of iteration to do wtih telemac in order to obtain a
-new quasi-stationary flow.
-To use with the option constant flow discharge'
-
-NOM = 'CRITERE POUR METTRE A JOUR L''HYDRODYNAMIQUE'
-NOM1 = 'CRITERION TO UPDATE THE FLOW'
-TYPE = REEL
-INDEX = 23
-MNEMO = 'CRIT\_CFD'
-DEFAUT = 0.1
-DEFAUT1 = 0.1
-RUBRIQUE = 'GENERAL'
-RUBRIQUE1 = 'GENERAL'
-NIVEAU = 2
-COMPORT = 'DISPLAY %CONSTANT FLOW% = OUI'
-AIDE = 'Critere (Hauteur du fond>CRIT\_CFD*Hauteur d''eau) pour mettre
-a jour l''ecoulement.
-A utiliser avec l''option constant flow discharge'
-AIDE1 = 'Criterion (Bottom height>CRIT\_CFD*Water depth) in order to
-update the flow.
-To use with the option constant flow discharge'
-
-/
 / pour le nouveau couplage interne
 /
 NOM = 'DICTIONNAIRE'
