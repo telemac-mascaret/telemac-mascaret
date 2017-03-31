@@ -222,25 +222,28 @@
 
 ! cohesive
       IF(TYPE_OF_SEDIMENT(ICLASS)==SED_CO) THEN
-        CALL SUSPENSION_EROSION_COH()
+       print*,'call to suspension_erosion from sisy or new Artelia
+     & routine'
+!        CALL SUSPENSION_EROSION_COH
 ! parameter list from sisyphe
 !     &(TAUP,NPOIN,XMVS,PARTHENIADES,ZERO,
 !     & FLUER,TOCE_VASE,NOMBLAY,DT,MS_VASE)
 ! MS_VASE: mass per layer MS_VASE(npoin2,nlayer)
-     &(TOB,NPOIN2,RHOS,MPART,ZERO,
-     & FLUER,TOCE,NCOUCH,DT,MS_VASE)
+!     &(TOB,NPOIN2,RHOS,MPART,ZERO,
+!     & FLUER,TOCE,NCOUCH,DT,MS_VASE)
 ! new routine from Artelia?? because consolidation needs to be taken into account
 
       ELSE
 ! non-cohesive
-        CALL SUSPENSION_EROSION()
+       print*,'call to suspension_erosion from sisy'
+!        CALL SUSPENSION_EROSION()
 ! parameterlist from sisyphe:
 !     &(TAUP,HN,FDM,FD90,AVA,NPOIN,CHARR,XMVE,XMVS,VCE,GRAV,HMIN,XWC,
 !     & ZERO,ZREF,AC,FLUER,CSTAEQ,QSC,ICQ,U2D,V2D,CSRATIO,T14,DEBUG)
 ! dmoy ist die mittlere Korngroesse... es muss aber die aktuelle sein... wo bekomme 
 ! ich die denn her in T3D??
-     &(TOB,HN,FDM,FD90,AVA,NPOIN2,CHARR,RHO0,RHOS,VCE,GRAV,HMIN,XWC,
-     & ZERO,ZREF,AC,FLUER,CREF,QSC,ICQ,U2D,V2D,CSRATIO,T2_01,DEBUG)
+!     &(TOB,HN,FDM,FD90,AVA,NPOIN2,CHARR,RHO0,RHOS,VCE,GRAV,HMIN,XWC,
+!     & ZERO,ZREF,AC,FLUER,CREF,QSC,ICQ,U2D,V2D,CSRATIO,T2_01,DEBUG)
       ENDIF
 
 

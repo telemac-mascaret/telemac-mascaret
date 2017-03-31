@@ -1519,17 +1519,18 @@
         DO I=1,NCLASS
 ! is this OK? 
           WCHU0(I)  = MOTREA(ADRESS(2,61)+I-1)
+          IF(SEDI.AND.WCHU0(I).LT.0.D0) THEN
+           IF(LNG.EQ.1) THEN
+             WRITE(LU,*)'VITESSE DE CHUTE NEGATIVE'
+           ENDIF
+           IF(LNG.EQ.1) THEN
+             WRITE(LU,*)'NEGATIVE SETLING VELOCITY'
+           ENDIF
+           CALL PLANTE(1)
+           STOP
+         ENDIF
         ENDDO
-      IF(SEDI.AND.WCHU0.LT.0.D0) THEN
-        IF(LNG.EQ.1) THEN
-          WRITE(LU,*)'VITESSE DE CHUTE NEGATIVE'
-        ENDIF
-        IF(LNG.EQ.1) THEN
-          WRITE(LU,*)'NEGATIVE SETLING VELOCITY'
-        ENDIF
-        CALL PLANTE(1)
-        STOP
-      ENDIF
+
 !
 !CV...
 !      TOCE      = MOTREA(ADRESS(2,58))
