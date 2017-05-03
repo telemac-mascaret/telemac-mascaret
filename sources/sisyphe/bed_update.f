@@ -223,7 +223,9 @@
            ENDIF
         ENDDO
       ENDDO
+!
 ! COMPUTE ZF (NOTE: THIS COULD BE MOVED)
+!
       DO IPOIN = 1,NPOIN
         ZF_T3D%R(IPOIN) = ZR_T3D%R(IPOIN)
         DO ILAYER = 1,NOMBLAY
@@ -233,7 +235,7 @@
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
-      ! FINALIZE
+! FINALIZE
       DEALLOCATE(MASS_MUD_TOT)
       DEALLOCATE(MASS_SAND_TOT)
       DEALLOCATE(MASS_MIX_TOT)
@@ -242,6 +244,6 @@
       DEALLOCATE(RATIO_MUD_SAND)
       DEALLOCATE(ES_PORO_SAND)
       DEALLOCATE(ES_MUD_ONLY)
-
+!
       RETURN
       END
