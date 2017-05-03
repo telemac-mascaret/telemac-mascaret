@@ -1,11 +1,21 @@
-!                  *****************************
+!                *********************************
                  SUBROUTINE SUSPENSION_COMPUTE_CAE
-!                  *****************************
+!                *********************************
 !
      &(TAUP,HN,FDM,FD90,NPOIN,CHARR,XMVE,XMVS,VCE,GRAV,HMIN,XWC,
      & ZERO,ZREF,AC,CSTAEQ,QSC,ICQ,U2D,V2D,CSRATIO,T14,DEBUG)
+!            
+!***********************************************************************
+! SISYPHE   V7P3                                             28/03/2017
+!***********************************************************************
 !
-!    CORRESPOND ANCIENNEMENT A SUSPENSION_ERODE.F A MERGER
+!brief    COMPUTES EQUILIBRIUM CONCENTRATION;
+!+
+!
+!history  R. WALTHER (ARTELIA), J. FONTAINE (EDF-LNHE)
+!+        28/03/2017
+!+        V7P3
+!+  Creation of the subroutine.
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !| AC             |<->| CRITICAL SHIELDS PARAMETER (SHOULD BE INPUT ONLY)
 !| ACLADM         |-->| MEAN DIAMETER OF SEDIMENT
@@ -29,7 +39,7 @@
 !| ZREF           |-->| REFERENCE ELEVATION
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !
-      USE INTERFACE_SISYPHE, EX_SUSPENSION_EROSION=>SUSPENSION_EROSION
+      USE INTERFACE_SISYPHE
       USE BIEF
       USE DECLARATIONS_SPECIAL
       IMPLICIT NONE
