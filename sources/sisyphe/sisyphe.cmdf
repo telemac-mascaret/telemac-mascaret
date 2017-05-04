@@ -642,6 +642,7 @@ files: declarations_sisyphe.f
   suspension_miles.f
   suspension_depot.f
   suspension_computation.f
+  suspension_compute_cae.f
   suspension_main.f
   nestor_interface.f
   noerod.f
