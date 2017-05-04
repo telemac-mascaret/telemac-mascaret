@@ -694,6 +694,7 @@ files: declarations_sisyphe.f
   init_sediment.f
   layer.f
   bed_update.f
+  bed_consolidation_layer.f
   suspension_deposit.f
   fluxpr_sisyphe.f
   flusec_sisyphe.f

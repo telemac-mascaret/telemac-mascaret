@@ -98,6 +98,10 @@
       USE BIEF
       USE INTERFACE_SISYPHE, EX_INIT_SEDIMENT => INIT_SEDIMENT
       USE DECLARATIONS_SPECIAL
+      USE DECLARATIONS_SISYPHE, ONLY: MASS_MUD,MASS_SAND,
+     & MASS_MUD_TOT,MASS_SAND_TOT,MASS_MIX_TOT,ES_PORO_SAND,ES_MUD_ONLY,
+     & RATIO_SAND,RATIO_MUD,RATIO_MUD_SAND,NSAND,NMUD,SED_NCO,SED_CO,
+     & TYPE_OF_SEDIMENT,XKV
       IMPLICIT NONE
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -130,7 +134,8 @@
       DOUBLE PRECISION   :: DENS,DSTAR
       DOUBLE PRECISION   :: CHECK_RS,CHECK_RM
       DOUBLE PRECISION   :: RATIO_MUD_VOL !ratio of mud volume to volume of porosity of sand
-      DOUBLE PRECISION   :: MASS_SAND_TOT,MASS_MUD_TOT,MASS_TOT
+      DOUBLE PRECISION   :: MASS_TOT ! FIXME
+      DOUBLE PRECISION, ALLOCATABLE :: TOCE_SAND(:) ! FIXME
       LOGICAL            :: BED_MIXED_GRADED
 !======================================================================!
 !======================================================================!
@@ -158,20 +163,20 @@
      &                               ZR%R,AVA0,CONC,DEBU,.FALSE.)
 !
       ELSE
-        IF(BED_MIXED_GRADED) THEN 
+        IF(BED_MIXED_GRADED) THEN
 ! THIS CONDITION IMPLIES THAT NSAND>1 AND/OR NMUD>1
 !
-! INITIALISATION OF RATIO_SAND AND RATIO_MUD 
+! INITIALISATION OF RATIO_SAND AND RATIO_MUD
 !
           IF(NSAND.EQ.1) THEN
-            DO ILAYER=1,NOMBLAYER
-              DO I=1,NPOIN
+            DO ILAYER = 1,NOMBLAY
+              DO I = 1,NPOIN
                 RATIO_SAND(NSAND,ILAYER,I)=1.D0
               ENDDO
             ENDDO
           ELSEIF(NMUD.EQ.1) THEN
-            DO ILAYER=1,NOMBLAYER
-              DO I=1,NPOIN
+            DO ILAYER = 1,NOMBLAY
+              DO I = 1,NPOIN
                 RATIO_MUD(NMUD,ILAYER,I)=1.D0
               ENDDO
             ENDDO
@@ -191,13 +196,13 @@
 !            RATIO_SAND(2,2,I)=...
 !            ...
 !            RATIO_SAND(NSAND,2,I)=...
-!            
-!    NOMBLAYER 
+!
+!    NOMBLAY
 !            RATIO_SAND(1,NOMBLAY,I)=...
 !            RATIO_SAND(2,NOMBLAY,I)=...
 !            ...
 !            RATIO_SAND(NSAND,NOMBLAY,I)=...
-!    FOR MUD 
+!    FOR MUD
 !    FIRST LAYER
 !            RATIO_MUD(1,1,I)=...
 !            RATIO_MUD(2,1,I)=...
@@ -209,24 +214,24 @@
 !            RATIO_MUD(2,2,I)=...
 !            ...
 !            RATIO_MUD(NSAND,2,I)=...
-!            
-!    NOMBLAYER 
+!
+!    NOMBLAY
 !            RATIO_MUD(1,NOMBLAY,I)=...
 !            RATIO_MUD(2,NOMBLAY,I)=...
 !            ...
 !            RATIO_MUD(NMUD,NOMBLAY,I)=...
 !
-!          ENDDO  
-!         
+!          ENDDO
+!
 !  CHECK THE RATIOS
           DO I=1,NPOIN
-            DO ILAYER=1,NLAYER
+            DO ILAYER=1,NOMBLAY
               CHECK_RS=0.D0
               CHECK_RM=0.D0
               DO ISAND=1,NSAND
                 CHECK_RS=CHECK_RS+RATIO_SAND(ISAND,ILAYER,I)
               ENDDO
-              IF(ABS(CHECK_RS-1.D0).GE.1.D-8) THEN 
+              IF(ABS(CHECK_RS-1.D0).GE.1.D-8) THEN
                  WRITE(LU,*)'SUM OF SAND RATE COEFF MUST BE EQUAL TO 1!'
                  CALL PLANTE(1)
                  STOP
@@ -234,7 +239,7 @@
               DO IMUD=1,NMUD
                 CHECK_RM=CHECK_RM+RATIO_MUD(IMUD,ILAYER,I)
               ENDDO
-              IF(ABS(CHECK_RM-1.D0).GE.1.D-8) THEN 
+              IF(ABS(CHECK_RM-1.D0).GE.1.D-8) THEN
                  WRITE(LU,*)'SUM OF MUD RATE COEFF MUST BE EQUAL TO 1!'
                  CALL PLANTE(1)
                  STOP
@@ -255,7 +260,7 @@
 !            ES(IPOIN,2)=...
 !            ...
 !            ES(IPOIN,NOMBLAY)=...
-!          ENDDO 
+!          ENDDO
 !
 ! 3) USERS DEFINE RATIO_MUD_SAND
 !
@@ -268,14 +273,14 @@
 !   b. different ratio for layers
 !          DO IPOIN=1,NPOIN
 !            RATIO_MUD_SAND(1,IPOIN)=...
-!            RATIO_MUD_SAND(2,IPOIN)=... 
+!            RATIO_MUD_SAND(2,IPOIN)=...
 !            ...
 !            RATIO_MUD_SAND(NOMBLAY,IPOIN)=...
-!          ENDDO 
+!          ENDDO
 !
 ! 4) MASS COMPUTATION
 !
-        DO I=1,NPOIN
+        DO I = 1,NPOIN
           DO ILAYER = 1,NOMBLAY
             RATIO_MUD_VOL=RATIO_MUD_SAND(ILAYER,I)*XMVS
      &      /(CONC_VASE(ILAYER)*XKV*(1.D0-RATIO_MUD_SAND(ILAYER,I)))
@@ -284,7 +289,7 @@
      &        ((1.D0-RATIO_MUD_SAND(ILAYER,I))/XMVS+
      &        RATIO_MUD_SAND(ILAYER,I)/CONC_VASE(ILAYER))
               DO IMUD = 1,NMUD
-                MASS_MUD(I,ILAYER,IMUD) = 
+                MASS_MUD(I,ILAYER,IMUD) =
      &          RATIO_MUD_SAND(ILAYER,I)*RATIO_MUD(IMUD,ILAYER,I)
      &          *MASS_TOT
               ENDDO
@@ -293,18 +298,18 @@
      &          (1.D0-RATIO_MUD_SAND(ILAYER,I))*MASS_TOT*
      &          RATIO_SAND(ISAND,ILAYER,I)
               ENDDO
-            ELSE ! all mud fits inside porosity 
-              MASS_SAND_TOT = XMVS*(1.D0-XKV)*ES(I,ILAYER)
-              MASS_MUD_TOT = MASS_SAND_TOT/
+            ELSE ! all mud fits inside porosity
+              MASS_SAND_TOT(ILAYER,I) = XMVS*(1.D0-XKV)*ES(I,ILAYER)
+              MASS_MUD_TOT(ILAYER,I) = MASS_SAND_TOT(ILAYER,I)/
      &                     (1.D0-RATIO_MUD_SAND(ILAYER,I))
             ENDIF
             DO IMUD = 1,NMUD
-              MASS_MUD(I,ILAYER,IMUD) = 
-     &        RATIO_MUD(IMUD,ILAYER,I)*MASS_MUD_TOT
+              MASS_MUD(I,ILAYER,IMUD) =
+     &        RATIO_MUD(IMUD,ILAYER,I)*MASS_MUD_TOT(ILAYER,I)
             ENDDO
             DO ISAND = 1,NSAND
-              MASS_SAND(ISAND,ILAYER,I) = 
-     &        RATIO_SAND(ISAND,ILAYER,I)*MASS_SAND_TOT
+              MASS_SAND(ISAND,ILAYER,I) =
+     &        RATIO_SAND(ISAND,ILAYER,I)*MASS_SAND_TOT(ILAYER,I)
             ENDDO
           ENDDO
         ENDDO
@@ -314,7 +319,6 @@
 !     NON-COHESIVE, MULTI-CLASSES
 !
         IF(.NOT.MIXTE) THEN
-! 
 !
           CALL INIT_AVAI
 !         CALL MEAN_GRAIN_SIZE
@@ -358,8 +362,8 @@
           CALL VITCHU_SISYPHE(XWC(I),DENS,FDM(I),GRAV,VCE)
           IF(BED_MIXED_GRADED) THEN
 !            calcul de la vitesse de chute en 2d ou au fond
-!            si T3D: la vitesse de chute est calculée en 3D puis repassée à sisyphe pour le fond		
-            IF(TYPE_OF_SEDIMENT.EQ.SED_NCO) THEN
+!            si T3D: la vitesse de chute est calculée en 3D puis repassée à sisyphe pour le fond
+            IF(TYPE_OF_SEDIMENT(I).EQ.SED_NCO) THEN
               CALL VITCHU_SISYPHE(XWC(I),DENS,FDM(I),GRAV,VCE)
             ELSE
 !           par defaut 1mm/s pour toutes les classes de vase
@@ -383,7 +387,7 @@
             AC(I) = 0.04D0*DSTAR**(-0.1D0)
 !           CORRECTION 27/06/2016
 !          ELSEIF (DSTAR <= 150.D0) THEN
-          ELSEIF (DSTAR <= 72.D0) THEN 
+          ELSEIF (DSTAR <= 72.D0) THEN
             AC(I) = 0.013D0*DSTAR**0.29D0
           ELSE
 !           CORRECTION 30/05/2012
@@ -395,11 +399,11 @@
 !
 !     FOR MIXED SEDIMENTS
 !
-      IF(MIXTE) TOCE_SABLE=AC(1)*FDM(1)*GRAV*(XMVS - XMVE)
-     
+      IF(MIXTE) TOCE_SABLE = AC(1)*FDM(1)*GRAV*(XMVS - XMVE)
+
       IF(BED_MIXED_GRADED) THEN
         DO ISAND = 1,NSAND
-          TOCE_SAND(ISAND)= AC(ISAND)*FDM(ISAND)*GRAV*(XMVS - XMVE)
+          TOCE_SAND(ISAND) = AC(ISAND)*FDM(ISAND)*GRAV*(XMVS - XMVE)
         ENDDO
       ENDIF
 !
