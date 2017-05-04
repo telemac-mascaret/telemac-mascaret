@@ -2,7 +2,7 @@
              SUBROUTINE BED_CONSOLIDATION_LAYER
 !            **********************************
 !
-!            
+!
 !***********************************************************************
 ! SISYPHE   V7P3                                             28/03/2017
 !***********************************************************************
@@ -21,41 +21,44 @@
 !
 !
       USE BIEF
+      USE DECLARATIONS_SISYPHE
       USE DECLARATIONS_SPECIAL
       IMPLICIT NONE
 !
-      INTEGER IPOIN,ILAYER,ISAND
-      DOUBLE PRECISION FLUX_MASS_MUD(NPOIN,NLAYER)
-      DOUBLE PRECISION FLUX_MASS_SAND(NPOIN,NLAYER,NSAND)
+      INTEGER IPOIN,ILAYER,ISAND,IMUD
+      DOUBLE PRECISION, ALLOCATABLE ::  FLUX_MASS_MUD(:,:,:)
+      DOUBLE PRECISION, ALLOCATABLE ::  FLUX_MASS_MUD_TOT(:,:)
+      DOUBLE PRECISION, ALLOCATABLE ::  FLUX_MASS_SAND(:,:,:)
+      DOUBLE PRECISION, ALLOCATABLE ::  A(:) ! FIXME
 !
 !======================================================================
 !     le flux de consolidation est dM/dt=a*M
 !     je pense que la matrice A(ILAYER) est deja declaree dans sisyphe sous un autre nom
-!     
-      IF(NMUD.EQ.0)THEN
+!
+      IF(NMUD.EQ.0) THEN
         WRITE(LU,*)'CONSOLIDATION WITH NO MUD??'
         STOP
       ENDIF
-      IF(A(NLAYER).NE.0.D0)THEN
-        WRITE(LU,*)'LE TAUX DE TRANFERT POUR LA CONSOLIDATION DOIT', 
+      IF(A(NOMBLAY).NE.0.D0)THEN
+        WRITE(LU,*)'LE TAUX DE TRANFERT POUR LA CONSOLIDATION DOIT',
      &             ' ETRE NUL POUR LA DERNIERE COUCHE'
         STOP
       ENDIF
 !     calcul des flux de transfer de vase
       DO IPOIN = 1,NPOIN
-        DO ILAYER = 1,NLAYER
-          IF(MASS_MUD_TOT(ILAYER,IPOIN).GE.MIN_SED_MASS_COMP)THEN
-!           
+        DO ILAYER = 1,NOMBLAY
+          IF(MASS_MUD_TOT(ILAYER,IPOIN).GE.MIN_SED_MASS_COMP) THEN
+!
             FLUX_MASS_MUD_TOT(ILAYER,IPOIN) =
      &           A(ILAYER)*MASS_MUD_TOT(ILAYER,IPOIN)*DT
-!           
+!
             DO IMUD = 1,NMUD
-!             
-              FLUX_MASS_MUD(IMUD,ILAYER,IPOIN)=
+!
+              FLUX_MASS_MUD(IMUD,ILAYER,IPOIN) =
      &             MIN(MASS_MUD(IMUD,ILAYER,IPOIN),
      &             FLUX_MASS_MUD_TOT(ILAYER,IPOIN)
      &             *RATIO_MUD(IMUD,ILAYER,IPOIN))
-!             
+!
             ENDDO
           ELSE
             DO IMUD = 1,NMUD
@@ -65,33 +68,33 @@
 !         on calcule le transfert total de vase
           FLUX_MASS_MUD_TOT(ILAYER,IPOIN) = 0.D0
           DO IMUD = 1,NMUD
-!           
+!
             FLUX_MASS_MUD_TOT(ILAYER,IPOIN) =
      &           FLUX_MASS_MUD_TOT(ILAYER,IPOIN)
      &           +FLUX_MASS_MUD(IMUD,ILAYER,IPOIN)
-!           
+!
           ENDDO
         ENDDO
       ENDDO
 !     calcul des flux de transfer de sable (le sable accompagne la vase dans les flux)
-      IF(NSAND.GE.1)THEN
+      IF(NSAND.GE.1) THEN
         DO IPOIN = 1,NPOIN
-          DO ILAYER = 1,NLAYER
+          DO ILAYER = 1,NOMBLAY
             DO ISAND = 1,NSAND
-              IF(MASS_MUD(IMUD,ILAYER,IPOIN).GE.MIN_SED_MASS_COMP)THEN
-!               
+              IF(MASS_MUD(IMUD,ILAYER,IPOIN).GE.MIN_SED_MASS_COMP) THEN
+!
                 FLUX_MASS_SAND(ISAND,ILAYER,IPOIN) =
      &               FLUX_MASS_MUD_TOT(ILAYER,IPOIN)/
      &               MASS_MUD_TOT(ILAYER,IPOIN)
      &               *MASS_SAND(ISAND,ILAYER,IPOIN)
-!               
+!
                 FLUX_MASS_SAND(ISAND,ILAYER,IPOIN) =
      &               MAX(0.D0,FLUX_MASS_SAND(ISAND,ILAYER,IPOIN))
-!               
+!
                 FLUX_MASS_SAND(ISAND,ILAYER,IPOIN) =
      &               MIN(FLUX_MASS_SAND(ISAND,ILAYER,IPOIN),
      &               MASS_SAND(ISAND,ILAYER,IPOIN))
-!               
+!
               ELSE
                 FLUX_MASS_SAND(ISAND,ILAYER,IPOIN) = 0.D0
               ENDIF
@@ -100,23 +103,23 @@
         ENDDO
       ENDIF
 !     transfert des masses de vase
-      DO IPOIN = 1,NPOIN2
-        DO ILAYER = 1,NLAYER
+      DO IPOIN = 1,NPOIN
+        DO ILAYER = 1,NOMBLAY
           DO IMUD = 1,NMUD
-            IF(ILAYER.EQ.NLAYER)THEN
-!             
+            IF(ILAYER.EQ.NOMBLAY) THEN
+!
               MASS_MUD(IMUD,ILAYER,IPOIN) =
      &             MASS_MUD(IMUD,ILAYER,IPOIN)
      &             +FLUX_MASS_MUD(IMUD,ILAYER-1,IPOIN)
-!             
-            ELSEIF(ILAYER.EQ.1)THEN
-!             
+!
+            ELSEIF(ILAYER.EQ.1) THEN
+!
               MASS_MUD(IMUD,ILAYER,IPOIN) =
      &             MASS_MUD(IMUD,ILAYER,IPOIN)
-     &             -FLUX_MASS_MUD(IMUD,IPOIN,ILAYER,IPOIN)
-!             
+     &             -FLUX_MASS_MUD(IMUD,ILAYER,IPOIN)
+!
             ELSE
-!             
+!
               MASS_MUD(IMUD,ILAYER,IPOIN) =
      &             MASS_MUD(IMUD,ILAYER,IPOIN)
      &             +FLUX_MASS_MUD(IMUD,ILAYER-1,IPOIN)
@@ -126,34 +129,34 @@
         ENDDO
       ENDDO
 !     transfert des masses de sable
-      IF(NSAND.GE.1)THEN
+      IF(NSAND.GE.1) THEN
         DO IPOIN = 1,NPOIN
-          DO ILAYER = 1,NLAYER
+          DO ILAYER = 1,NOMBLAY
             DO ISAND = 1,NSAND
-              IF(ILAYER.EQ.NLAYER)THEN
-!               
+              IF(ILAYER.EQ.NOMBLAY) THEN
+!
                 MASS_SAND(ISAND,ILAYER,IPOIN) =
      &               MASS_SAND(ISAND,ILAYER,IPOIN)
      &               +FLUX_MASS_SAND(ISAND,ILAYER-1,IPOIN)
-!               
-              ELSEIF(ILAYER.EQ.1)THEN
-!               
+!
+              ELSEIF(ILAYER.EQ.1) THEN
+!
                 MASS_SAND(ISAND,ILAYER,IPOIN) =
      &               MASS_SAND(ISAND,ILAYER,IPOIN)
      &               -FLUX_MASS_SAND(ISAND,ILAYER,IPOIN)
-!               
+!
               ELSE
-!               
+!
                 MASS_SAND(ISAND,ILAYER,IPOIN) =
      &               MASS_SAND(ISAND,ILAYER,IPOIN)
      &               +FLUX_MASS_SAND(ISAND,ILAYER-1,IPOIN)
      &               -FLUX_MASS_SAND(ISAND,ILAYER,IPOIN)
-!               
+!
               ENDIF
             ENDDO
           ENDDO
         ENDDO
       ENDIF
-!     
+!
       RETURN
       END SUBROUTINE BED_CONSOLIDATION_LAYER
