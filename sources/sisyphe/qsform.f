@@ -54,7 +54,7 @@
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
-!     INTEGER          :: I
+      INTEGER          :: I
 !     DOUBLE PRECISION :: C1, C2, T
 !
 !======================================================================!
@@ -68,7 +68,7 @@
 !     C1 = DENS * GRAV * DM
 !     C2 = 0.053D0 * SQRT(DM**3*DENS*GRAV) * DSTAR**(-0.3D0)
 !
-!     DO I = 1, NPOIN
+      DO I = 1, NPOIN
 !
 !       TRANSPORT STAGE PARAMETER
 !
@@ -80,22 +80,22 @@
 !
 !       BEDLOAD TRANSPORT RATE
 !
-!       QSC%R(I) = C2 * T**2.1D0
-!       QSS%R(I) = 0.D0
+       QSC%R(I) = 0.D0 ! C2 * T**2.1D0
+       QSS%R(I) = 0.D0
 !
-!     ENDDO
+      ENDDO
 !
 !  FOLLOWING LINES NEED TO BE COMMENTED OUT
 !
-      IF(LNG.EQ.1) WRITE(LU,52)
-      IF(LNG.EQ.2) WRITE(LU,53)
+!!      IF(LNG.EQ.1) WRITE(LU,52)
+!!      IF(LNG.EQ.2) WRITE(LU,53)
 !
-52    FORMAT(/,1X,' STOP :',/
-     &     ,1X,' LE TAUX DE TRANSPORT DOIT ETRE CALCULE DANS QSFORM')
-53    FORMAT(/,1X,'SISYPHE IS STOPPED : ',/
-     &      ,1X,' SAND TRANSPORT MUST BE CALCULATED IN QSFORM')
-      CALL PLANTE(1)
-      STOP
+!!52    FORMAT(/,1X,' STOP :',/
+!!     &     ,1X,' LE TAUX DE TRANSPORT DOIT ETRE CALCULE DANS QSFORM')
+!!53    FORMAT(/,1X,'SISYPHE IS STOPPED : ',/
+!!     &      ,1X,' SAND TRANSPORT MUST BE CALCULATED IN QSFORM')
+!!      CALL PLANTE(1)
+!!      STOP
 !
 !-----------------------------------------------------------------------
 !

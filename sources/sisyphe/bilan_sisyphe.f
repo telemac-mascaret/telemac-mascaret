@@ -4,7 +4,7 @@
 !
      &(E,ESOMT,MESH,MSK,MASKEL,T1,T2,S,IELMU,VCUMU,DT,NPTFR,
      & INFO,ZFCL_C,ZFCL_S,ZFCL_MS,
-     & QSCLXC,QSCLYC,NSICLA,VOLTOT,DZF_GF,MASS_GF,LGRAFED,
+     & QSCLXC,QSCLYC,NSICLA,VOLTOT,DZF_GF,
      & NUMLIQ,NFRLIQ,FLBCLA,VF,LT,NIT,NPOIN,VOLU2D,CSF_SABLE,MASDEP,
      & MASDEPT,CHARR,SUSP,SLIDE)
 !
@@ -55,14 +55,12 @@
 !| FLBCLA         |-->| BLOCK OF FLUXES AT BOUNDARY FOR EACH CLASS
 !| IELMU          |-->| NUMER OF ELEMENTS
 !| INFO           |-->| IF YES : INFORMATION IS PRINTED
-!| LGRAFED        |---| A SUPPRIMER
 !| LT             |-->| CURRENT TIME STEP
 !| MASDEP         |-->| VOLUME DEPOSITED ON THE BOTTOM FOR EACH CLASS
 !|                |   | FROM THE BEGINNING
 !| MASDEPT        |-->| VOLUME DEPOSITED ON THE BOTTOM FOR EACH CLASS
 !|                |   | FOR THIS TIME STEP
 !| MASKEL         |-->| MASKING OF ELEMENTS
-!| MASS_GF        |---|A SUPPRIMER
 !| MESH           |<->| MESH STRUCTURE
 !| MSK            |-->| IF YES, THERE IS MASKED ELEMENTS
 !| NFRLIQ         |-->| NUMBER OF LIQUID BOUNDARIES
@@ -98,8 +96,7 @@
       DOUBLE PRECISION, INTENT(IN) :: DT
       LOGICAL, INTENT(IN)          :: MSK,INFO,VF,SUSP,SLIDE,CHARR
 !
-      LOGICAL, INTENT(IN)          :: LGRAFED
-      DOUBLE PRECISION, INTENT(INOUT) :: MASS_GF,VCUMU
+      DOUBLE PRECISION, INTENT(INOUT) :: VCUMU
       DOUBLE PRECISION, INTENT(IN)    :: CSF_SABLE,VOLTOT(NSICLA)
       DOUBLE PRECISION, INTENT(IN)    :: MASDEP(NSICLA)
       DOUBLE PRECISION, INTENT(INOUT) :: MASDEPT(NSICLA)
@@ -269,14 +266,6 @@
 !
 !=======================================================================
 !
-!     GRAIN-FEEDING
-!     IF (LGRAFED) THEN
-!        CALL VECTOR(T1,'=','MASVEC          ',IELMU,
-!    &               1.D0,DZF_GF,S,S,S,S,S,MESH,MSK,MASKEL)
-!        MASST = BIEF_SUM(T1)
-!        IF(NCSIZE.GT.1) MASST = P_DSUM(MASST)
-!        MASS_GF = MASS_GF + MASST
-!     ENDIF
 !     IF(NESTOR) ...   ?????
 !
       VOLDEPC=0.D0
@@ -373,16 +362,6 @@
           ENDIF
         ENDIF
 !
-!       IF(LGRAFED) THEN
-!         IF(LNG.EQ.1) THEN
-!           WRITE(LU, 4000) MASST
-!           WRITE(LU, 4010) MASS_GF
-!         ENDIF
-!         IF(LNG.EQ.2) THEN
-!           WRITE(LU, 4001) MASST
-!           WRITE(LU, 4011) MASS_GF
-!         ENDIF
-!       ENDIF
 !
       ENDIF
 !

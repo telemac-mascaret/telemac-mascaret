@@ -248,6 +248,7 @@
 !
 !     ICM           = MOTINT( ADRESS(1,  1) )
       ICF           = MOTINT( ADRESS(1,  2) )
+      BED_MODEL     = MOTINT( ADRESS(1,  59) )
       NPAS          = MOTINT( ADRESS(1,  3) )
       NMAREE        = MOTINT( ADRESS(1,  4) )
 !     N1            = MOTINT( ADRESS(1,  5) )
@@ -311,13 +312,13 @@
       PRODUC        = MOTINT( ADRESS(1, 33) )
       OPTASS        = MOTINT( ADRESS(1, 34) )
       OPDTRA        = MOTINT( ADRESS(1, 35) )
-      DEPER         = MOTINT( ADRESS(1, 36) )
       KFROT         = MOTINT( ADRESS(1, 37) )
       NCONDIS       = MOTINT( ADRESS(1, 38) )
       SLOPEFF       = MOTINT( ADRESS(1, 39) )
       DEVIA         = MOTINT( ADRESS(1, 40) )
       NOMBLAY       = MOTINT( ADRESS(1,251) )
-      NSICLA        = MOTINT( ADRESS(1,252) )
+      NSICLA        = DIMENS(4,59)
+      write(lu,*)'NSICLA EST',NSICLA
       HIDFAC        = MOTINT( ADRESS(1,253) )
       ICQ           = MOTINT( ADRESS(1, 41) )
 !     CONTROL SECTIONS
@@ -392,13 +393,9 @@
       DO K=1,NSICLA
         FDM(K)   = MOTREA( ADRESS(2,  4) + K-1 )
       ENDDO
-!     IF OLD NAME OF KEYWORD 28 HAS BEEN FOUND
-      IF(TROUVE(2,28).EQ.2) THEN
-        DO K=1,NSICLA
-          FDM(K) = MOTREA( ADRESS(2,28) + K-1 )
-        ENDDO
-      ENDIF
-      XKV         = MOTREA( ADRESS(2,  5) )
+      DO K=1,DIMENS(2,5) !can be also NOMBLAY
+         XKV(K) = MOTREA( ADRESS(2,  5) + K-1 )
+      ENDDO
 !     SHIELDS NUMBERS
       DO K=1,DIMENS(2,6)
         AC(K)   = MOTREA( ADRESS(2, 6) + K-1 )
@@ -407,10 +404,21 @@
 !     ONE IS TAKEN FOR THE FOLLOWING
 !     FOR EXAMPLE IF ONLY ONE IS GIVEN, ALL WILL HAVE
 !     THE SAME VALUE
+! a verifier avec Pablo!!!
       IF(DIMENS(2,6).LT.NSICLA) THEN
-        DO K=DIMENS(2,6)+1,NSICLA
-          AC(K) = MOTREA( ADRESS(2, 6)+DIMENS(2,6)-1 )
-        ENDDO
+        IF(LNG.EQ.1) THEN
+          WRITE(LU,*)'DONNER UNE VALEUR DE SHIELDS
+     &                POUR CHAQUE SEDIMENT'
+        ENDIF
+        IF(LNG.EQ.2) THEN
+          WRITE(LU,*)'GIVE A VALUE OF THE SHIELDS PARAMETER
+     &                FOR EVERY SEDIMENT'
+        ENDIF
+        CALL PLANTE(1)
+        STOP
+!        DO K=DIMENS(2,6)+1,NSICLA
+!          AC(K) = MOTREA( ADRESS(2, 6)+DIMENS(2,6)-1 )
+!        ENDDO
       ENDIF
       SFON        = MOTREA( ADRESS(2,  7) )
       GRAV        = MOTREA( ADRESS(2,  8) )
@@ -433,9 +441,20 @@
         XWC(K)   = MOTREA( ADRESS(2, 22) + K-1 )
       ENDDO
       IF(DIMENS(2,22).LT.NSICLA) THEN
-        DO K=DIMENS(2,22)+1,NSICLA
-          XWC(K) = MOTREA( ADRESS(2, 22)+DIMENS(2,22)-1 )
-        ENDDO
+        IF(LNG.EQ.1) THEN
+          WRITE(LU,*)'DONNER UNE VALEUR DE VITESSE DE CHUTE (OU -9)
+     &                POUR CHAQUE SEDIMENT'
+        ENDIF
+        IF(LNG.EQ.2) THEN
+          WRITE(LU,*)'GIVE A VALUE OF THE SETTLING VELOCITY
+     &                (OR -9) FOR EVERY SEDIMENT'
+        ENDIF
+        CALL PLANTE(1)
+        STOP
+! a verifier avec Pablo
+!        DO K=DIMENS(2,22)+1,NSICLA
+!          XWC(K) = MOTREA( ADRESS(2, 22)+DIMENS(2,22)-1 )
+!        ENDDO
       ENDIF
       CRIT_CFD    = MOTREA( ADRESS(2, 23) )
       KSPRATIO    = MOTREA( ADRESS(2, 24) )
@@ -492,7 +511,10 @@
 !
       IF(DIMENS(2,34).GT.0) THEN
         DO K=1,DIMENS(2,34)
-          TOCE_VASE(K)=MOTREA( ADRESS(2,34) + K-1 )
+          TOC_MUD(K)=MOTREA( ADRESS(2,34) + K-1 )
+! TOCE_VASE CORRESPONDS TO THE OLD KEYWORD
+! IT IS KEPT FOR COMPATIBLE REASONS
+          TOCE_VASE(K)=TOC_MUD(K)
         ENDDO
       ENDIF
 !
@@ -501,9 +523,21 @@
 !     OBSOLETE KEY WORD : VITCE= MOTREA( ADRESS(2,35))
 !
       VITCE = SQRT(TOCE_VASE(1)/XMVE)
-      VITCD= MOTREA( ADRESS(2,36))
+!
+      IF(DIMENS(2,36).GT.0) THEN
+!     ALLOCATE ARRAY DEPENDING ON NSICLA
+      ALLOCATE(TOCD(NSICLA))
+! check if dimension of tocd is nsicla or nomblay
+        DO K=1,NSICLA
+           TOCD(K)= MOTREA( ADRESS(2,36)+ K-1 )
+        ENDDO
+      ENDIF
+!
 !     PARTHENIADES WITH CONVERSION TO M/S
-      PARTHENIADES = MOTREA( ADRESS(2,37))/XMVS
+!
+      DO K=1,DIMENS(2,5)        !can be also NOMBLAY
+         PARTHENIADES(K) = MOTREA( ADRESS(2,37) + K-1)/XMVS
+      ENDDO
 !
 !     CONSOLIDATION MODEL
 !
@@ -586,17 +620,19 @@
 
       ! COMPUTATION OF FALL VELOCITIES
       ! ------------------------------------------
-      CALWC = .FALSE.
-      ! IF TROUVE: VELOCITIES ARE USER-DEFINED
-      ! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      IF (TROUVE(2, 22).EQ.2) CALWC = .TRUE.
+! CALWC NO MORE NECESSARY
+!!      CALWC = .FALSE.
+!!      ! IF TROUVE: VELOCITIES ARE USER-DEFINED
+!!      ! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+!!      IF (TROUVE(2, 22).EQ.2) CALWC = .TRUE.
 ! CV
       ! SHIELDS PARAMETER
       ! ------------------------------------------
-      CALAC = .FALSE.
-      ! IF TROUVE
-      ! ~~~~~~~~~~~~~
-      IF (TROUVE(2, 6).EQ.2) CALAC = .TRUE.
+! CALAC NO MORE NECESSARY
+!!      CALAC = .FALSE.
+!!      ! IF TROUVE
+!!      ! ~~~~~~~~~~~~~
+!!      IF (TROUVE(2, 6).EQ.2) CALAC = .TRUE.
 
 
       BILMA        = MOTLOG( ADRESS(3,  1) )
@@ -610,7 +646,6 @@
       HOULE        = MOTLOG( ADRESS(3, 10) )
       CONST_ALAYER = MOTLOG( ADRESS(3, 11) )
       LCONDIS      = MOTLOG( ADRESS(3, 12) )
-      LGRAFED      = MOTLOG( ADRESS(3, 13) )
 !     USED TO CHECK SIS_FILES(SISPRE)%NAME
       DEBU         = MOTLOG( ADRESS(3, 14) )
       IMP_INFLOW_C = MOTLOG( ADRESS(3, 15) )
@@ -619,14 +654,6 @@
       UNIT         = MOTLOG( ADRESS(3, 17) )
       VF           = MOTLOG( ADRESS(3,253) )
       CORR_CONV    = MOTLOG( ADRESS(3, 18) )
-      DO K=1,NSICLA
-        SEDCO(K)   = .FALSE.
-      ENDDO
-      IF(DIMENS(3,19).GT.0) THEN
-        DO K=1,DIMENS(3,19)
-          SEDCO(K) = MOTLOG( ADRESS(3,19) + K-1 )
-        ENDDO
-      ENDIF
       SLIDE    = MOTLOG( ADRESS(3, 20) )
       DIFT     = MOTLOG( ADRESS(3, 21) )
       EFFPEN   = MOTLOG( ADRESS(3, 22) )
@@ -652,7 +679,9 @@
       CHECK_MESH = MOTLOG(ADRESS(3,29) )
 !     NEW IMPLEMENTATION FOR CROSS-SECTION
       DOFLUX = MOTLOG(ADRESS(3,61) )
-!
+!     NEW ARTELIA BED MODEL
+      NEW_BED_MODEL = MOTLOG(ADRESS(3,30) )
+
 ! ################################### !
 ! CHARACTER STRING KEYWORDS           !
 ! ################################### !
@@ -705,6 +734,43 @@
       IF(N_NAMES_PRIV.GT.0) THEN
         DO K=1,N_NAMES_PRIV
           NAMES_PRIVE(K) = MOTCAR(ADRESS(4,42)+K-1)(1:32)
+        ENDDO
+      ENDIF
+!
+!     TYPE OF SEDIMENT AND NSICLA
+      NSAND = 0
+      NMUD = 0
+      IF(NSICLA.GT.0) THEN
+      ALLOCATE(TYPE_SED(NSICLA))
+! for the moment the following variables are overdimensioned
+      ALLOCATE(NUM_IMUD_ICLA(NSICLA))
+      ALLOCATE(NUM_ICLA_IMUD(NSICLA))
+      ALLOCATE(NUM_ISAND_ICLA(NSICLA))
+      ALLOCATE(NUM_ICLA_ISAND(NSICLA))
+        DO K=1,NSICLA
+          TYPE_SED(K) = MOTCAR(ADRESS(4,59)+K-1)(1:3)
+          IF(TYPE_SED(K).EQ.'CO') THEN
+            SEDCO(K)=.TRUE.
+            NMUD=NMUD+1
+            NUM_IMUD_ICLA(NMUD)=K
+            NUM_ICLA_IMUD(K)=NMUD
+          ELSEIF(TYPE_SED(K).EQ.'NCO') THEN
+            SEDCO(K)=.FALSE.
+            NSAND=NSAND+1
+            NUM_ISAND_ICLA(NSAND)=K
+            NUM_ICLA_ISAND(K)=NSAND
+          ELSE
+            IF(LNG.EQ.1) THEN
+              WRITE(LU,*)'VERIFIER TYPE DE SEDIMENT'
+              WRITE(LU,*)'LES SEULES POSSIBILITEES SONT : CO AND NCO'
+            ENDIF
+            IF(LNG.EQ.2) THEN
+              WRITE(LU,*)'CHECK TYPE OF SEDIMENT'
+              WRITE(LU,*)'POSSIBLE CHOICES ARE: CO AND NCO'
+            ENDIF
+            CALL PLANTE(1)
+            STOP
+          ENDIF
         ENDDO
       ENDIF
 !
@@ -1041,7 +1107,10 @@
 !       FILLS VOIDS WITH MUD:
 ! CV: vérifier que la concentration en cohésif est non nulle
 !
-        CSF_SABLE= 1.D0
+!         DO K=1,DIMENS(2,5)
+!         CSF_SABLE(K) = 1.D0
+        CSF_SABLE = 1.D0
+!         ENDDO
 !V: verrouiller les options
         NSICLA=2
         SEDCO(1)=.FALSE.
@@ -1050,7 +1119,10 @@
         SUSP=.TRUE.
 !V
       ELSE
-        CSF_SABLE= (1.D0-XKV)
+!        DO K=1,DIMENS(2,5)
+!         CSF_SABLE(K) = (1.D0-XKV(K))
+         CSF_SABLE = (1.D0-XKV(1)) ! generalize
+!        ENDDO
       ENDIF
 !
       IF((.NOT.MIXTE).AND.SEDCO(1)) THEN

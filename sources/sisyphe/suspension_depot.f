@@ -2,7 +2,7 @@
                      SUBROUTINE SUSPENSION_DEPOT
 !                    ***************************
 !
-     &(TOB,HN, NPOIN, HMIN,XWC,VITCD,ZERO,KARMAN,
+     &(TOB,HN, NPOIN, HMIN,XWC,TOCD,ZERO,KARMAN,
      & FDM,FD90,XMVE,T1,T2,ZREF,FLUDPT,DEBUG,SEDCO,CSTAEQ)
 !
 !***********************************************************************
@@ -52,7 +52,7 @@
 !| T1             |<->| WORK BIEF_OBJ STRUCTURE
 !| T2             |<->| WORK BIEF_OBJ STRUCTURE
 !| TOB            |-->| BED SHEAR STRESS (TOTAL FRICTION)
-!| VITCD          |-->| CRITICAL SHEAR VELOCITY FOR MUD DEPOSITION
+!| TOCD           |-->| CRITICAL SHEAR STRESS
 !| XMVE           |-->| FLUID DENSITY
 !| XWC            |-->| SETTLING VELOCITIES
 !| ZERO           |-->| ZERO
@@ -72,7 +72,7 @@
       LOGICAL,          INTENT(IN)    :: SEDCO
       DOUBLE PRECISION, INTENT(IN)    ::  HMIN
       DOUBLE PRECISION, INTENT(IN)    :: FDM,FD90,XWC
-      DOUBLE PRECISION, INTENT(IN)    :: VITCD
+      DOUBLE PRECISION, INTENT(IN)    :: TOCD
       DOUBLE PRECISION, INTENT(IN)    :: ZERO, KARMAN,XMVE
       TYPE (BIEF_OBJ),  INTENT(INOUT) :: T1,T2
       TYPE (BIEF_OBJ),  INTENT(IN)    :: ZREF
@@ -106,9 +106,9 @@
 !       COMPUTES THE PROBABILITY FOR DEPOSITION
 !
         DO I = 1, NPOIN
-!         HERE T1 >=0, so case VITCD=0.D0 excluded by the test
-          IF(T1%R(I).LT.VITCD) THEN
-            AUX = 1.D0-(T1%R(I)/VITCD)**2
+          IF(TOB%R(I).LT.TOCD) THEN
+!**********1 seule vase est possible dans l ancienne version TOCD = TOCD(1)
+            AUX = 1.D0-(TOB%R(I)/TOCD)
           ELSE
             AUX = 0.D0
           ENDIF

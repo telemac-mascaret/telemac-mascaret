@@ -188,17 +188,17 @@
 !
       DO ILAYER = 1,NOMBLAY
         DO IPOIN = 1,NPOIN
-          ES_PORO_SAND(IPOIN,ILAYER) = MASS_SAND_TOT(ILAYER,IPOIN)*XKV
-     &                               /((1.D0-XKV)*XMVS)
+          ES_PORO_SAND(IPOIN,ILAYER) = MASS_SAND_TOT(ILAYER,IPOIN)*
+     &                         XKV(ILAYER)/((1.D0-XKV(ILAYER))*XMVS)
           ES_MUD_ONLY(IPOIN,ILAYER) = MASS_MUD_TOT(ILAYER,IPOIN)
-     &                              /CONC_VASE(ILAYER)
+     &                         /CONC_VASE(ILAYER)
            IF(ES_MUD_ONLY(IPOIN,ILAYER).GE.ES_PORO_SAND(IPOIN,ILAYER))
      &     THEN
              ES(IPOIN,ILAYER) = MASS_SAND_TOT(ILAYER,IPOIN)/XMVS
      &                        + ES_MUD_ONLY(IPOIN,ILAYER)
            ELSE
              ES(IPOIN,ILAYER) = MASS_SAND_TOT(ILAYER,IPOIN)
-     &                        /((1.D0-XKV)*XMVS)
+     &                        /((1.D0-XKV(ILAYER))*XMVS)
            ENDIF
         ENDDO
       ENDDO

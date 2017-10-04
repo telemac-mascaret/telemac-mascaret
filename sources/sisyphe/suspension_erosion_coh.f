@@ -62,7 +62,8 @@
       INTEGER,          INTENT(IN)    :: NOMBLAY
       INTEGER,          INTENT(IN)    :: NPOIN
       DOUBLE PRECISION, INTENT(IN)    :: XMVS
-      DOUBLE PRECISION, INTENT(IN)    :: ZERO,PARTHENIADES
+      DOUBLE PRECISION, INTENT(IN)    :: ZERO
+      DOUBLE PRECISION, INTENT(IN)     :: PARTHENIADES(NOMBLAY)
       DOUBLE PRECISION,  INTENT(INOUT) :: MS_VASE(NPOIN,NOMBLAY)
       DOUBLE PRECISION, INTENT(IN)     :: TOCE_VASE(NOMBLAY), DT
       TYPE (BIEF_OBJ),  INTENT(INOUT) :: FLUER
@@ -96,7 +97,7 @@
           ELSE
             AUX = 0.D0
           ENDIF
-          FLUER%R(I) = PARTHENIADES*AUX
+          FLUER%R(I) = PARTHENIADES(1)*AUX !expand partheniades for multilayer
         ENDDO
       ELSE
       ! **************************************************** !
@@ -108,7 +109,7 @@
 ! Calcul des Flux de masse/couche  en Kg/m2/s
           DO J=1,NOMBLAY
             IF(TAUP%R(I).GT.TOCE_VASE(J))THEN
-              FLUER_LOC(J)=PARTHENIADES*XMVS
+              FLUER_LOC(J)=PARTHENIADES(1)*XMVS
      &              *((TAUP%R(I)/MAX(TOCE_VASE(J),1.D-08))-1.D0)
             ELSE
               FLUER_LOC(J)=0.D0

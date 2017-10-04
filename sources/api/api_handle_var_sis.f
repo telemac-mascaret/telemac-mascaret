@@ -99,7 +99,7 @@
         ELSE IF(TRIM(VARNAME).EQ.'MODEL.SHIELDS') THEN
           VALUE = INST%AC(1)
         ELSE IF(TRIM(VARNAME).EQ.'MODEL.POROSITY') THEN
-          VALUE = INST%XKV
+          VALUE = INST%XKV(1) ! to check for vertical variation of the porosity
         ELSE IF(TRIM(VARNAME).EQ.'MODEL.KSPRATIO') THEN
           VALUE = INST%KSPRATIO
         ELSE IF(TRIM(VARNAME).EQ.'MODEL.PHISED') THEN

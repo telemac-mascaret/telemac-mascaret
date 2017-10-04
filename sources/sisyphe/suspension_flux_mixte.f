@@ -98,7 +98,8 @@
       LOGICAL,          INTENT(IN)     :: CHARR
       DOUBLE PRECISION, INTENT(IN)     :: XMVE, XMVS, VCE,GRAV, HMIN
       DOUBLE PRECISION, INTENT(IN)     :: XWC
-      DOUBLE PRECISION, INTENT(IN)     :: ZERO, PARTHENIADES
+      DOUBLE PRECISION, INTENT(IN)     :: ZERO
+      DOUBLE PRECISION, INTENT(IN)     :: PARTHENIADES(NOMBLAY)
       TYPE (BIEF_OBJ),  INTENT(IN)     :: ZREF
       DOUBLE PRECISION, INTENT(INOUT)  :: AVAIL(NPOIN,NOMBLAY,NSICLA)
       DOUBLE PRECISION, INTENT(INOUT)  :: AC
@@ -210,7 +211,7 @@
           ELSEIF(F2.GE.0.5D0) THEN
 !           PROPORTION OF MUD > 50%, FLUXES ARE SIMILAR TO THOSE FOR MUD ONLY
             IF(TAUP%R(I).GT.TOCE_MIXTE(I,J))THEN
-              FLUER_LOC(J)=PARTHENIADES*
+              FLUER_LOC(J)=PARTHENIADES(1)* !expand partheniades for multilayers
      &              ((TAUP%R(I)/TOCE_MIXTE(I,J))-1.D0)
             ELSE
               FLUER_LOC(J)=0.D0
@@ -220,7 +221,7 @@
 !           AND CRITICAL SHEAR STRESS
             IF(TAUP%R(I).GT.TOCE_MIXTE(I,J)) THEN
               FLUERSABLE=CSTAEQ%R(I)*XWC
-              FLUERVASE=PARTHENIADES*(TAUP%R(I)/TOCE_MIXTE(I,J)-1.D0)
+              FLUERVASE=PARTHENIADES(1)*(TAUP%R(I)/TOCE_MIXTE(I,J)-1.D0) !expand partheniades for multilayers
             ELSE
               FLUERSABLE=0.D0
               FLUERVASE=0.D0

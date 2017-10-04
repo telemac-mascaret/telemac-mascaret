@@ -13,7 +13,7 @@ RESULTS FILE                                 = sis_yen-exp.slf
 /  GENERAL AND OUTPUT
 /----------------------------------------------
 TITLE : 'Yen-180-bend'
-VARIABLES FOR GRAPHIC PRINTOUTS = 
+VARIABLES FOR GRAPHIC PRINTOUTS =
 'U,V,S,E,H,B,KS,CS1,TOB,M,N,P'
 /
 /----------------------------------------------
@@ -30,7 +30,7 @@ MASS-LUMPING                             = YES
 /----------------------------------------------
 / PHYSICAL PARAMETERS - HYDRODYNAMICS
 /----------------------------------------------
-/ 
+/
 /FRICTION COEFFICIENT = 65.
 /LAW OF BOTTOM FRICTION = 0
 / 0: wird berechnet: ks = 3*D50
@@ -38,15 +38,19 @@ MASS-LUMPING                             = YES
 /
 /----------------------------------------------
 / PHYSICAL PARAMETERS - BED LOAD
-/---------------------------------------------- 
-BED LOAD = YES
-SUSPENSION = NO
-BED-LOAD TRANSPORT FORMULA                 = 3
+/----------------------------------------------
+/ MANDATORY KEY WORDS
+TYPE OF SEDIMENT = NCO
+BED LOAD FOR ALL SANDS = YES
+SUSPENSION FOR ALL SANDS = NO
+BED-LOAD TRANSPORT FORMULA FOR ALL SANDS = 3
+SETTLING VELOCITIES = -9
 SHIELDS PARAMETERS = 0.047
+/----------------------------------------------
 CRITICAL EVOLUTION RATIO                   = 1000.
-/COEFFICIENT FUNCTION OF THE POROSITY       = 1.6 
+/COEFFICIENT FUNCTION OF THE POROSITY       = 1.6
 NON COHESIVE BED POROSITY                   = 0.37500
-SEDIMENT DIAMETERS = 0.001 
+SEDIMENT DIAMETERS = 0.001
 /
 SLOPE EFFECT = YES
 FORMULA FOR DEVIATION  = 2
@@ -54,6 +58,3 @@ PARAMETER FOR DEVIATION = 0.85
 FORMULA FOR SLOPE EFFECT = 2
 FRICTION ANGLE OF THE SEDIMENT = 35
 &FIN
-
-
-
