@@ -96,7 +96,8 @@
       DOUBLE PRECISION, INTENT(INOUT) :: FLUER(NPOIN2)
       DOUBLE PRECISION, INTENT(IN)    :: TOB(NPOIN2),DENSI(NPOIN2)
       LOGICAL,          INTENT(IN)    :: MIXTE
-      DOUBLE PRECISION, INTENT(IN)    :: MPART,DT,HMIN
+      DOUBLE PRECISION, INTENT(IN)    :: DT,HMIN 
+      DOUBLE PRECISION, INTENT(IN)    :: MPART ! use partheniades instead !!!!!!
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !

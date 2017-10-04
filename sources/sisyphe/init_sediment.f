@@ -2,11 +2,12 @@
                      SUBROUTINE INIT_SEDIMENT
 !                    ************************
 !
-     &(NSICLA,ELAY,ZF,ZR,NPOIN,AVAIL,FRACSED_GF,AVA0,
-     & LGRAFED,CALWC,XMVS,XMVE,GRAV,VCE,XWC,FDM,
+     &(NSICLA,ELAY,ZF,ZR,NPOIN,AVAIL,AVA0,
+     & CALWC,XMVS,XMVE,GRAV,VCE,XWC,FDM,
      & CALAC,AC,SEDCO,ES,ES_SABLE, ES_VASE ,NOMBLAY,CONC_VASE,
      & MS_SABLE,MS_VASE,ACLADM,UNLADM,TOCE_SABLE,
-     & CONC,NLAYER,DEBU,MIXTE)
+     & CONC,NLAYER,DEBU,MIXTE,NEW_BED_MODEL,
+     & TOC_MUD,TOCE_MUD)
 !
 !***********************************************************************
 ! SISYPHE   V7P2                                   27/06/2016
@@ -71,9 +72,7 @@
 !| ES_SABLE       |<->| LAYER THICKNESSES OF SAND AS DOUBLE PRECISION
 !| ES_VASE        |<->| LAYER THICKNESSES OF MUD AS DOUBLE PRECISION
 !| FDM            |-->| DIAMETER DM FOR EACH CLASS
-!| FRACSED_GF     |-->|(A SUPPRIMER)
 !| GRAV           |-->| ACCELERATION OF GRAVITY
-!| LGRAFED        |-->|(A SUPPRIMER)
 !| MS_SABLE       |<->| MASS OF SAND PER LAYER (KG/M2)
 !| MS_VASE        |<->| MASS OF MUD PER LAYER (KG/M2)
 !| ES_SABLE       |<->| THICKNESS OF SAND LAYER (M)
@@ -100,8 +99,8 @@
       USE DECLARATIONS_SPECIAL
       USE DECLARATIONS_SISYPHE, ONLY: MASS_MUD,MASS_SAND,
      & MASS_MUD_TOT,MASS_SAND_TOT,MASS_MIX_TOT,ES_PORO_SAND,ES_MUD_ONLY,
-     & RATIO_SAND,RATIO_MUD,RATIO_MUD_SAND,NSAND,NMUD,SED_NCO,SED_CO,
-     & TYPE_OF_SEDIMENT,XKV
+     & RATIO_SAND,RATIO_MUD,RATIO_MUD_SAND,NSAND,NMUD,
+     & TYPE_SED,XKV,TOCE_SAND
       IMPLICIT NONE
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -111,12 +110,11 @@
       TYPE(BIEF_OBJ), INTENT(INOUT)     :: MS_SABLE, MS_VASE
       TYPE(BIEF_OBJ),    INTENT(INOUT)  :: ACLADM, UNLADM
       TYPE(BIEF_OBJ),    INTENT(INOUT)  :: NLAYER
-      LOGICAL,           INTENT(IN)     :: LGRAFED,CALWC
+      LOGICAL,           INTENT(IN)     :: CALWC
       LOGICAL,           INTENT(IN)     :: CALAC
       DOUBLE PRECISION,  INTENT(IN)     :: XMVS,XMVE,GRAV,VCE
       DOUBLE PRECISION,  INTENT(INOUT)  :: AVA0(NSICLA)
       DOUBLE PRECISION,  INTENT(INOUT)  :: AVAIL(NPOIN,NOMBLAY,NSICLA)
-      DOUBLE PRECISION,  INTENT(INOUT)  :: FRACSED_GF(NSICLA)
       DOUBLE PRECISION,  INTENT(INOUT)  :: FDM(NSICLA),XWC(NSICLA)
       DOUBLE PRECISION,  INTENT(INOUT)  :: AC(NSICLA),TOCE_SABLE
       LOGICAL,           INTENT(IN)     :: SEDCO(NSICLA), DEBU
@@ -126,6 +124,9 @@
       DOUBLE PRECISION, INTENT(INOUT) :: ES_SABLE(NPOIN,NOMBLAY)
       DOUBLE PRECISION, INTENT(INOUT) :: ES_VASE(NPOIN,NOMBLAY)
       DOUBLE PRECISION, INTENT(INOUT) :: CONC(NPOIN,NOMBLAY)
+      DOUBLE PRECISION, INTENT(IN)    :: TOC_MUD(NOMBLAY)
+      DOUBLE PRECISION, INTENT(INOUT) :: TOCE_MUD(NOMBLAY,NPOIN)
+      LOGICAL,           INTENT(IN)   :: NEW_BED_MODEL
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
@@ -135,14 +136,11 @@
       DOUBLE PRECISION   :: CHECK_RS,CHECK_RM
       DOUBLE PRECISION   :: RATIO_MUD_VOL !ratio of mud volume to volume of porosity of sand
       DOUBLE PRECISION   :: MASS_TOT ! FIXME
-      DOUBLE PRECISION, ALLOCATABLE :: TOCE_SAND(:) ! FIXME
-      LOGICAL            :: BED_MIXED_GRADED
 !======================================================================!
 !======================================================================!
 !                               PROGRAM                                !
 !======================================================================!
 !======================================================================!
-      BED_MIXED_GRADED=.FALSE.
 !
 !  ------ BED COMPOSITION
 !
@@ -163,7 +161,7 @@
      &                               ZR%R,AVA0,CONC,DEBU,.FALSE.)
 !
       ELSE
-        IF(BED_MIXED_GRADED) THEN
+        IF(NEW_BED_MODEL) THEN
 ! THIS CONDITION IMPLIES THAT NSAND>1 AND/OR NMUD>1
 !
 ! INITIALISATION OF RATIO_SAND AND RATIO_MUD
@@ -283,7 +281,8 @@
         DO I = 1,NPOIN
           DO ILAYER = 1,NOMBLAY
             RATIO_MUD_VOL=RATIO_MUD_SAND(ILAYER,I)*XMVS
-     &      /(CONC_VASE(ILAYER)*XKV*(1.D0-RATIO_MUD_SAND(ILAYER,I)))
+     &            /(CONC_VASE(ILAYER)*XKV(ILAYER)
+     &            *     (1.D0-RATIO_MUD_SAND(ILAYER,I)))
             IF (RATIO_MUD_VOL.GT.1.D0) THEN
               MASS_TOT = ES(I,ILAYER)/
      &        ((1.D0-RATIO_MUD_SAND(ILAYER,I))/XMVS+
@@ -299,7 +298,8 @@
      &          RATIO_SAND(ISAND,ILAYER,I)
               ENDDO
             ELSE ! all mud fits inside porosity
-              MASS_SAND_TOT(ILAYER,I) = XMVS*(1.D0-XKV)*ES(I,ILAYER)
+               MASS_SAND_TOT(ILAYER,I) = XMVS*(1.D0-XKV(ILAYER))
+     &          *     ES(I,ILAYER)
               MASS_MUD_TOT(ILAYER,I) = MASS_SAND_TOT(ILAYER,I)/
      &                     (1.D0-RATIO_MUD_SAND(ILAYER,I))
             ENDIF
@@ -348,36 +348,28 @@
 !
       ENDIF !(NSICLA)
 !
-      IF(LGRAFED) THEN
-        DO I=1,NSICLA
-          FRACSED_GF(I)=AVA0(I)
-        ENDDO
-      ENDIF
-!
 !     SETTLING VELOCITY
 !
-      IF(.NOT.CALWC) THEN
-        DENS = (XMVS - XMVE) / XMVE
-        DO I = 1, NSICLA
+      DENS = (XMVS - XMVE) / XMVE
+      DO I = 1, NSICLA
+        IF(XWC(I).LT.-1) THEN
+! SETTLING VELOCITY IS NOT GIVEN IN THE PARAMETER FILE
           CALL VITCHU_SISYPHE(XWC(I),DENS,FDM(I),GRAV,VCE)
-          IF(BED_MIXED_GRADED) THEN
+          IF(NEW_BED_MODEL) THEN
 !            calcul de la vitesse de chute en 2d ou au fond
 !            si T3D: la vitesse de chute est calculée en 3D puis repassée à sisyphe pour le fond
-            IF(TYPE_OF_SEDIMENT(I).EQ.SED_NCO) THEN
+            IF(TYPE_SED(I).EQ.'NCO') THEN
               CALL VITCHU_SISYPHE(XWC(I),DENS,FDM(I),GRAV,VCE)
             ELSE
 !           par defaut 1mm/s pour toutes les classes de vase
               XWC(I)= 0.001D0
             ENDIF
           ENDIF
-        ENDDO
-      ENDIF
+        ENDIF
 !
 !     SHIELDS PARAMETER
 !
-      IF(.NOT.CALAC) THEN
-        DENS  = (XMVS - XMVE )/ XMVE
-        DO I = 1, NSICLA
+        IF(AC(I).LT.-1) THEN
           DSTAR = FDM(I)*(GRAV*DENS/VCE**2)**(1.D0/3.D0)
           IF (DSTAR <= 4.D0) THEN
             AC(I) = 0.24D0/DSTAR
@@ -394,16 +386,21 @@
 !           AC(I) = 0.055D0
             AC(I) = 0.045D0
           ENDIF
-        ENDDO
-      ENDIF
+        ENDIF
+      ENDDO
 !
 !     FOR MIXED SEDIMENTS
 !
       IF(MIXTE) TOCE_SABLE = AC(1)*FDM(1)*GRAV*(XMVS - XMVE)
 
-      IF(BED_MIXED_GRADED) THEN
+      IF(NEW_BED_MODEL) THEN
         DO ISAND = 1,NSAND
           TOCE_SAND(ISAND) = AC(ISAND)*FDM(ISAND)*GRAV*(XMVS - XMVE)
+        ENDDO
+        DO ILAYER = 1,NOMBLAY
+          DO I=1,NPOIN
+            TOCE_MUD(ILAYER,I) = TOC_MUD(ILAYER)
+          ENDDO
         ENDDO
       ENDIF
 !

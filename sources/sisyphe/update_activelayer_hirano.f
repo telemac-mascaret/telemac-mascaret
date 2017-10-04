@@ -99,15 +99,15 @@
 
       DO IPOIN = 1,NPOIN
         IF(MASS_SAND_TOT(1,IPOIN).GT.1.D-9) THEN
-          ES_PORO_SAND(IPOIN,1) = (MASS_SAND_TOT(1,IPOIN)*XKV) ! thickness of first (active) layer
-     &                             /((1-XKV)*XMVS)
+          ES_PORO_SAND(IPOIN,1) = (MASS_SAND_TOT(1,IPOIN)*XKV(1)) ! thickness of first (active) layer
+     &                             /((1-XKV(1))*XMVS)
           ES_MUD_ONLY(IPOIN,1) = MASS_MUD_TOT(1,IPOIN)
      &                             /CONC_MUD((1,IPOIN)
         IF(ES_MUD_ONLY(IPOIN,1).GE.ES_PORO_SAND(IPOIN,1)) THEN
           ES(IPOIN,1) = MASS_SAND_TOT(1,IPOIN)/XMVS
      &                  +ES_MUD_ONLY(IPOIN,1)
         ELSE
-	     ES(IPOIN,1) = MASS_SAND_TOT(1,IPOIN)/((1-XKV)*XMVS)
+	     ES(IPOIN,1) = MASS_SAND_TOT(1,IPOIN)/((1-XKV(1))*XMVS)
       ENDIF
 !      
       THICK_TRANSFER=ESTRAT%R(IPOIN)-ES(IPOIN,1) ! negative sign means from layer 1 to layer 2 
@@ -137,15 +137,15 @@
           ELSEIF(THICK_TRANSFER.LT.0.D0) ! active layer too small: transfer of mass needed from layer 2
              THICK_TRANSFER=MIN(THICK_TRANSFER,ES(IPOIN,2)) ! if not enough sediment in layer 2 active layer thickness will be smaller than ESTRAT
              IF(MASS_SAND_TOT(2,IPOIN).GT.1.D-9) THEN
-                ES_PORO_SAND(IPOIN,2) = (MASS_SAND_TOT(2,IPOIN)*XKV) ! thickness of second layer
-     &                                  /((1-XKV)*XMVS)
+                ES_PORO_SAND(IPOIN,2) = (MASS_SAND_TOT(2,IPOIN)*XKV(2)) ! thickness of second layer
+     &                                  /((1-XKV(2))*XMVS)
                 ES_MUD_ONLY(IPOIN,2) = MASS_MUD_TOT(2,IPOIN)
      &                                  /CONC_MUD((2,IPOIN)
              IF(ES_MUD_ONLY(IPOIN,2).GE.ES_PORO_SAND(IPOIN,2)) THEN
 	        ES(IPOIN,2) = MASS_SAND_TOT(2,IPOIN)/XMVS
      &                        +ES_MUD_ONLY(IPOIN,2)
              ELSE
-	         ES(IPOIN,2) = MASS_SAND_TOT(2,IPOIN)/((1-XKV)*XMVS)
+	         ES(IPOIN,2) = MASS_SAND_TOT(2,IPOIN)/((1-XKV(2))*XMVS)
              ENDIF
              IF(NMUD.GE.1) THEN
                DO IMUD=1,NMUD
