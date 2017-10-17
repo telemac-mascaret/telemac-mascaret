@@ -1,5 +1,29 @@
-MASS-BALANCE = YES
 / -----------------------------------------------------
+/ INPUT-OUTPUT FILES
+/
+GEOMETRY FILE = geo_bosse_mixte-t2d.slf
+BOUNDARY CONDITIONS FILE = geo_bosse_mixte-t2d.cli
+RESULTS FILE = sis_bosse_mixte-t2d.slf
+/
+/ -----------------------------------------------------
+TITLE = 'bosse mixte'
+/
+/-------------------------------------------------------
+/ENTREES-SORTIES, GRAPHIQUES ET LISTING
+VARIABLES FOR GRAPHIC PRINTOUTS =
+'U,V,S,Z,H,B,E,R, CS*,*A*,ES*,QSSUSP,TOB,M'
+/-----------------------------
+MASS-BALANCE = YES
+DIFFUSION : NO
+/
+STEADY CASE = VRAI
+MASS-LUMPING = YES
+TYPE OF ADVECTION : 4
+SOLVER FOR SUSPENSION : 1
+SOLVER ACCURACY FOR SUSPENSION : 1.E-10
+ZERO = 1e-12
+TETA = 0.5
+// -----------------------------------------------------
 /
 /                            SISYPHE
 /           FICHIER DE DECLARATION DES MOTS CLES DU CODE
@@ -8,19 +32,20 @@ MASS-BALANCE = YES
 /DEBUGGER = 1
 MIXED SEDIMENT = YES
 /
-COHESIVE SEDIMENTS = NON; YES
-NUMBER OF SIZE-CLASSES OF BED MATERIAL= 2
+/COHESIVE SEDIMENTS = NON; YES
+TYPE OF SEDIMENT = NCO; CO
 /
 INITIAL FRACTION FOR PARTICULAR SIZE CLASS = 0.5; 0.5
 SEDIMENT DIAMETERS = 0.0001; 0.00005
 /
 SETTLING VELOCITIES = 0.01;0.001
+SHIELDS PARAMETERS = -9;-9
 /
 / -----------------------------------------------------
-/ Transport solide
+/ SOLID TRANSPORT
 /
-BED LOAD = NO
-SUSPENSION = YES
+BED LOAD FOR ALL SANDS= NO
+SUSPENSION FOR ALL SANDS  = YES
 MUD CONSOLIDATION = NO
 /
 NUMBER OF LAYERS OF THE CONSOLIDATION MODEL : 10
@@ -31,41 +56,9 @@ CRITICAL EROSION SHEAR STRESS OF THE MUD :
 0.00816605;0.0264398;0.05477861;0.0930092;0.14098592;
 0.19862961;0.29816415;0.46425147;0.68695285;0.82157461
 /
-CRITICAL SHEAR VELOCITY FOR MUD DEPOSITION =  1000.D0
+CRITICAL SHEAR STRESS FOR MUD DEPOSITION =  1000.D0
 PARTHENIADES CONSTANT = 1.D-03
 /
-/ -----------------------------------------------------
-/ Fichiers
-/
-GEOMETRY FILE = geo_bosse_mixte-t2d.slf
-BOUNDARY CONDITIONS FILE = geo_bosse_mixte-t2d.cli
-RESULTS FILE = sis_bosse_mixte-t2d.slf
-/
-/ -----------------------------------------------------
-TITLE = 'bosse mixte'
-STEADY CASE = VRAI
-MASS-LUMPING = YES
-/
-/-------------------------------------------------------
-/ENTREES-SORTIES, GRAPHIQUES ET LISTING
-/
-VARIABLES FOR GRAPHIC PRINTOUTS =
-'U,V,S,Z,H,B,E,R, CS*,*A*,ES*,QSSUSP,TOB,M'
-/
-/
-/-----------------------------
-/PARAMETRES NUMERIQUES
-/
-ZERO = 1e-12
-TETA = 0.5
-/
-/
-/FROTTEMENT calculé par Télémac 2d
-/------------------------------
-/LOI DE FROTTEMENT SUR LE FOND = 5
-/COEFFICIENT DE FROTTEMENT = 0.00015
-/
-//-----------------------------
 / SUSPENSION
 /
 /CONCENTRATIONS PAR CLASSE AUX FRONTIERES = 0.;0.;0.00001;0.00001
@@ -73,9 +66,4 @@ CONCENTRATION PER CLASS AT BOUNDARIES = 0.;0.;0.00001;0.00001
 INITIAL SUSPENSION CONCENTRATIONS: 0.00001;0.00001
 TREATMENT OF FLUXES AT THE BOUNDARIES : 2;2
 /
-DIFFUSION : NO
-/
-TYPE OF ADVECTION : 4
-SOLVER FOR SUSPENSION : 1
-SOLVER ACCURACY FOR SUSPENSION : 1.E-10
 /

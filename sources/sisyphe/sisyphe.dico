@@ -1601,21 +1601,6 @@ etc... '
 //      MODIF V5P3
 /
 
-NOM = 'NOMBRE DE CLASSES GRANULOMETRIQUES'
-NOM1 = 'NUMBER OF SIZE-CLASSES OF BED MATERIAL'
-TYPE = ENTIER
-INDEX = 252
-MNEMO = 'NSICLA'
-TAILLE = 0
-DEFAUT = 1
-DEFAUT1 = 1
-RUBRIQUE = 'GRANULOMETRIE'
-RUBRIQUE1 = 'BED MATERIAL'
-NIVEAU = 2
-AIDE = 'Fixe la valeur du nombre de classes granulometriques
-de grains considerees dans le calcul'
-AIDE1 = 'Sets value of number of size classes of bed materials.'
-
 NOM = 'HIDING FACTOR PAR CLASSE GRANULO'
 NOM1 = 'HIDING FACTOR FOR PARTICULAR SIZE CLASS'
 TYPE = REEL

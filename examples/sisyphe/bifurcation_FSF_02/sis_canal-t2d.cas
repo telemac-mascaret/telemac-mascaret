@@ -33,14 +33,15 @@ TYPE OF ADVECTION                         : 13
 /       BED SEDIMENT TRANSPORT
 /---------------------------------------------------------------------
 /
+TYPE OF SEDIMENT = NCO
 /PRESCRIBED SOLID DISCHARGES : 0.   ; 1.0E-4   ; 1.0E-4
 PRESCRIBED SOLID DISCHARGES : 0.   ; 1.0E-5   ; 5.0E-6
 NON COHESIVE BED POROSITY : 0.40
-BED LOAD                                   : YES
+BED LOAD FOR ALL SANDS                     : YES
 SHIELDS PARAMETERS                         : 0.047
-BED-LOAD TRANSPORT FORMULA                 : 1/ MPM
-MEAN DIAMETER OF THE SEDIMENT              : 0.0001
-/SEDIMENT DIAMETERS                             : 0.00048
+BED-LOAD TRANSPORT FORMULA FOR ALL SANDS   : 1 / MPM
+SETTLING VELOCITIES                        : -9
+SEDIMENT DIAMETERS                         : 0.0001
 /
 /---------------------------------------------------------------------
 /       SLOPE
