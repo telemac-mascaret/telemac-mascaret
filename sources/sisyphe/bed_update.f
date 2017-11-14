@@ -38,6 +38,7 @@
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
+! various masses are in [kg/m2]
       DO IPOIN = 1,NPOIN
 !
         DO ILAYER = 1,NOMBLAY
@@ -184,7 +185,7 @@
         ENDDO
       ENDIF
 !
-! COMPUTE THICKNESS
+! COMPUTE THICKNESS [m]
 !
       DO ILAYER = 1,NOMBLAY
         DO IPOIN = 1,NPOIN

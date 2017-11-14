@@ -800,7 +800,7 @@
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ! 10. BED EVOLUTION DUE TO NET EROSION/DEPOSITUON FLUX
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-!
+! FLUDPT is [m/s]; CST is [kg/m3] ou [%]
       DO I=1,NPOIN
         FLUDP%R(I)=FLUDPT%R(I)*CST%R(I)
       ENDDO

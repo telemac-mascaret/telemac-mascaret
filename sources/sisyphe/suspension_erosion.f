@@ -66,7 +66,7 @@
 !| TAUP           |-->| SKIN FRICTION
 !| VCE            |-->| FLOW VISCOSITY
 !| XMVE           |-->| FLUID DENSITY
-!| XMVS           |-->| WATER DENSITY
+!| XMVS           |-->| SEDIMENT DENSITY
 !| XWC            |-->| SETTLING VELOCITIES
 !| ZERO           |-->| ZERO
 !| ZREF           |-->| REFERENCE ELEVATION

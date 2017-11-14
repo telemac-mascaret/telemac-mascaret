@@ -87,6 +87,7 @@
       CALL OS('X=CX    ', X=QFLUX, C=DT*XMVS)
 !
 !     WRITE(LU,*)'MASSE DEPOSEE: ', DOTS(QFLUX,VOLU2D)
+! zfcl_s is in [m]
 !
       IF(NOMBLAY.EQ.1)  THEN
 !V      CALL OS('X=CY    ', X=ZFCL_S,Y= QFLUX,C=1.D0/CONC_VASE(1))

@@ -17,7 +17,7 @@
 !+  Creation of the subroutine.
 !
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-!| CA             |-->| BOTTOM CONCENTRATION
+!| CA             |-->| BOTTOM CONCENTRATION [kg/m^3]
 !| CODE           |-->| HYDRODYNAMIC CODE IN CASE OF COUPLING
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !
@@ -42,7 +42,7 @@
       LAYER_DEPOSIT_MUD = 1
       ISAND = 0
       IMUD = 0
-
+! here mass_* is in [kg/m^2] like in the sub suspension_erode
       DO IPOIN = 1,NPOIN
         DO ICLA = 1,NSICLA
           IF(TYPE_SED(ICLA).EQ.'NCO') THEN
@@ -68,6 +68,7 @@
           ENDIF
         ENDDO
       ENDDO
+! to check : multiplier par dt et fonction de base a la fin
 !
       RETURN
       END
