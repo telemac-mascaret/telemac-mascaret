@@ -58,7 +58,7 @@
 !| NPOIN          |-->| NUMBER OF POINTS
 !| TAUP           |-->| CRITICAL SHEAR STRESS
 !| XMVE           |-->| FLUID DENSITY
-!| XMVS           |-->| WATER DENSITY
+!| XMVS           |-->| SEDIMENT DENSITY
 !| ZERO           |-->| ZERO
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !

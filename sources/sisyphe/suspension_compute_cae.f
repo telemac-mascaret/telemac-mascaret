@@ -4,7 +4,7 @@
 !
      &(TAUP,HN,FDM,FD90,NPOIN,CHARR,XMVE,XMVS,VCE,GRAV,HMIN,XWC,
      & ZERO,ZREF,AC,CSTAEQ,QSC,ICQ,U2D,V2D,CSRATIO,T14,DEBUG)
-!            
+!
 !***********************************************************************
 ! SISYPHE   V7P3                                             28/03/2017
 !***********************************************************************
@@ -17,11 +17,11 @@
 !+        V7P3
 !+  Creation of the subroutine.
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-!| AC             |<->| CRITICAL SHIELDS PARAMETER (SHOULD BE INPUT ONLY)
+!| AC             |-->| CRITICAL SHIELDS PARAMETER
 !| ACLADM         |-->| MEAN DIAMETER OF SEDIMENT
 !| CHARR          |-->| LOGICAL, IF BEDLOAD OR NOT
 !| CSTAEQ         |<->| EQUILIBRIUM CONCENTRATION
-!| CSRATIO        |<->| EQUILIBRIUM CONCENTRATION FOR SOULBY-VAN RIJN EQ.
+!| CSRATIO        |-->| EQUILIBRIUM CONCENTRATION FOR SOULBY-VAN RIJN EQ.
 !| DEBUG          |-->| FLAG FOR DEBUGGING
 !| FLUER          |<->| EROSION FLUX
 !| GRAV           |-->| ACCELERATION OF GRAVITY
@@ -33,7 +33,7 @@
 !| TAUP           |-->| SKIN FRICTION
 !| VCE            |-->| FLOW VISCOSITY
 !| XMVE           |-->| FLUID DENSITY
-!| XMVS           |-->| WATER DENSITY
+!| XMVS           |-->| SEDIMENT DENSITY
 !| XWC            |-->| SETTLING VELOCITIES
 !| ZERO           |-->| ZERO
 !| ZREF           |-->| REFERENCE ELEVATION
@@ -44,7 +44,7 @@
       USE DECLARATIONS_SPECIAL
       IMPLICIT NONE
 
-      ! 2/ GLOBAL VARIABLES
+      ! GLOBAL VARIABLES
       ! -------------------
       TYPE (BIEF_OBJ),  INTENT(IN)    :: TAUP,HN,ZREF,QSC
       TYPE (BIEF_OBJ),  INTENT(IN)    :: U2D,V2D,CSRATIO,T14
@@ -52,10 +52,10 @@
       LOGICAL,          INTENT(IN)    :: CHARR
       DOUBLE PRECISION, INTENT(IN)    :: XMVE,XMVS,GRAV,HMIN,XWC,VCE
       DOUBLE PRECISION, INTENT(IN)    :: ZERO,FDM,FD90
+      DOUBLE PRECISION, INTENT(IN)    :: AC
       TYPE (BIEF_OBJ),  INTENT(INOUT) :: CSTAEQ
-      DOUBLE PRECISION, INTENT(INOUT) :: AC
 
-      ! 3/ LOCAL VARIABLES
+      ! LOCAL VARIABLES
       ! -------------------
 
       INTEGER I

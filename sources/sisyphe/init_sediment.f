@@ -85,7 +85,7 @@
 !| UNLADM         |-->| MEAN DIAMETER OF ACTIVE STRATUM LAYER
 !| VCE            |-->| WATER VISCOSITY
 !| XMVE           |-->| FLUID DENSITY
-!| XMVS           |-->| WATER DENSITY
+!| XMVS           |-->| SEDIMENT DENSITY
 !| XWC            |-->| SETTLING VELOCITY
 !| ZF             |-->| ELEVATION OF BOTTOM
 !| ZR             |-->| NON ERODABLE BED

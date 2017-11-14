@@ -7,7 +7,7 @@
 ! SISYPHE   V7P3                                             28/03/2017
 !***********************************************************************
 !
-!brief    COMPUTES FIRST LAYER DEPOSITION;
+!brief    COMPUTES EROSION FLUX [kg*s-1*m-2]
 !+
 !
 !history  R. WALTHER (ARTELIA), J. FONTAINE (EDF-LNHE)
@@ -16,7 +16,8 @@
 !+  Creation of the subroutine.
 !
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-!| CA             |-->| BOTTOM CONCENTRATION
+!|                |-->|
+!|FLUER           |<->| EROSION FLUX
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !
 !
@@ -64,10 +65,12 @@
       DO ISAND = 1,NSAND
         IF(NSAND.NE.0)THEN      ! TODO: FIX AGUMENTS IN COMPUTE_CAE
           CALL SUSPENSION_COMPUTE_CAE(T4,HN,FDM,FD90,NPOIN,CHARR,
-     &         XMVE,XMVS,VCE,GRAV,HMIN,ZERO,
-     &         ZREF,AC,FLUER,CSTAEQ,QS_C,ICQ,U2D,V2D,
+     &         XMVE,XMVS,VCE,GRAV,HMIN,ZERO,XWC,ZERO,
+     &         ZREF,AC,CSTAEQ,QS_C,ICQ,U2D,V2D,
      &         CSRATIO,T14,DEBUG)
+! TO ADD: MULTIPLICATION XMVS, IN ORDER TO OBTAIN A FLUX IN KG*S-1*M-2
           DO JPOIN = 1,NPOIN
+            CSTAEQ%R(JPOIN) = XMVS*CSTAEQ%R(JPOIN)
             FLUER_PUR_SAND(ISAND,JPOIN) =
      &           CSTAEQ%R(JPOIN)*XWC(NUM_ISAND_ICLA(ISAND))
           ENDDO
@@ -102,6 +105,7 @@
 !
 !         PUR MUD FLUX
           IF(NMUD.GT.0)THEN
+! TOB(IPOIN) : A CALCULER? D'OU IL VIENT?
             IF(TOB(IPOIN).GT.TOCE_MUD(ILAYER,IPOIN))THEN
               FLUER_PUR_MUD(IPOIN) = PARTHENIADES(1) ! to expand partheniades for multilayers
      &             *(TOB(IPOIN)/TOCE_MUD(ILAYER,IPOIN) - 1.D0)
@@ -225,9 +229,11 @@
 !
         DO IMUD = 1,NMUD
           FLUER_MUD(IMUD,IPOIN) = MAX(QER_MUD(IMUD)/DT,0.D0)
+          FLUER(NUM_IMUD_ICLA(IMUD),IPOIN) = FLUER_MUD(IMUD,IPOIN)
         ENDDO
         DO ISAND = 1,NSAND_VIRTUAL
           FLUER_SAND(ISAND,IPOIN) = MAX(QER_SABLE(ISAND)/DT,0.D0)
+          FLUER(NUM_ISAND_ICLA(ISAND),IPOIN) = FLUER_SAND(ISAND,IPOIN)
 !         quand il y aura du bedload ajouter
 !!!       FLUER_MUD(IMUD,IPOIN)= FLUER_MUD(IMUD,IPOIN)+FLUER_BEDLOAD_MUD(IMUD,IPOIN)
         ENDDO

@@ -1,6 +1,6 @@
-!                    ***************************************
+!                    ******************************
                      SUBROUTINE SUSPENSION_SANDFLOW
-!                    ***************************************
+!                    ******************************
 !
      &  (FDM, FD90, TAUP, NPOIN, GRAV,
      &   XMVE, XMVS, ZERO, AC, CSTAEQ,ZREF,HN,U2D,V2D,CSRATIO)
@@ -19,10 +19,10 @@
 !+        Original implementation
 !
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-!| AC             |<->|
+!| AC             |-->| CRITICAL SHIELDS PARAMETER
 !| FDM            |-->| D50
 !| GRAV           |-->| ACCELERATION DUE TO GRAVITY
-!| NPOIN          |-->|
+!| NPOIN          |-->| NUMBER OF POINTS
 !| XMVE           |-->| WATER DENSITY
 !| XMVS           |-->| SEDIMENT DENSITY
 !| CSTAEQ         |<->| EQUILIBRIUM SEDIMENT CONCENTRATION

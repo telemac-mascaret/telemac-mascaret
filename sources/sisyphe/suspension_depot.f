@@ -43,7 +43,7 @@
 !
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !| DEBUG          |-->| FLAG FOR DEBUGGING
-!| FLUDPT         |<->| IMPLICIT DEPOSITION FLUX
+!| FLUDPT         |<->| IMPLICIT DEPOSITION FLUX [m/s]
 !| HMIN           |-->| MINIMUM VALUE OF WATER DEPTH
 !| HN             |-->| WATER DEPTH
 !| KARMAN         |-->| VON KARMAN CONSTANT
