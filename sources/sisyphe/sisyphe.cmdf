@@ -605,6 +605,7 @@ files: declarations_sisyphe.f
   qgl.f
   cgl.f
   conlit.f
+  bed_update.f
   bedload_direction.f
   bedload_interact.f
   bedload_bailard.f
