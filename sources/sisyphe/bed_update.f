@@ -219,15 +219,5 @@
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
-! FINALIZE
-      DEALLOCATE(MASS_MUD_TOT)
-      DEALLOCATE(MASS_SAND_TOT)
-      DEALLOCATE(MASS_MIX_TOT)
-      DEALLOCATE(RATIO_SAND)
-      DEALLOCATE(RATIO_MUD)
-      DEALLOCATE(RATIO_MUD_SAND)
-      DEALLOCATE(ES_PORO_SAND)
-      DEALLOCATE(ES_MUD_ONLY)
-!
       RETURN
       END

@@ -243,8 +243,23 @@
       IF(ALLOCATED(CHAIN)) THEN
         DEALLOCATE(CHAIN)
       END IF
-
-      ! Resetting variable
+!
+!  to check: all variables of new model deallocated?
+!
+      DEALLOCATE(RATIO_MUD_SAND)
+      DEALLOCATE(MASS_MUD)
+      DEALLOCATE(MASS_SAND)
+      DEALLOCATE(MASS_MUD_TOT)
+      DEALLOCATE(MASS_SAND_TOT)
+      DEALLOCATE(MASS_MIX_TOT)
+      DEALLOCATE(ES_PORO_SAND)
+      DEALLOCATE(ES_MUD_ONLY)
+      DEALLOCATE(RATIO_SAND)
+      DEALLOCATE(RATIO_MUD)
+      DEALLOCATE(TOCE_SAND)
+      DEALLOCATE(TOCE_MUD)
+!
+! Resetting variable
       INIT_FLUXPR = .TRUE.
       DEJA_RFC = .FALSE.
       DEJA_FLUSEC = .FALSE.
