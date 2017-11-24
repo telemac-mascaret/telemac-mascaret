@@ -496,26 +496,26 @@
 !
 !     DEFAULT VALUES, PREVIOUSLY IN THE DICTIONARY
 !     EVEN IF THERE ARE NOT 10 LAYERS
-      CONC_VASE(1)  =  50.D0
-      CONC_VASE(2)  = 100.D0
-      CONC_VASE(3)  = 150.D0
-      CONC_VASE(4)  = 200.D0
-      CONC_VASE(5)  = 250.D0
-      CONC_VASE(6)  = 300.D0
-      CONC_VASE(7)  = 350.D0
-      CONC_VASE(8)  = 400.D0
-      CONC_VASE(9)  = 450.D0
-      CONC_VASE(10) = 500.D0
+      CONC_MUD(1)  =  50.D0
+      CONC_MUD(2)  = 100.D0
+      CONC_MUD(3)  = 150.D0
+      CONC_MUD(4)  = 200.D0
+      CONC_MUD(5)  = 250.D0
+      CONC_MUD(6)  = 300.D0
+      CONC_MUD(7)  = 350.D0
+      CONC_MUD(8)  = 400.D0
+      CONC_MUD(9)  = 450.D0
+      CONC_MUD(10) = 500.D0
 !
       IF(DIMENS(2,32).GT.0) THEN
         DO K=1,DIMENS(2,32)
-          CONC_VASE(K)=MOTREA( ADRESS(2,32) + K-1 )
+          CONC_MUD(K)=MOTREA( ADRESS(2,32) + K-1 )
         ENDDO
       ENDIF
 !
 !     OBSOLETE KEY WORD : CSF_VASE = MOTREA( ADRESS(2, 29) )
 !
-!      CSF_VASE = CONC_VASE(1)/XMVS
+!      CSF_VASE = CONC_MUD(1)/XMVS
 !
       IF(DIMENS(2,34).GT.0) THEN
         DO K=1,DIMENS(2,34)

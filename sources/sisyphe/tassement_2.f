@@ -3,7 +3,7 @@
 !                        **********************
 !
      &(ZF,NPOIN,DTS,ELAY,DZF_TASS,T2,LT,XMVS,XMVE,GRAV,NOMBLAY,
-     & ES,CONC_VASE,MS_VASE,XWC,COEF_N,CONC_GEL,CONC_MAX)
+     & ES,CONC_MUD,MS_VASE,XWC,COEF_N,CONC_GEL,CONC_MAX)
 !
 !***********************************************************************
 ! SISYPHE   V6P2                                   13/01/2012
@@ -27,7 +27,7 @@
 !| COEF_N         |-->| PERMEABILITY COEFFICIENT
 !| CONC_GEL       |-->| GEL CONCENTRATION
 !| CONC_MAX       |-->| MAXIMUM CONCENTRATION
-!| CONC_VASE      |<->| MUD CONCENTRATION FOR EACH LAYER
+!| CONC_MUD       |<->| MUD CONCENTRATION FOR EACH LAYER
 !| DTS            |-->| TIME STEP FOR SUSPENSION
 !| DZF_TASS       |-->| BED EVOLUTION DUE TO CONSOLIDATION
 !| ELAY           |<->| THICKNESS OF EACH LAYER
@@ -60,7 +60,7 @@
       TYPE (BIEF_OBJ),  INTENT(INOUT) :: DZF_TASS,ELAY,T2,ZF
       DOUBLE PRECISION, INTENT(INOUT) :: MS_VASE(NPOIN,NOMBLAY)
       DOUBLE PRECISION, INTENT(INOUT) :: ES(NPOIN,NOMBLAY)
-      DOUBLE PRECISION, INTENT(IN)    :: CONC_VASE(NOMBLAY)
+      DOUBLE PRECISION, INTENT(IN)    :: CONC_MUD(NOMBLAY)
       DOUBLE PRECISION, INTENT(IN)    :: XWC
       DOUBLE PRECISION, INTENT(IN)    :: COEF_N,CONC_GEL,CONC_MAX
 !
@@ -96,41 +96,41 @@
 !        EFFECTIVE STRESS: DIFFUSION TERM
 !       ----------------------------------
         DO J = 1,NOMBLAY
-          DIFFU(J)=11.55D0*(CONC_VASE(J)/(XMVS*0.0296D0))**12.D0*
+          DIFFU(J)=11.55D0*(CONC_MUD(J)/(XMVS*0.0296D0))**12.D0*
      & (LT*DTS)**(-3.4D0)
         ENDDO
 
 !       EFFECTIVE STRESS
 !       ------------------------
         DO J = 1,NOMBLAY
-          SIG_EFF(J)=119033.D0*(CONC_VASE(J)/XMVS)**14.D0
+          SIG_EFF(J)=119033.D0*(CONC_MUD(J)/XMVS)**14.D0
         ENDDO
 
 !       PERMEABILITY
 !       --------------
         DO J=1,NOMBLAY-1
 !       SEDIMENTATION
-          KSED(J)=XWC*(1.D0-CONC_VASE(J)/XMVS)*
-     &            (1.D0-(CONC_VASE(J)/CONC_GEL))**COEF_N/
-     &            ((XMVS-XMVE)*(CONC_VASE(J)/XMVS)/XMVE)
+          KSED(J)=XWC*(1.D0-CONC_MUD(J)/XMVS)*
+     &            (1.D0-(CONC_MUD(J)/CONC_GEL))**COEF_N/
+     &            ((XMVS-XMVE)*(CONC_MUD(J)/XMVS)/XMVE)
 !       CONSOLIDATION
-          KCONSO(J)=XWC*(1.D0-CONC_VASE(J)/XMVS)*
-     &            (1.D0-(CONC_VASE(J)/CONC_MAX))**COEF_N/
-     &            ((XMVS-XMVE)*(CONC_VASE(J)/XMVS)/XMVE)
+          KCONSO(J)=XWC*(1.D0-CONC_MUD(J)/XMVS)*
+     &            (1.D0-(CONC_MUD(J)/CONC_MAX))**COEF_N/
+     &            ((XMVS-XMVE)*(CONC_MUD(J)/XMVS)/XMVE)
 !
-        IF (CONC_VASE(J).GT.CONC_GEL) THEN
+        IF (CONC_MUD(J).GT.CONC_GEL) THEN
 !
 !     SEDIMENTATION AND CONSOLIDATION :
 !     --------------------------------
         IF ((ES(I,J+1) + ES(I,J)).GT.1.D-8) THEN
             V_S(J) =
-     & KCONSO(J) * CONC_VASE(J) * (1.D0/XMVS - 1.D0/XMVE)
-     & + DIFFU(J)/CONC_VASE(J)*
-     & (CONC_VASE(J+1)-CONC_VASE(J))/
+     & KCONSO(J) * CONC_MUD(J) * (1.D0/XMVS - 1.D0/XMVE)
+     & + DIFFU(J)/CONC_MUD(J)*
+     & (CONC_MUD(J+1)-CONC_MUD(J))/
      & (0.5D0 * (ES(I,J+1) + ES(I,J)))
 ! CALCULATE FROM SIG_EFF
 !            V_S(J) =
-!     &          KCONSO(J) * CONC_VASE(J) * (1.D0/XMVS - 1.D0/XMVE)
+!     &          KCONSO(J) * CONC_MUD(J) * (1.D0/XMVS - 1.D0/XMVE)
 !     &          + ( KCONSO(J) / (XMVE * GRAV)) *
 !     &          (SIG_EFF(J+1) - SIG_EFF(J)) /
 !     &          (0.5D0 * (ES(I,J+1) + ES(I,J)))
@@ -140,7 +140,7 @@
         ELSE
 !      PURE SEDIMENTATION :
 !     ---------------
-          V_S(J) = KSED(J)*CONC_VASE(J)*(1.D0/XMVS-1.D0/XMVE)
+          V_S(J) = KSED(J)*CONC_MUD(J)*(1.D0/XMVS-1.D0/XMVE)
         ENDIF
       ENDDO
 !
@@ -154,8 +154,8 @@
 !     --------------
         DO J=NOMBLAY-1,1,-1
           FLUX(J) =
-     &    (V_S(J)-V_S(J+1))*CONC_VASE(J+1)*CONC_VASE(J)/
-     &          (CONC_VASE(J+1)-CONC_VASE(J))
+     &    (V_S(J)-V_S(J+1))*CONC_MUD(J+1)*CONC_MUD(J)/
+     &          (CONC_MUD(J+1)-CONC_MUD(J))
           IF (FLUX(J).GT.0.D0) FLUX(J) = 0.D0
         ENDDO
 !      SEDIMENT FLUX AT THE RIGID BED
@@ -183,7 +183,7 @@
         ELAY%R(I)=0.D0
 !
         DO J=1,NOMBLAY
-          ES(I,J) = MS_VASE(I,J) / CONC_VASE(J)
+          ES(I,J) = MS_VASE(I,J) / CONC_MUD(J)
           ELAY%R(I)=ELAY%R(I) + ES(I,J)
         ENDDO
 !      BED EVOLUTION DUE TO CONSOLIDATION

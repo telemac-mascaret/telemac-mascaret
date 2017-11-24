@@ -2,7 +2,7 @@
                      SUBROUTINE INIT_COMPO_COH
 !                    *************************
 !
-     &(ES,CONC_VASE,CONC,NPOIN,NOMBLAY,NSICLA,AVAIL,AVA0)
+     &(ES,CONC_MUD,CONC,NPOIN,NOMBLAY,NSICLA,AVAIL,AVA0)
 !
 !***********************************************************************
 ! SISYPHE   V6P2                                   21/07/2011
@@ -16,7 +16,7 @@
 !| AVA0           |-->| VOLUME PERCENT
 !| AVAIL          |<->| VOLUME PERCENT OF EACH CLASS
 !| CONC           |<->| CONC OF EACH BED LAYER (KG/M3)
-!| CONC_VASE      |<->| MUD CONCENTRATION FOR EACH LAYER
+!| CONC_MUD       |<->| MUD CONCENTRATION FOR EACH LAYER
 !| ES             |<->| LAYER THICKNESSES AS DOUBLE PRECISION
 !| NOMBLAY        |-->| NUMBER OF LAYERS FOR CONSOLIDATION
 !| NPOIN          |-->| NUMBER OF POINTS
@@ -34,7 +34,7 @@
 !
       INTEGER, INTENT(IN)              :: NPOIN,NOMBLAY,NSICLA
       DOUBLE PRECISION, INTENT(INOUT)  :: ES(NPOIN,NOMBLAY)
-      DOUBLE PRECISION, INTENT(IN)     :: CONC_VASE(NOMBLAY)
+      DOUBLE PRECISION, INTENT(IN)     :: CONC_MUD(NOMBLAY)
       DOUBLE PRECISION,  INTENT(INOUT) :: CONC(NPOIN,NOMBLAY)
       DOUBLE PRECISION, INTENT(INOUT)  :: AVAIL(NPOIN,NOMBLAY,NSICLA)
       DOUBLE PRECISION, INTENT(IN)     :: AVA0(NSICLA)
@@ -81,7 +81,7 @@
       DO I=1,NPOIN
         DO J= 1,NOMBLAY
 !
-          CONC(I,J) = CONC_VASE(J)
+          CONC(I,J) = CONC_MUD(J)
           ES(I,J)   = EPAI_VASE(J)
 !
           IF(NSICLA.GT.1) THEN

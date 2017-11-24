@@ -872,7 +872,7 @@
      &                     AVAIL,AVA0,CALWC,
      &                     XMVS,XMVE,GRAV,VCE,XWC,FDM,CALAC,AC,
      &                     SEDCO,ES,ES_SABLE,ES_VASE,
-     &                     NCOUCH_TASS,CONC_VASE,
+     &                     NCOUCH_TASS,CONC_MUD,
      &                     MS_SABLE, MS_VASE,ACLADM,
      &                     UNLADM,TOCE_SABLE,
      &                     CONC,NLAYER,DEBU,MIXTE,NEW_BED_MODEL,
@@ -1563,18 +1563,18 @@
         IF(DEBUG.GT.0) WRITE(LU,*) 'APPEL DE TASSEMENT'
         IF(ITASS.EQ.1) THEN ! modify for all layers XKV
           CALL TASSEMENT(ZF,NPOIN,DTS,ELAY,T3,T2,LT,AVAIL,NSICLA,
-     &                 ES,XMVS,XKV(1),TRANS_MASS,CONC_VASE,NCOUCH_TASS,
+     &                 ES,XMVS,XKV(1),TRANS_MASS,CONC_MUD,NCOUCH_TASS,
      &                 MS_SABLE%R,MS_VASE%R)
         ELSEIF(ITASS.EQ.2.OR.ITASS.EQ.3) THEN
 !!!! ONLY FOR ONE CLASS
           CALL TASSEMENT_2(ZF,NPOIN,DTS,ELAY,T3,T2,LT,XMVS,XMVE,GRAV,
-     &        NOMBLAY,ES,CONC_VASE,MS_VASE%R,XWC(1),
+     &        NOMBLAY,ES,CONC_MUD,MS_VASE%R,XWC(1),
      &        COEF_N,CONC_GEL,CONC_MAX)
 !        ELSEIF(ITASS.EQ.3) THEN
 !!!! ONLY FOR ONE CLASS
 !          CALL TASSEMENT_3(ZF,NPOIN,DTS,ELAY,
 !     &               T3,T2,LT,XMVS,XMVE,GRAV,NOMBLAY,
-!     &               ES,CONC_VASE,CONC,IVIDE,MS_VASE%R,XWC(1),
+!     &               ES,CONC_MUD,CONC,IVIDE,MS_VASE%R,XWC(1),
 !     &                 TRA01,TRA02,TRA03,CONC_GEL,COEF_N,CONC_MAX)
         ENDIF
         IF(DEBUG.GT.0) WRITE(LU,*) 'RETOUR DE TASSEMENT'
