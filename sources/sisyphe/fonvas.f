@@ -451,7 +451,7 @@
 ! Will have to be rewritten
 !          CALL GIBSON(ZF,NPOIN2,DT,ELAY,
 !     &               T3,T2,LT,XMVS,XMVE,GRAV,NOMBLAY,
-!     &               ES,CONC_VASE,CONC,IVIDE,MS_VASE%R,XWC(1),
+!     &               ES,CONC_MUD,CONC,IVIDE,MS_VASE%R,XWC(1),
 !     &                 TRA01,TRA02,TRA03,CGEL,COEF_N,CFMAX)
 !      ELSEIF(ITASS.EQ.1) THEN
 !

@@ -41,7 +41,7 @@
 !
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !| AVAI           |<->| PERCENT OF MUD CLASS PER LAYER
-!| CONC_VASE      |-->|  INPUT CONCENTRATION OF EACH LAYER (IN KG/M3)
+!| CONC_MUD       |-->|  INPUT CONCENTRATION OF EACH LAYER (IN KG/M3)
 !| DT             |-->| TIME STEP
 !| ES             |<->| THICKNESS OF SEDIMENT BED LAYERS
 !| FLUDP          |<->| DEPOSITION FLUX
@@ -90,7 +90,7 @@
 ! zfcl_s is in [m]
 !
       IF(NOMBLAY.EQ.1)  THEN
-!V      CALL OS('X=CY    ', X=ZFCL_S,Y= QFLUX,C=1.D0/CONC_VASE(1))
+!V      CALL OS('X=CY    ', X=ZFCL_S,Y= QFLUX,C=1.D0/CONC_MUD(1))
         DO I = 1, NPOIN
           ZFCL_S%R(I)=QFLUX%R(I)/CONC(I,1)
           ES_VASE(I,1)= ES_VASE(I,1)+ZFCL_S%R(I)
@@ -102,7 +102,7 @@
 ! DEPOSITION IN THE FIRST LAYER
 !
           IF(QFLUX%R(I).GE.ZERO) THEN
-!           ZFCL_S%R(I) = QFLUX%R(I) / CONC_VASE(1)
+!           ZFCL_S%R(I) = QFLUX%R(I) / CONC_MUD(1)
             ZFCL_S%R(I) = QFLUX%R(I) / CONC(I,1)
             ES_VASE(I,1)=ES_VASE(I,1)+ZFCL_S%R(I)
           ELSEIF(QFLUX%R(I).LT.ZERO) THEN
@@ -116,17 +116,17 @@
 !
 ! CONC ARE IN KG/M3
 !
-!             IF(-QFLUX%R(I).LE.CONC_VASE(J)*ES(I,J)) THEN
+!             IF(-QFLUX%R(I).LE.CONC_MUD(J)*ES(I,J)) THEN
               IF(-QFLUX%R(I).LE.CONC(I,J)*ES_VASE(I,J)) THEN
 !               Last layer to be eroded
-!               ZFCL_S%R(I)= ZFCL_S%R(I)+QFLUX%R(I)/CONC_VASE(J)
+!               ZFCL_S%R(I)= ZFCL_S%R(I)+QFLUX%R(I)/CONC_MUD(J)
                 ZFCL_S%R(I)= ZFCL_S%R(I)+QFLUX%R(I)/CONC(I,J)
                 ES_VASE(I,J)=ES_VASE(I,J)-
      &                MAX(-QFLUX%R(I)/CONC(I,J),0.D0)
                 GO TO 40
               ELSE
 !               EROSION OF THE WHOLE LAYER
-!               QFLUX%R(I)=QFLUX%R(I)+CONC_VASE(J)*ES(I,J)
+!               QFLUX%R(I)=QFLUX%R(I)+CONC_MUD(J)*ES(I,J)
                 QFLUX%R(I)=QFLUX%R(I)+CONC(I,J)*ES_VASE(I,J)
                 ZFCL_S%R(I)=ZFCL_S%R(I) - ES_VASE(I,J)
                 ES_VASE(I,J) = 0.D0

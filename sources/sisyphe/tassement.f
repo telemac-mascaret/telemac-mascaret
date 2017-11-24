@@ -3,7 +3,7 @@
 !                    ********************
 !
      &(ZF,NPOIN,DTS,ELAY,DZF_TASS,T2,LT,AVAIL,NSICLA,ES,XMVS,
-     & XKV,TRANS_MASS,CONC_VASE,NOMBLAY,MS_SABLE,MS_VASE)
+     & XKV,TRANS_MASS,CONC_MUD,NOMBLAY,MS_SABLE,MS_VASE)
 !
 !***********************************************************************
 ! SISYPHE   V6P1                                   21/07/2011
@@ -31,7 +31,7 @@
 !
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !| AVAIL          |<->| VOLUME PERCENT OF EACH CLASS
-!| CONC_VASE      |<->| MUD CONCENTRATION FOR EACH LAYER
+!| CONC_MUD       |<->| MUD CONCENTRATION FOR EACH LAYER
 !| DTS            |-->| TIME STEP FOR SUSPENSION
 !| DZF_TASS       |-->| BED EVOLUTION DUE TO CONSOLIDATION
 !| ELAY           |<->| THICKNESS OF EACH LAYER
@@ -64,7 +64,7 @@
       DOUBLE PRECISION, INTENT(INOUT) :: AVAIL(NPOIN,NOMBLAY,NSICLA)
       DOUBLE PRECISION, INTENT(INOUT) :: ES(NPOIN,NOMBLAY)
       DOUBLE PRECISION, INTENT(IN)    :: TRANS_MASS(NOMBLAY)
-      DOUBLE PRECISION, INTENT(IN)    :: CONC_VASE(NOMBLAY)
+      DOUBLE PRECISION, INTENT(IN)    :: CONC_MUD(NOMBLAY)
       DOUBLE PRECISION, INTENT(IN)    :: XMVS,XKV(NOMBLAY)
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -87,7 +87,7 @@
 !
         T2%R(I)=0.D0
         DO J=1,NOMBLAY
-          EPAI_VASE(J)=MS_VASE(I,J)/CONC_VASE(J)
+          EPAI_VASE(J)=MS_VASE(I,J)/CONC_MUD(J)
           ES(I,J)=EPAI_VASE(J)
           IF(NSICLA.GT.1) THEN
             EPAI_SABLE(J)=MS_SABLE(I,J)/XMVS
@@ -144,7 +144,7 @@
         ELAY%R(I)=0.D0
 !
         DO J=1,NOMBLAY
-          EPAI_VASE(J)=MS_VASE(I,J)/CONC_VASE(J)
+          EPAI_VASE(J)=MS_VASE(I,J)/CONC_MUD(J)
           ES(I,J) = EPAI_VASE (J)
           IF(NSICLA.GT.1) THEN
             EPAI_SABLE(J)=MS_SABLE(I,J)/XMVS
@@ -161,7 +161,7 @@
           DO J=1,NOMBLAY
            IF(ES(I,J).GE.1.D-6) THEN
              AVAIL(I,J,1)=MS_SABLE(I,J)/XMVS/ES(I,J)
-             AVAIL(I,J,2)=MS_VASE(I,J)/CONC_VASE(J)/ES(I,J)
+             AVAIL(I,J,2)=MS_VASE(I,J)/CONC_MUD(J)/ES(I,J)
            ELSE
              AVAIL(I,J,1)=0.D0
              AVAIL(I,J,2)=0.D0

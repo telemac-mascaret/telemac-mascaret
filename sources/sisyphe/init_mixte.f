@@ -3,7 +3,7 @@
 !                    *********************
 !
      &(XMVS,NPOIN,AVAIL,NSICLA,ES,ES_SABLE, ES_VASE,ELAY,NOMBLAY,
-     & CONC_VASE,MS_SABLE,MS_VASE,ZF,ZR,AVA0,CONC,DEBU,MIXTE)
+     & CONC_MUD,MS_SABLE,MS_VASE,ZF,ZR,AVA0,CONC,DEBU,MIXTE)
 !
 !***********************************************************************
 ! SISYPHE   V6P2                                   21/07/2011
@@ -49,7 +49,7 @@
 !| AVA0           |-->| VOLUME PERCENT
 !| AVAIL          |<->| VOLUME PERCENT OF EACH CLASS
 !| CONC           |<->| CONC OF EACH BED LAYER (KG/M3)
-!| CONC_VASE      |<->| MUD CONCENTRATION FOR EACH LAYER
+!| CONC_MUD       |<->| MUD CONCENTRATION FOR EACH LAYER
 !| DEBU           |-->| FLAG, FOR PREVIOUS SEDIMENTOLOGICAL FILE
 !| ELAY           |<->| THICKNESS OF TOTAL LAYER
 !| ES             |<->| LAYER THICKNESSES AS DOUBLE PRECISION
@@ -88,7 +88,7 @@
       DOUBLE PRECISION,  INTENT(INOUT) :: ES_SABLE(NPOIN,NOMBLAY)
       DOUBLE PRECISION,  INTENT(INOUT) :: ES_VASE(NPOIN,NOMBLAY)
 !
-      DOUBLE PRECISION, INTENT(IN)     :: CONC_VASE(NOMBLAY)
+      DOUBLE PRECISION, INTENT(IN)     :: CONC_MUD(NOMBLAY)
       DOUBLE PRECISION,  INTENT(INOUT) :: CONC(NPOIN,NOMBLAY)
       DOUBLE PRECISION, INTENT(IN)     :: AVA0(NSICLA)
       LOGICAL, INTENT (IN)             :: DEBU, MIXTE
@@ -116,7 +116,7 @@
 
       IF(.NOT.DEBU) THEN
 !
-        CALL INIT_COMPO_COH(ES,CONC_VASE,CONC,NPOIN,
+        CALL INIT_COMPO_COH(ES,CONC_MUD,CONC,NPOIN,
      &     NOMBLAY,NSICLA,AVAIL,AVA0)
 !
 !       Recalcul des epaisseurs pour satisfaire : Sum (ES)=ZF-ZR
@@ -179,7 +179,7 @@
 !
            DO J=1,NOMBLAY
               EST=EST+ES(I,J)
-              CONC(I,J) = CONC_VASE(J)
+              CONC(I,J) = CONC_MUD(J)
            ENDDO
 !          ELSE
 !            EST=ES(I,1)
