@@ -73,7 +73,8 @@
 !
       ENDDO
 !
-! COMPUTES TOT MASS PER LAYER
+! UPDATES TOT MASS PER LAYER
+! it means that after bedload here we receive MASS_SAND(ISAND,ILAYER,IPOIN)/MUD
 !
       IF(NSAND.GE.1) THEN
         DO IPOIN = 1,NPOIN
@@ -189,6 +190,9 @@
 !
       DO ILAYER = 1,NOMBLAY
         DO IPOIN = 1,NPOIN
+! ES_PORO_SAND: is the thicnkess of voids in the sand volume.
+! ces deux variables sont à garder? sinon on simplifie
+! poro_sand est aussi utilise dans update_active_layer_hirano : plutot que le stocker on le recalcul?
           ES_PORO_SAND(IPOIN,ILAYER) = MASS_SAND_TOT(ILAYER,IPOIN)*
      &                         XKV(ILAYER)/((1.D0-XKV(ILAYER))*XMVS)
           ES_MUD_ONLY(IPOIN,ILAYER) = MASS_MUD_TOT(ILAYER,IPOIN)

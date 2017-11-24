@@ -33,7 +33,8 @@
 !
       USE BIEF
       USE DECLARATIONS_TELEMAC
-      USE DECLARATIONS_SISYPHE
+      USE DECLARATIONS_SISYPHE, ONLY: NEW_BED_MODEL,AVAIL,ACLADM,UNLADM,
+     & FDM,NSICLA,RATIO_SAND,NPOIN
 !
       USE DECLARATIONS_SPECIAL
       IMPLICIT NONE
@@ -46,20 +47,39 @@
 !
 !     UNLADM IS NEEDED FOR HUNZIKER
 !
-      DO J=1,NPOIN
-        ACLADM%R(J) = 0.D0
-        UNLADM%R(J) = 0.D0
-        IF(NSICLA.GT.1) THEN
-          DO I=1,NSICLA
-            IF(AVAIL(J,1,I).GT.0.D0) THEN
-              ACLADM%R(J) = ACLADM%R(J) + FDM(I)*AVAIL(J,1,I)
-              UNLADM%R(J) = UNLADM%R(J) + FDM(I)*AVAIL(J,2,I)
-            ENDIF
-          ENDDO
-        ENDIF
-        IF(ACLADM%R(J).LE.0.D0) ACLADM%R(J) = FDM(1)
-        IF(UNLADM%R(J).LE.0.D0) UNLADM%R(J) = ACLADM%R(J)
-      ENDDO
+      IF(.NOT.NEW_BED_MODEL) THEN
+        DO J=1,NPOIN
+          ACLADM%R(J) = 0.D0
+          UNLADM%R(J) = 0.D0
+          IF(NSICLA.GT.1) THEN
+            DO I=1,NSICLA
+              IF(AVAIL(J,1,I).GT.0.D0) THEN
+                ACLADM%R(J) = ACLADM%R(J) + FDM(I)*AVAIL(J,1,I)
+                UNLADM%R(J) = UNLADM%R(J) + FDM(I)*AVAIL(J,2,I)
+              ENDIF
+            ENDDO
+          ENDIF
+          IF(ACLADM%R(J).LE.0.D0) ACLADM%R(J) = FDM(1)
+          IF(UNLADM%R(J).LE.0.D0) UNLADM%R(J) = ACLADM%R(J)
+        ENDDO
+      ELSE
+! NOTE THAT MASS FRACTION AND VOLUME FRACTION ARE THE SAME WHEN
+! THERE ARE ONLY SANDS
+        DO J=1,NPOIN
+          ACLADM%R(J) = 0.D0
+          UNLADM%R(J) = 0.D0
+          IF(NSICLA.GT.1) THEN
+            DO I=1,NSICLA
+              IF(RATIO_SAND(I,1,J).GT.0.D0) THEN
+                ACLADM%R(J) = ACLADM%R(J) + FDM(I)*RATIO_SAND(I,1,J)
+                UNLADM%R(J) = UNLADM%R(J) + FDM(I)*RATIO_SAND(I,2,J)
+              ENDIF
+            ENDDO
+          ENDIF
+          IF(ACLADM%R(J).LE.0.D0) ACLADM%R(J) = FDM(1)
+          IF(UNLADM%R(J).LE.0.D0) UNLADM%R(J) = ACLADM%R(J)
+        ENDDO
+      ENDIF
 !
 !-----------------------------------------------------------------------
 !

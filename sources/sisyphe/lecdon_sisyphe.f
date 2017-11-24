@@ -393,6 +393,14 @@
       DO K=1,NSICLA
         FDM(K)   = MOTREA( ADRESS(2,  4) + K-1 )
       ENDDO
+!
+!     XKV CAN BE USED EVEN WHEN THERE ARE ONLY CO SEDIMENTS (XKV=0)
+!     THUS INITIALIZATION
+!
+      DO K=1,NOMBLAY
+         XKV(K) = 0.D0
+      ENDDO
+!
       DO K=1,DIMENS(2,5) !can be also NOMBLAY
          XKV(K) = MOTREA( ADRESS(2,  5) + K-1 )
       ENDDO
