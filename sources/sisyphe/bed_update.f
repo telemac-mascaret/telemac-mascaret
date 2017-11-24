@@ -23,7 +23,10 @@
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !
       USE BIEF
-      USE DECLARATIONS_SISYPHE
+      USE DECLARATIONS_SISYPHE, ONLY: MASS_MIX_TOT,MASS_SAND_TOT,
+     & MASS_MUD_TOT,MASS_MUD,MASS_SAND,NSAND,NMUD,RATIO_MUD,RATIO_SAND,
+     & RATIO_MUD_SAND,NOMBLAY,CONC_VASE,ES,XKV,XMVS,MIN_SED_MASS_COMP,
+     & NPOIN
       USE DECLARATIONS_SPECIAL
       IMPLICIT NONE
 !
@@ -34,10 +37,12 @@
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
       INTEGER IPOIN,ILAYER,ISAND,IMUD
-      DOUBLE PRECISION TOT
+      DOUBLE PRECISION TOT,TERM,DISCR
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
+!--------------------------------------------------------------------------------------
+! attention : all masses put to zero ->this part maybe necesssary only in intialization
 ! various masses are in [kg/m2]
       DO IPOIN = 1,NPOIN
 !
@@ -72,7 +77,8 @@
         ENDDO
 !
       ENDDO
-!
+! end attention
+!-----------------------------------------------------------------------------
 ! UPDATES TOT MASS PER LAYER
 ! it means that after bedload here we receive MASS_SAND(ISAND,ILAYER,IPOIN)/MUD
 !
@@ -190,21 +196,16 @@
 !
       DO ILAYER = 1,NOMBLAY
         DO IPOIN = 1,NPOIN
-! ES_PORO_SAND: is the thicnkess of voids in the sand volume.
-! ces deux variables sont à garder? sinon on simplifie
-! poro_sand est aussi utilise dans update_active_layer_hirano : plutot que le stocker on le recalcul?
-          ES_PORO_SAND(IPOIN,ILAYER) = MASS_SAND_TOT(ILAYER,IPOIN)*
-     &                         XKV(ILAYER)/((1.D0-XKV(ILAYER))*XMVS)
-          ES_MUD_ONLY(IPOIN,ILAYER) = MASS_MUD_TOT(ILAYER,IPOIN)
-     &                         /CONC_VASE(ILAYER)
-           IF(ES_MUD_ONLY(IPOIN,ILAYER).GE.ES_PORO_SAND(IPOIN,ILAYER))
-     &     THEN
-             ES(IPOIN,ILAYER) = MASS_SAND_TOT(ILAYER,IPOIN)/XMVS
-     &                        + ES_MUD_ONLY(IPOIN,ILAYER)
-           ELSE
-             ES(IPOIN,ILAYER) = MASS_SAND_TOT(ILAYER,IPOIN)
-     &                        /((1.D0-XKV(ILAYER))*XMVS)
-           ENDIF
+!       TERM REPRESENTS THE DIFFERENCE BETWEEN MUD VOLUME AND VOID VOLUME
+          TERM=RATIO_MUD_SAND(ILAYER,IPOIN)/CONC_VASE(ILAYER)-
+     &    (XKV(ILAYER)*(1.D0-RATIO_MUD_SAND(ILAYER,IPOIN)))/
+     &    (XMVS*(1.D0-XKV(ILAYER)))
+          DISCR=MAX(0.D0,TERM)
+!       IF DISCR IS POSITIVE IT MEANS THAT MUD VOLUME IS LARGER THAN VOID VOLUME
+!       IF DISCR IS NEGATIVE, THE VOID VOLUME IS NOT COMPLETELY FILLED BY MUD
+          ES(IPOIN,ILAYER)=MASS_MIX_TOT(ILAYER,IPOIN)*
+     &    ((1.D0-RATIO_MUD_SAND(ILAYER,IPOIN))/(XMVS*(1.D0-XKV(ILAYER)))
+     &    + DISCR)
         ENDDO
       ENDDO
 !

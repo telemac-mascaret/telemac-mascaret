@@ -284,7 +284,6 @@
 !
 ! 4) MASS COMPUTATION : ALL MASSES IN [kg/m^2]
 !     -> MASS_MUD;MASS_SAND;MASS_MUD_TOT;MASS_SAND_TOT
-!     -> MASS_TOT_MIX: NOT COMPUTED/SAVE -> NOT NECESSARY
 !
 !    WARNING : FOR MASS COMPUTATION IS MANDATORY RATIO_MUD_SAND,
 !              XMVS,CONC_VASE,XKV,ES(ILAYER)
@@ -315,7 +314,6 @@
               MASS_SAND(ISAND,ILAYER,I) = MASS_SAND_TOT(ILAYER,I)
      &        *RATIO_SAND(ISAND,ILAYER,I)
             ENDDO
-! to check: mass_mud(imud,ilayer,i) or mass_mud(i,ilayer,imud)? check then allocate
           ENDDO
         ENDDO
 !
