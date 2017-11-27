@@ -752,6 +752,7 @@ files: declarations_sisyphe.f
   ad_allvec_sisyphe.F
   read_sections_sisyphe.f
   point_sisyphe.f
+  update_activelayer_hirano.f
 
 [special]
 path: <root>|sources|utils|special

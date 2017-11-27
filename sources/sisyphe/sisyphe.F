@@ -1382,9 +1382,24 @@
       ! BEDLOAD COMPUTATION  !
       ! ******************** !
         IF(CHARR) THEN
-!          IF(DEBUG.GT.0) WRITE(LU,*)'BED_UPDATE_ACTIVE_LAYER_HIRANO'
-!          CALL UPDATE_ACTIVE_LAYER_HIRANO()
-!          IF(DEBUG.GT.0) WRITE(LU,*)'END BED_UPDATE_ACTIVE_LAYER_HIRANO'
+!
+          IF(TASS) THEN
+            WRITE(LU,*)'CONSOLIDATION NOT IMPLEMENTED YET'
+            CALL PLANTE(1)
+            STOP
+          ENDIF
+!          activelayer hirano can be used only if nlayer>1, nsand+nmud>1, no consolidation
+          IF(NOMBLAY.GE.2.AND.NSICLA.GE.2.AND.(.NOT.TASS)) THEN
+! since bedload not possible if mix sediments, it means that active layer hirano is possible only
+! if several sands OR several muds?
+! but at the same time, is not possible to have bedload for muds!
+! so hirano is only for several sands, isn't it?
+            IF(DEBUG.GT.0) WRITE(LU,*)'UPDATE_ACTIVELAYER_HIRANO'
+            CALL UPDATE_ACTIVELAYER_HIRANO
+            IF(DEBUG.GT.0) THEN
+              WRITE(LU,*)'END UPDATE_ACTIVELAYER_HIRANO'
+            ENDIF
+          ENDIF
 
           IF(DEBUG.GT.0) WRITE(LU,*) 'BEDLOAD_MAIN'
           CALL BEDLOAD_MAIN
