@@ -702,6 +702,7 @@ files: declarations_sisyphe.f
   entete_sisyphe.f
   sisyphe.F
   homere_sisyphe.F
+  update_activelayer_hirano.f
 
 [special]
 path: <root>|sources|utils|special
