@@ -876,7 +876,7 @@
      &                     MS_SABLE, MS_VASE,ACLADM,
      &                     UNLADM,TOCE_SABLE,
      &                     CONC,NLAYER,DEBU,MIXTE,NEW_BED_MODEL,
-     &                     TOC_MUD,TOCE_MUD)
+     &                     TOC_MUD,TOCE_MUD,VOLU2D)
         IF(DEBUG.GT.0) WRITE(LU,*) 'END INIT_SEDIMENT'
 !
 !
@@ -982,7 +982,7 @@
 !
 !> JR @ RWTH: ALGORITHMIC DIFFERENTIATION
 #if defined(COMPAD)
-      CALL AD_SISYPHE_INITIALISATION_END
+        CALL AD_SISYPHE_INITIALISATION_END
 #endif
 !< JR @ RWTH
 !
@@ -1045,7 +1045,7 @@
 !
 !> JR @ RWTH: ALGORITHMIC DIFFERENTIATION
 #if defined(COMPAD)
-      CALL AD_SISYPHE_TIMESTEP_BEGIN
+          CALL AD_SISYPHE_TIMESTEP_BEGIN
 #endif
 !< JR @ RWTH
 !
@@ -1081,7 +1081,7 @@
 !
 !     ALGORITHMIC DIFFERENTIATION
 #if defined(COMPAD)
-      CALL AD_SISYPHE_LOOPRECORDS_BEGIN
+            CALL AD_SISYPHE_LOOPRECORDS_BEGIN
 #endif
 !
 !------------------------------------------------------------------
@@ -1214,98 +1214,98 @@
               ENDIF ! (SIS_FILES(SISHYD)%NAME(1:1) /=' ')
             ENDIF ! (NOT.PERMA.OR.PASS)
 !
-        IF(PASS) THEN
-!         IN STEADY STATE LOGICAL FOR READING SET TO FALSE
-          IF (PERMA) PASS = .FALSE.
-        ELSE
-!         COMPUTES THE WATER DEPTH
-          CALL OS('X=Y-Z   ', X=HN, Y=Z, Z=ZF)
-        ENDIF
+            IF(PASS) THEN
+!             IN STEADY STATE LOGICAL FOR READING SET TO FALSE
+              IF (PERMA) PASS = .FALSE.
+            ELSE
+!             COMPUTES THE WATER DEPTH
+              CALL OS('X=Y-Z   ', X=HN, Y=Z, Z=ZF)
+            ENDIF
 !
 !       COUPLING
 !
-        IF(CODE(1:7).EQ.'TELEMAC') THEN
+            IF(CODE(1:7).EQ.'TELEMAC') THEN
 !
-!         OV INSTEAD OF OS IN ORDER TO AVOID PROBLEMS WITH QUASI-BUBBLE ELEMENTS
-!         OPERATES ONLY ON THE (1:NPOIN) RANGE OF THE TELEMAC FIELDS
-!         IT IS A HIDDEN DISCRETISATION CHANGE
+!             OV INSTEAD OF OS IN ORDER TO AVOID PROBLEMS WITH QUASI-BUBBLE ELEMENTS
+!             OPERATES ONLY ON THE (1:NPOIN) RANGE OF THE TELEMAC FIELDS
+!             IT IS A HIDDEN DISCRETISATION CHANGE
 !
-          CALL OV( 'X=Y     ',U2D%R, U_TEL%R, U_TEL%R, 0.D0, NPOIN)
-          CALL OV( 'X=Y     ',V2D%R, V_TEL%R, V_TEL%R, 0.D0, NPOIN)
-          CALL OV( 'X=Y     ', HN%R, H_TEL%R, H_TEL%R, 0.D0, NPOIN)
-!         ADDED BY JMH 01/07/2004 (ZF MAY BE MODIFIED BY CALLING PROGRAM)
-          CALL OS('X=Y     ', X=ZF, Y=ZF_TEL)
-!         ELAY MUST BE UPDATED CONSEQUENTLY (ADDED BY JMH 02/05/2014)
-!         IF COUPLED WITH TELEMAC3D, NO BOTTOM CHANGE FROM TELEMAC2D
-          IF(CODE(1:9).EQ.'TELEMAC3D') THEN
-            CALL OS('X=Y-Z   ',X=ELAY,Y=ZF,Z=ZR)
-          ENDIF
-!         CLIPS NEGATIVE DEPTHS
-          IF(OPTBAN.GT.0) THEN
-            DO I = 1,HN%DIM1
-              IF(HN%R(I).LT.HMIN) THEN
-                U2D%R(I)=0.D0
-                V2D%R(I)=0.D0
-                HN%R(I)=HMIN
+              CALL OV( 'X=Y     ',U2D%R, U_TEL%R, U_TEL%R, 0.D0, NPOIN)
+              CALL OV( 'X=Y     ',V2D%R, V_TEL%R, V_TEL%R, 0.D0, NPOIN)
+              CALL OV( 'X=Y     ', HN%R, H_TEL%R, H_TEL%R, 0.D0, NPOIN)
+!             ADDED BY JMH 01/07/2004 (ZF MAY BE MODIFIED BY CALLING PROGRAM)
+              CALL OS('X=Y     ', X=ZF, Y=ZF_TEL)
+!             ELAY MUST BE UPDATED CONSEQUENTLY (ADDED BY JMH 02/05/2014)
+!             IF COUPLED WITH TELEMAC3D, NO BOTTOM CHANGE FROM TELEMAC2D
+              IF(CODE(1:9).EQ.'TELEMAC3D') THEN
+                CALL OS('X=Y-Z   ',X=ELAY,Y=ZF,Z=ZR)
               ENDIF
-            ENDDO
-          ENDIF
-!         FREE SURFACE
-          CALL OS('X=Y+Z   ', X=Z, Y=ZF, Z=HN)
+!             CLIPS NEGATIVE DEPTHS
+              IF(OPTBAN.GT.0) THEN
+                DO I = 1,HN%DIM1
+                  IF(HN%R(I).LT.HMIN) THEN
+                    U2D%R(I)=0.D0
+                    V2D%R(I)=0.D0
+                    HN%R(I)=HMIN
+                  ENDIF
+                ENDDO
+              ENDIF
+!             FREE SURFACE
+              CALL OS('X=Y+Z   ', X=Z, Y=ZF, Z=HN)
 !
-!         CV: COPY OF TOMAWAC VARIABLES
+!             CV: COPY OF TOMAWAC VARIABLES
 !
-          IF(INCLUS(COUPLING,'TOMAWAC')) THEN
-!           INCIDENT WAVE DIRECTION
-            CALL OS( 'X=Y     ',THETAW,THETAW_TEL)
-!           Wave period
-            CALL OS( 'X=Y     ', TW, TW_TEL)
-!           SIGNIFICANT HEIGHT
-            CALL OS( 'X=Y     ', HW , HW_TEL)
-!           SIGNIFICANT HEIGHT
-            CALL OS( 'X=Y     ', UW , UW_TEL)
-            HW%TYPR='Q'
-            TW%TYPR='Q'
-            THETAW%TYPR='Q'
-            UW%TYPR='Q'
-          ENDIF
+              IF(INCLUS(COUPLING,'TOMAWAC')) THEN
+!               INCIDENT WAVE DIRECTION
+                CALL OS( 'X=Y     ',THETAW,THETAW_TEL)
+!               Wave period
+                CALL OS( 'X=Y     ', TW, TW_TEL)
+!               SIGNIFICANT HEIGHT
+                CALL OS( 'X=Y     ', HW , HW_TEL)
+!               SIGNIFICANT HEIGHT
+                CALL OS( 'X=Y     ', UW , UW_TEL)
+                HW%TYPR='Q'
+                TW%TYPR='Q'
+                THETAW%TYPR='Q'
+                UW%TYPR='Q'
+              ENDIF
 !
-        ENDIF
+            ENDIF !ENDIF(CODE(1:7).EQ.'TELEMAC')
 !
 !       END OF COUPLING
 ! =========================================================================
 ! TREATMENT OF TIDAL FLATS, DEFINITION OF THE MASKS
 ! =====================================================================!
 !
-        IF(OPTBAN.EQ.2) THEN
+            IF(OPTBAN.EQ.2) THEN
 !
-! ----    BUILDS MASKING BY ELEMENTS
+! ----        BUILDS MASKING BY ELEMENTS
 !
-          CALL OS ('X=Y     ', X=MSKTMP, Y=MASKEL)
-          CALL OS ('X=C     ', X=MASKEL, C=1.D0)
-          IF(CODE(1:7) == 'TELEMAC') THEN
-!           MASKS ARE DERIVED FROM THE NON-CLIPPED VALUES OF H
-!           PROVIDED BY TELEMAC
-            CALL MASKTF(MASKEL%R,H_TEL%R,HMIN,MESH%IKLE%I,
-     &                  NELEM,NPOIN)
-          ELSE
-            CALL MASKTF(MASKEL%R,HN%R,HMIN,MESH%IKLE%I,
-     &                  NELEM,NPOIN)
-          ENDIF
+              CALL OS ('X=Y     ', X=MSKTMP, Y=MASKEL)
+              CALL OS ('X=C     ', X=MASKEL, C=1.D0)
+              IF(CODE(1:7) == 'TELEMAC') THEN
+!               MASKS ARE DERIVED FROM THE NON-CLIPPED VALUES OF H
+!               PROVIDED BY TELEMAC
+                CALL MASKTF(MASKEL%R,H_TEL%R,HMIN,MESH%IKLE%I,
+     &                      NELEM,NPOIN)
+              ELSE
+                CALL MASKTF(MASKEL%R,HN%R,HMIN,MESH%IKLE%I,
+     &                      NELEM,NPOIN)
+              ENDIF
 !
-!        JMH 17/12/2009
+!            JMH 17/12/2009
 !
-!        ELSEIF(OPTBAN.EQ.1) THEN
+!            ELSEIF(OPTBAN.EQ.1) THEN
 !
-!          CANCELS Q QU AND QV IF HN.LE.0.D0
-!          CALL MASKAB(HN%R,Q%R,QU%R,QV%R,NPOIN)
+!              CANCELS Q QU AND QV IF HN.LE.0.D0
+!              CALL MASKAB(HN%R,Q%R,QU%R,QV%R,NPOIN)
 !
-        ENDIF
+            ENDIF
 !
 ! ----   BUILDS THE MASK OF THE POINTS FROM THE MASK OF THE ELEMENTS
 ! ----   AND CHANGES IFAMAS (IFABOR WITH MASKING)
 !
-        IF(MSK) CALL MASKTO(MASKEL%R,MASKPT,IFAMAS%I,
+            IF(MSK) CALL MASKTO(MASKEL%R,MASKPT,IFAMAS%I,
      &                      MESH%IKLE%I,
      &                      MESH%IFABOR%I,MESH%ELTSEG%I,MESH%NSEG,
      &                      NELEM,NPOIN,IELMT,MESH)
@@ -1315,33 +1315,33 @@
 !
 ! ------------------------------------------------------------------
 !
-702     CONTINUE
+702         CONTINUE
 !
-        ISOUS = ISOUS + 1
+            ISOUS = ISOUS + 1
 !
 !------------------------------------------------------------------
 !
 #if defined(COMPAD)
-        CALL AD_SISYPHE_SUBITERATION_BEGIN
+            CALL AD_SISYPHE_SUBITERATION_BEGIN
 #endif
 !
 !------------------------------------------------------------------
 !
-        IF(CODE(1:7).NE.'TELEMAC') AT0=AT0+DTS
-        IF(ENTET.AND.ISOUS.EQ.1) CALL ENTETE_SISYPHE(2,AT0,LT)
-        IF(ENTET.AND.ISOUS.EQ.NSOUS) ENTETS=.TRUE.
+            IF(CODE(1:7).NE.'TELEMAC') AT0=AT0+DTS
+            IF(ENTET.AND.ISOUS.EQ.1) CALL ENTETE_SISYPHE(2,AT0,LT)
+            IF(ENTET.AND.ISOUS.EQ.NSOUS) ENTETS=.TRUE.
 !
 !---------------------------------------------------------------------
 !        FRICTION COEFFICIENT VARIABLE IN TIME
 !---------------------------------------------------------------------
 !
-        CALL CORSTR_SISYPHE
+            CALL CORSTR_SISYPHE
 !
 ! ----  TREATS THE BOUNDARY CONDITIONS
 !
-        IF(DEBUG.GT.0) WRITE(LU,*) 'CONLIT'
-        CALL CONLIT(MESH%NBOR%I,AT0)
-        IF(DEBUG.GT.0) WRITE(LU,*) 'END CONLIT'
+            IF(DEBUG.GT.0) WRITE(LU,*) 'CONLIT'
+            CALL CONLIT(MESH%NBOR%I,AT0)
+            IF(DEBUG.GT.0) WRITE(LU,*) 'END CONLIT'
 !
 ! =======================================================================
 !
@@ -1351,111 +1351,116 @@
 !
 !  ---  MEAN DIAMETER FOR THE ACTIVE-LAYER AND UNDER-LAYER
 !
-        IF(.NOT.NEW_BED_MODEL) THEN
-          IF(.NOT.MIXTE.AND.NSICLA.GT.1) CALL MEAN_GRAIN_SIZE
-        ELSE
-          IF(NMUD.EQ.0.AND.NSICLA.GT.1) CALL MEAN_GRAIN_SIZE
-        ENDIF
+            IF(.NOT.NEW_BED_MODEL) THEN
+              IF(.NOT.MIXTE.AND.NSICLA.GT.1) CALL MEAN_GRAIN_SIZE
+            ELSE
+              IF(NMUD.EQ.0.AND.NSICLA.GT.1) CALL MEAN_GRAIN_SIZE
+            ENDIF
 !
 !  ---  MEAN VELOCITY UNORM
 !
-        CALL OS('X=N(Y,Z)',X=UNORM,Y=U2D,Z=V2D)
+            CALL OS('X=N(Y,Z)',X=UNORM,Y=U2D,Z=V2D)
 !
 !  ---  WAVE ORBITAL VELOCITY --> UW
 !
-        IF(HOULE) THEN
-          IF(UW%TYPR.NE.'Q') THEN
-            CALL CALCUW(UW%R,HN%R,HW%R,TW%R,GRAV,NPOIN)
-          ENDIF
-        ENDIF
+            IF(HOULE) THEN
+              IF(UW%TYPR.NE.'Q') THEN
+                CALL CALCUW(UW%R,HN%R,HW%R,TW%R,GRAV,NPOIN)
+              ENDIF
+            ENDIF
 !
-        CALL TOB_SISYPHE
-     &    (TOB,TOBW, MU, KS, KSP,KSR,CF, FW,
-     &     CHESTR, UETCAR, CF_TEL,KS_TEL, CODE ,
-     &     KFROT, ICR, KSPRATIO,HOULE,
-     &     GRAV,XMVE,  XMVS, VCE, KARMAN,ZERO,
-     &     HMIN,HN, ACLADM, UNORM,UW, TW, NPOIN,KSPRED,IKS)
+            CALL TOB_SISYPHE
+     &      (TOB,TOBW, MU, KS, KSP,KSR,CF, FW,
+     &       CHESTR, UETCAR, CF_TEL,KS_TEL, CODE ,
+     &       KFROT, ICR, KSPRATIO,HOULE,
+     &       GRAV,XMVE,  XMVS, VCE, KARMAN,ZERO,
+     &       HMIN,HN, ACLADM, UNORM,UW, TW, NPOIN,KSPRED,IKS)
 !
 !  END OF INITIALISATION
 !
       ! ******************** !
       ! BEDLOAD COMPUTATION  !
       ! ******************** !
-        IF(CHARR) THEN
+            IF(CHARR) THEN
 !
-          IF(TASS) THEN
-            WRITE(LU,*)'CONSOLIDATION NOT IMPLEMENTED YET'
-            CALL PLANTE(1)
-            STOP
-          ENDIF
-!          activelayer hirano can be used only if nlayer>1, nsand+nmud>1, no consolidation
-          IF(NOMBLAY.GE.2.AND.NSICLA.GE.2.AND.(.NOT.TASS)) THEN
-! since bedload not possible if mix sediments, it means that active layer hirano is possible only
-! if several sands OR several muds?
-! but at the same time, is not possible to have bedload for muds!
-! so hirano is only for several sands, isn't it?
-            IF(DEBUG.GT.0) WRITE(LU,*)'UPDATE_ACTIVELAYER_HIRANO'
-            CALL UPDATE_ACTIVELAYER_HIRANO
-            IF(DEBUG.GT.0) THEN
-              WRITE(LU,*)'END UPDATE_ACTIVELAYER_HIRANO'
-            ENDIF
-          ENDIF
-
-          IF(DEBUG.GT.0) WRITE(LU,*) 'BEDLOAD_MAIN'
-          CALL BEDLOAD_MAIN
-     &        (ACLADM,KSP,KSR,VOLU2D,UNSV2D,
-     &         CF,EBOR,FW,HN,LIQBOR,MASK,MASKEL,
-     &         MASKPT,Q,QBOR,U2D,V2D,S,UNLADM,UW,THETAW,
-     &         MU,TOB,TOBW,TW,ZF,DEBUG,HIDFAC,ICF,
-     &         IELMT,ISOUS,KDDL,KDIR,KENT,KINC,KLOG,KNEU,KSORT,
-     &         LOADMETH,LT,NPOIN,NPTFR,NSICLA,
-     &         OPTBAN,LS0,BETA,FD90,FDM,GRAV,HIDI,HMIN,
-     &         VCE,CSF_SABLE,XMVE,XMVS,XWC,PI,KARMAN,ZERO,
-     &         KARIM_HOLLY_YANG,MSK,SUSP,VF,ENTET,
-     &         CONST_ALAYER,LCONDIS,MESH,
-     &         ELAY,LIEBOR,LIMTEC,MASKTR,
-     &         IT1,T1,T2,T3,T4,T5,T6,T7,T8,T9,
-     &         T10,T11,T12,T13,UNORM,AC,AT0,DTS,ELAY0,
-     &         AVAIL,BREACH,CALFA_CL,COEFPN,DZF_GF,HIDING,
-     &         QSCL_C,QSCL_S,QS_C,QSCLXC,QSXC,QSCLYC,
-     &         QSYC,SALFA_CL,ZF_C,ZFCL_C,NSOUS,ENTETS,
-     &         SECCURRENT,SLOPEFF,PHISED,DEVIA,BETA2,BIJK,
-     &         SEDCO,HOULE,U3D,V3D,CODE,FLBCLA,MAXADV)
+              IF(DEBUG.GT.0) WRITE(LU,*) 'BEDLOAD_MAIN'
+              CALL BEDLOAD_MAIN
+     &            (ACLADM,KSP,KSR,VOLU2D,UNSV2D,
+     &             CF,EBOR,FW,HN,LIQBOR,MASK,MASKEL,
+     &             MASKPT,Q,QBOR,U2D,V2D,S,UNLADM,UW,THETAW,
+     &             MU,TOB,TOBW,TW,ZF,DEBUG,HIDFAC,ICF,
+     &             IELMT,ISOUS,KDDL,KDIR,KENT,KINC,KLOG,KNEU,KSORT,
+     &             LOADMETH,LT,NPOIN,NPTFR,NSICLA,
+     &             OPTBAN,LS0,BETA,FD90,FDM,GRAV,HIDI,HMIN,
+     &             VCE,CSF_SABLE,XMVE,XMVS,XWC,PI,KARMAN,ZERO,
+     &             KARIM_HOLLY_YANG,MSK,SUSP,VF,ENTET,
+     &             CONST_ALAYER,LCONDIS,MESH,
+     &             ELAY,LIEBOR,LIMTEC,MASKTR,
+     &             IT1,T1,T2,T3,T4,T5,T6,T7,T8,T9,
+     &             T10,T11,T12,T13,UNORM,AC,AT0,DTS,ELAY0,
+     &             AVAIL,BREACH,CALFA_CL,COEFPN,DZF_GF,HIDING,
+     &             QSCL_C,QSCL_S,QS_C,QSCLXC,QSXC,QSCLYC,
+     &             QSYC,SALFA_CL,ZF_C,ZFCL_C,NSOUS,ENTETS,
+     &             SECCURRENT,SLOPEFF,PHISED,DEVIA,BETA2,BIJK,
+     &             SEDCO,HOULE,U3D,V3D,CODE,FLBCLA,MAXADV,RATIO_SAND)
 !
-          IF(DEBUG.GT.0) WRITE(LU,*) 'END_BEDLOAD_MAIN'
+              IF(DEBUG.GT.0) WRITE(LU,*) 'END_BEDLOAD_MAIN'
+!!****************************************************************
+!!  this part concerns the old sisyphe and should be completely replaced
+!!  by new subroutines (see here after)
+!!!
+!!!         UPDATES THE BOTTOM
+!!!
+!!          IF(.NOT.STAT_MODE) THEN
+!!            CALL OS('X=X+Y   ',X=ZF,Y=ZF_C)
+!!          ENDIF
+!!!
+!!!         UPDATES THE LAYERS  --> ELAY
+!!!
+!!          IF(.NOT.MIXTE.AND.NSICLA.GT.1) THEN
+!!            IF(DEBUG.GT.0) WRITE(LU,*) 'LAYER AFTER BEDLOAD'
+!!! vsmtype: type of vertical grain sorting: Hirano layers (0)
+!!! or continous-VSM(1)
+!!            IF(VSMTYPE.EQ.0) THEN
+!!              CALL LAYER(ZFCL_C,NLAYER,ZR,ZF,ESTRAT,ELAY,VOLU2D,
+!!     &                   ACLADM,NSICLA,NPOIN,ELAY0,VOLTOT,ES,
+!!     &                   AVAIL,CONST_ALAYER,DTS,T2%R,IT1%I)
+!!            ELSE
+!!              CALL CVSP_MAIN(ZFCL_C,NLAYER,ZR,ZF,ESTRAT,ELAY,VOLU2D,
+!!     &                       ACLADM,NSICLA,NPOIN,ELAY0,VOLTOT,ES,
+!!     &                       AVAIL,CONST_ALAYER,DTS,T2%R,IT1%I)
+!!            ENDIF
+!!            IF(DEBUG.GT.0) WRITE(LU,*) 'END_LAYER'
+!!          ELSE
+!!            CALL OS('X=Y-Z   ',X=ELAY,Y=ZF,Z=ZR)
+!!          ENDIF
+!! end old sisyphe
+!!************************************************************
+              IF(TASS) THEN
+                WRITE(LU,*)'CONSOLIDATION NOT IMPLEMENTED YET'
+                CALL PLANTE(1)
+                STOP
+              ENDIF
+!              IF(NOMBLAY.GE.2.AND.NSICLA.GE.2.AND.(.NOT.TASS)) THEN
+!                 IF(DEBUG.GT.0) WRITE(LU,*)'UPDATE_ACTIVELAYER_HIRANO'
+!                 CALL UPDATE_ACTIVELAYER_HIRANO
+!                 IF(DEBUG.GT.0) THEN
+!                   WRITE(LU,*)'END UPDATE_ACTIVELAYER_HIRANO'
+!                 ENDIF
+!              ENDIF
+              IF(DEBUG.GT.0) WRITE(LU,*)'BED_UPDATE'
+              CALL BED_UPDATE(ZR,ZF,VOLU2D)
+              CALL OS('X=Y-Z   ',X=ELAY,Y=ZF,Z=ZR)
+              IF(DEBUG.GT.0) WRITE(LU,*)'END BED_UPDATE'
 !
-!         UPDATES THE BOTTOM
-!
-          IF(.NOT.STAT_MODE) THEN
-            CALL OS('X=X+Y   ',X=ZF,Y=ZF_C)
-          ENDIF
-!
-!         UPDATES THE LAYERS  --> ELAY
-!
-          IF(.NOT.MIXTE.AND.NSICLA.GT.1) THEN
-            IF(DEBUG.GT.0) WRITE(LU,*) 'LAYER AFTER BEDLOAD'
-            IF(VSMTYPE.EQ.0) THEN
-              CALL LAYER(ZFCL_C,NLAYER,ZR,ZF,ESTRAT,ELAY,VOLU2D,
-     &                   ACLADM,NSICLA,NPOIN,ELAY0,VOLTOT,ES,
-     &                   AVAIL,CONST_ALAYER,DTS,T2%R,IT1%I)
-            ELSE
-              CALL CVSP_MAIN(ZFCL_C,NLAYER,ZR,ZF,ESTRAT,ELAY,VOLU2D,
-     &                       ACLADM,NSICLA,NPOIN,ELAY0,VOLTOT,ES,
-     &                       AVAIL,CONST_ALAYER,DTS,T2%R,IT1%I)
-            ENDIF
-            IF(DEBUG.GT.0) WRITE(LU,*) 'END_LAYER'
-          ELSE
-            CALL OS('X=Y-Z   ',X=ELAY,Y=ZF,Z=ZR)
-          ENDIF
-! END OF BEDLOAD
-        ENDIF
+            ENDIF !ENDIF(CHARR)
       ! ********************** !
       ! SUSPENSION COMPUTATION !
       ! ********************** !
-        IF(SUSP) THEN
+            IF(SUSP) THEN
 !
-          IF(DEBUG.GT.0) WRITE(LU,*) 'SUSPENSION_MAIN'
-          CALL SUSPENSION_MAIN
+              IF(DEBUG.GT.0) WRITE(LU,*) 'SUSPENSION_MAIN'
+              CALL SUSPENSION_MAIN
      &(SLVTRA,HN,HN_TEL,MU,TOB,FDM,FD90,KSP,KSR,KS,
      & VOLU2D,V2DPAR,UNSV2D,AFBOR,BFBOR,ZF,LICBOR,
      & IFAMAS,MASKEL,MASKPT,U2D,V2D,NSICLA,
@@ -1475,14 +1480,14 @@
      & ZCONV,SOLSYS,FLBOR_TEL,FLBOR_SIS,FLBORTRA,NUMLIQ%I,NFRLIQ,
      & MIXTE,NCOUCH_TASS,CONC,TOCE_VASE,TOCE_SABLE,
      & FLUER_VASE,TOCE_MIXTE,MS_SABLE,MS_VASE,TASS,DIRFLU,MAXADV)
-          IF(DEBUG.GT.0) WRITE(LU,*) 'END_SUSPENSION_MAIN'
+              IF(DEBUG.GT.0) WRITE(LU,*) 'END_SUSPENSION_MAIN'
 !
 !      UPDATES THE BOTTOM
 !
 ! mak:
-          IF(.NOT.STAT_MODE) THEN
-            CALL OS('X=X+Y   ',X=ZF,Y=ZF_S)
-          ENDIF
+              IF(.NOT.STAT_MODE) THEN
+                CALL OS('X=X+Y   ',X=ZF,Y=ZF_S)
+              ENDIF
 ! end mak
 !        CALL OS('X=X+Y   ',X=ZF,Y=ZF_S)
 !
@@ -1490,120 +1495,121 @@
 !      REDEFINES THE LAYER OF ERODABLE SEDIMENT
 !      EXTENDED GRANULOMETRY (TO BE REPLACED WITH NOMBLAY>1
 !
-          IF(.NOT.MIXTE.AND.NSICLA.GT.1) THEN
-            IF(DEBUG.GT.0) WRITE(LU,*) 'LAYER AFTER SUSPENSION'
-            IF(VSMTYPE.EQ.0) THEN
-              CALL LAYER(ZFCL_S,NLAYER,ZR,ZF,ESTRAT,ELAY,VOLU2D,
-     &                   ACLADM,NSICLA,NPOIN,ELAY0,VOLTOT,ES,
-     &                   AVAIL,CONST_ALAYER,DTS,T2%R,IT1%I)
-            ELSE
-              CALL CVSP_MAIN(ZFCL_S,NLAYER,ZR,ZF,ESTRAT,ELAY,VOLU2D,
+              IF(.NOT.MIXTE.AND.NSICLA.GT.1) THEN
+                IF(DEBUG.GT.0) WRITE(LU,*) 'LAYER AFTER SUSPENSION'
+                IF(VSMTYPE.EQ.0) THEN
+                  CALL LAYER(ZFCL_S,NLAYER,ZR,ZF,ESTRAT,ELAY,VOLU2D,
      &                       ACLADM,NSICLA,NPOIN,ELAY0,VOLTOT,ES,
      &                       AVAIL,CONST_ALAYER,DTS,T2%R,IT1%I)
-            ENDIF
-            IF(DEBUG.GT.0) WRITE(LU,*) 'END_LAYER'
-          ELSE
-            CALL OS('X=Y-Z   ',X=ELAY,Y=ZF,Z=ZR)
-          ENDIF
+                ELSE
+                  CALL CVSP_MAIN(ZFCL_S,NLAYER,ZR,ZF,ESTRAT,ELAY,VOLU2D,
+     &                           ACLADM,NSICLA,NPOIN,ELAY0,VOLTOT,ES,
+     &                           AVAIL,CONST_ALAYER,DTS,T2%R,IT1%I)
+                ENDIF
+                IF(DEBUG.GT.0) WRITE(LU,*) 'END_LAYER'
+              ELSE
+                CALL OS('X=Y-Z   ',X=ELAY,Y=ZF,Z=ZR)
+              ENDIF
 ! END OF SUSPENSION
-        ENDIF
+            ENDIF !EDIF(SUSP)
 !
 ! RECONSTITUTES THE BEDLOAD AND/OR SUSPENSION DATA
 ! -----------------------------------------------------
 !
-        IF(DEBUG.GT.0) WRITE(LU,*) 'QS_RESULT'
+            IF(DEBUG.GT.0) WRITE(LU,*) 'QS_RESULT'
 !
-        DO I = 1, NSICLA
-          CALL OS('X=Y+Z   ',X=T1,Y=QSCLXC%ADR(I)%P,Z=QSCLXS%ADR(I)%P)
-          CALL OS('X=Y+Z   ',X=T2,Y=QSCLYC%ADR(I)%P,Z=QSCLYS%ADR(I)%P)
-          CALL OS('X=N(Y,Z)', X=QSCL%ADR(I)%P,Y=T1,Z=T2)
-          IF(I.EQ.1) THEN
-            CALL OS('X=Y     ', X=QSX, Y=T1)
-            CALL OS('X=Y     ', X=QSY, Y=T2)
-          ELSE
-            CALL OS('X=X+Y   ', X=QSX, Y=T1)
-            CALL OS('X=X+Y   ', X=QSY, Y=T2)
-          ENDIF
-        ENDDO
-        CALL OS('X=N(Y,Z)', X=QS, Y=QSX, Z=QSY)
-        IF(DEBUG.GT.0) WRITE(LU,*) 'END_QS_RESULT'
+            DO I = 1, NSICLA
+            CALL OS('X=Y+Z   ',X=T1,Y=QSCLXC%ADR(I)%P,Z=QSCLXS%ADR(I)%P)
+            CALL OS('X=Y+Z   ',X=T2,Y=QSCLYC%ADR(I)%P,Z=QSCLYS%ADR(I)%P)
+            CALL OS('X=N(Y,Z)', X=QSCL%ADR(I)%P,Y=T1,Z=T2)
+              IF(I.EQ.1) THEN
+                CALL OS('X=Y     ', X=QSX, Y=T1)
+                CALL OS('X=Y     ', X=QSY, Y=T2)
+              ELSE
+                CALL OS('X=X+Y   ', X=QSX, Y=T1)
+                CALL OS('X=X+Y   ', X=QSY, Y=T2)
+              ENDIF
+            ENDDO
+            CALL OS('X=N(Y,Z)', X=QS, Y=QSX, Z=QSY)
+            IF(DEBUG.GT.0) WRITE(LU,*) 'END_QS_RESULT'
 !
 !=======================================================================
 !
 !     MAXIMUM BOTTOM SLOPE : EVOL IN T1
 !
-      IF(SLIDE) THEN
+            IF(SLIDE) THEN
 !
-        IF(ENTET) CALL ENTETE_SISYPHE(14,AT0,LT)
+              IF(ENTET) CALL ENTETE_SISYPHE(14,AT0,LT)
 !
-        IF(DEBUG.GT.0) WRITE(LU,*) 'APPEL DE MAXSLOPE'
-        CALL MAXSLOPE(PHISED,ZF%R,ZR%R,MESH%XEL%R,MESH%YEL%R,
-     &                MESH%NELEM,
-     &                MESH%NELMAX,NPOIN,MESH%IKLE%I,T1,UNSV2D,MESH,
-     &                ZFCL_MS,AVAIL,NOMBLAY,NSICLA)
-        IF(DEBUG.GT.0) WRITE(LU,*) 'RETOUR DE MAXSLOPE'
-        CALL OS('X=X+Y   ',X=ZF,Y=T1)
+              IF(DEBUG.GT.0) WRITE(LU,*) 'APPEL DE MAXSLOPE'
+              CALL MAXSLOPE(PHISED,ZF%R,ZR%R,MESH%XEL%R,MESH%YEL%R,
+     &                      MESH%NELEM,MESH%NELMAX,
+     &                      NPOIN,MESH%IKLE%I,T1,UNSV2D,MESH,
+     &                      ZFCL_MS,AVAIL,NOMBLAY,NSICLA)
+              IF(DEBUG.GT.0) WRITE(LU,*) 'RETOUR DE MAXSLOPE'
+              CALL OS('X=X+Y   ',X=ZF,Y=T1)
 !
-        IF(.NOT.MIXTE.AND.NSICLA.GT.1) THEN
-          IF(DEBUG.GT.0) WRITE(LU,*) 'LAYER AFTER SLIDE'
-          IF(VSMTYPE.EQ.0) THEN
-            CALL LAYER(ZFCL_MS,NLAYER,ZR,ZF,ESTRAT,ELAY,VOLU2D,
-     &                 ACLADM,NSICLA,NPOIN,ELAY0,VOLTOT,ES,
-     &                 AVAIL,CONST_ALAYER,DTS,T2%R,IT1%I)
-          ELSE
-            CALL CVSP_MAIN(ZFCL_MS,NLAYER,ZR,ZF,ESTRAT,ELAY,VOLU2D,
-     &                     ACLADM,NSICLA,NPOIN,ELAY0,VOLTOT,ES,
-     &                     AVAIL,CONST_ALAYER,DTS,T2%R,IT1%I)
-          ENDIF
-          IF(DEBUG.GT.0) WRITE(LU,*) 'END_LAYER'
-        ELSE
-          CALL OS('X=Y-Z   ',X=ELAY,Y=ZF,Z=ZR)
-        ENDIF
+              IF(.NOT.MIXTE.AND.NSICLA.GT.1) THEN
+                IF(DEBUG.GT.0) WRITE(LU,*) 'LAYER AFTER SLIDE'
+                IF(VSMTYPE.EQ.0) THEN
+                  CALL LAYER(ZFCL_MS,NLAYER,ZR,ZF,ESTRAT,ELAY,VOLU2D,
+     &                       ACLADM,NSICLA,NPOIN,ELAY0,VOLTOT,ES,
+     &                       AVAIL,CONST_ALAYER,DTS,T2%R,IT1%I)
+                ELSE
+                  CALL CVSP_MAIN(ZFCL_MS,NLAYER,ZR,ZF,ESTRAT,ELAY,
+     &                           VOLU2D,ACLADM,NSICLA,NPOIN,ELAY0,
+     &                           VOLTOT,ES,AVAIL,CONST_ALAYER,DTS,T2%R,
+     &                           IT1%I)
+                ENDIF
+                IF(DEBUG.GT.0) WRITE(LU,*) 'END_LAYER'
+              ELSE
+                CALL OS('X=Y-Z   ',X=ELAY,Y=ZF,Z=ZR)
+              ENDIF
 !
-      ENDIF
+            ENDIF !ENDIF (SLIDE)
 !
 !========================================================================
 !
 !     SETTLING: EVOLUTION COMPUTED IN T3
 !
-      IF(TASS) THEN
+            IF(TASS) THEN
 !
-        IF(ENTET) THEN
-          IF(.NOT.CHARR.AND..NOT.SUSP.AND..NOT.SLIDE) THEN
-            CALL ENTETE_SISYPHE(2,AT0,LT)
-          ENDIF
-          CALL ENTETE_SISYPHE(15,AT0,LT)
-        ENDIF
+              IF(ENTET) THEN
+                IF(.NOT.CHARR.AND..NOT.SUSP.AND..NOT.SLIDE) THEN
+                  CALL ENTETE_SISYPHE(2,AT0,LT)
+                ENDIF
+                CALL ENTETE_SISYPHE(15,AT0,LT)
+              ENDIF
 !
-        IF(DEBUG.GT.0) WRITE(LU,*) 'APPEL DE TASSEMENT'
-        IF(ITASS.EQ.1) THEN ! modify for all layers XKV
-          CALL TASSEMENT(ZF,NPOIN,DTS,ELAY,T3,T2,LT,AVAIL,NSICLA,
-     &                 ES,XMVS,XKV(1),TRANS_MASS,CONC_MUD,NCOUCH_TASS,
-     &                 MS_SABLE%R,MS_VASE%R)
-        ELSEIF(ITASS.EQ.2.OR.ITASS.EQ.3) THEN
+              IF(DEBUG.GT.0) WRITE(LU,*) 'APPEL DE TASSEMENT'
+              IF(ITASS.EQ.1) THEN ! modify for all layers XKV
+                CALL TASSEMENT(ZF,NPOIN,DTS,ELAY,T3,T2,LT,AVAIL,NSICLA,
+     &                       ES,XMVS,XKV(1),TRANS_MASS,CONC_MUD,
+     &                       NCOUCH_TASS,MS_SABLE%R,MS_VASE%R)
+              ELSEIF(ITASS.EQ.2.OR.ITASS.EQ.3) THEN
 !!!! ONLY FOR ONE CLASS
-          CALL TASSEMENT_2(ZF,NPOIN,DTS,ELAY,T3,T2,LT,XMVS,XMVE,GRAV,
-     &        NOMBLAY,ES,CONC_MUD,MS_VASE%R,XWC(1),
-     &        COEF_N,CONC_GEL,CONC_MAX)
-!        ELSEIF(ITASS.EQ.3) THEN
+                CALL TASSEMENT_2(ZF,NPOIN,DTS,ELAY,T3,T2,LT,XMVS,XMVE,
+     &               GRAV,NOMBLAY,ES,CONC_MUD,MS_VASE%R,XWC(1),
+     &               COEF_N,CONC_GEL,CONC_MAX)
+!              ELSEIF(ITASS.EQ.3) THEN
 !!!! ONLY FOR ONE CLASS
-!          CALL TASSEMENT_3(ZF,NPOIN,DTS,ELAY,
-!     &               T3,T2,LT,XMVS,XMVE,GRAV,NOMBLAY,
-!     &               ES,CONC_MUD,CONC,IVIDE,MS_VASE%R,XWC(1),
-!     &                 TRA01,TRA02,TRA03,CONC_GEL,COEF_N,CONC_MAX)
-        ENDIF
-        IF(DEBUG.GT.0) WRITE(LU,*) 'RETOUR DE TASSEMENT'
+!                CALL TASSEMENT_3(ZF,NPOIN,DTS,ELAY,
+!     &                     T3,T2,LT,XMVS,XMVE,GRAV,NOMBLAY,
+!     &                     ES,CONC_MUD,CONC,IVIDE,MS_VASE%R,XWC(1),
+!     &                       TRA01,TRA02,TRA03,CONC_GEL,COEF_N,CONC_MAX)
+              ENDIF
+              IF(DEBUG.GT.0) WRITE(LU,*) 'RETOUR DE TASSEMENT'
 !
 !       UPDATES ZF (ELAY HAS BEEN UPDATED IN TASSEMENT)
 !
 ! mak:
-        IF(.NOT.STAT_MODE) THEN
-           CALL OS('X=X+Y   ',X=ZF,Y=T3)
-        ENDIF
+              IF(.NOT.STAT_MODE) THEN
+                 CALL OS('X=X+Y   ',X=ZF,Y=T3)
+              ENDIF
 ! end mak
-!        CALL OS('X=X+Y   ',X=ZF,Y=T3)
+!             CALL OS('X=X+Y   ',X=ZF,Y=T3)
 !
-      ENDIF
+            ENDIF !ENDIF(TASS)
 !
 !=======================================================================
 ! : 5        COMPUTES THE EVOLUTIONS FOR THIS CYCLE OF TIMESTEP
@@ -1611,71 +1617,77 @@
 !=======================================================================
 !
 ! ----  COMPUTES  THE EVOLUTIONS FOR THIS (SUB) TIMESTEP
+!       EVOLUTIONS ARE NOW MASS EVOLUTION (to do)
 !
-      IF(CHARR) THEN
-        CALL OS('X=Y     ',X=E,Y=ZF_C)
-      ELSE
-        CALL OS('X=0     ',X=E)
-      ENDIF
-      IF(SUSP)  CALL OS('X=X+Y   ',X=E,Y=ZF_S)
-      IF(SLIDE) CALL OS('X=X+Y   ',X=E,Y=T1)
-      IF(TASS)  CALL OS('X=X+Y   ',X=E,Y=T3)
+            IF(CHARR) THEN
+! old
+!              CALL OS('X=Y     ',X=E,Y=ZF_C)
+! new
+              CALL OS('X=Y     ',X=E,Y=EVOL_M)
+            ELSE
+              CALL OS('X=0     ',X=E)
+            ENDIF
+! still to do
+            IF(SUSP)  CALL OS('X=X+Y   ',X=E,Y=ZF_S)
+            IF(SLIDE) CALL OS('X=X+Y   ',X=E,Y=T1)
+            IF(TASS)  CALL OS('X=X+Y   ',X=E,Y=T3)
 !
-      CALL OS('X=X+Y   ', X=ESOMT, Y=E)
+            CALL OS('X=X+Y   ', X=ESOMT, Y=E)
 !
 !  UPDATES
 !
-      IF(PART.EQ.-1.OR.(PART.EQ.3.AND.CODE(1:7).NE.'TELEMAC')) THEN
+            IF(PART.EQ.-1.OR.(PART.EQ.3.AND.CODE(1:7).NE.'TELEMAC'))THEN
 !
 ! mak:
-        IF(.NOT.STAT_MODE) THEN
-          CALL OS('X=X-Y   ',X=HN,Y=E)
-        ENDIF
+              IF(.NOT.STAT_MODE) THEN
+                CALL OS('X=X-Y   ',X=HN,Y=E)
+              ENDIF
 ! end mak
-!      CALL OS('X=X-Y   ',X=HN,Y=E)
-        IF(OPTBAN.GT.0) THEN
-          DO I = 1,HN%DIM1
-            IF(HN%R(I).LT.HMIN) THEN
-              U2D%R(I)=0.D0
-              V2D%R(I)=0.D0
-              HN%R(I) =HMIN
-            ELSE
-              U2D%R(I)= QU%R(I)/HN%R(I)
-              V2D%R(I)= QV%R(I)/HN%R(I)
-            ENDIF
-          ENDDO
-        ELSE
-          CALL OS('X=Y/Z   ', X=U2D, Y=QU,   Z=HN)
-          CALL OS('X=Y/Z   ', X=V2D, Y=QV,   Z=HN)
-        ENDIF
+!             CALL OS('X=X-Y   ',X=HN,Y=E)
+              IF(OPTBAN.GT.0) THEN
+                DO I = 1,HN%DIM1
+                  IF(HN%R(I).LT.HMIN) THEN
+                    U2D%R(I)=0.D0
+                    V2D%R(I)=0.D0
+                    HN%R(I) =HMIN
+                  ELSE
+                    U2D%R(I)= QU%R(I)/HN%R(I)
+                    V2D%R(I)= QV%R(I)/HN%R(I)
+                  ENDIF
+                ENDDO
+              ELSE
+                CALL OS('X=Y/Z   ', X=U2D, Y=QU,   Z=HN)
+                CALL OS('X=Y/Z   ', X=V2D, Y=QV,   Z=HN)
+              ENDIF
 !
 !=======================================================================
 ! : 6     STOPS IF EVOLUTIONS GREATER THAN EMAX = RC*(INITIAL DEPTH)
 !=======================================================================
 !
-!       DETERMINES THE MAXIMUM EVOLUTION THRESHOLD
-        DO I = 1, NPOIN
-          EMAX%R(I) = RC*MAX(HN%R(I),HMIN)
-        ENDDO
+!             DETERMINES THE MAXIMUM EVOLUTION THRESHOLD
+              DO I = 1, NPOIN
+                EMAX%R(I) = RC*MAX(HN%R(I),HMIN)
+              ENDDO
 !
 ! ----  STOPS WHEN THE EVOLUTIONS ARE GREATER THAN A CERTAIN THRESHOLD
 !      THIS TEST IS ONLY CALLED IN 'SISYPHE ONLY' MODE
 !
-        IF(DEBUG.GT.0) WRITE(LU,*) 'ARRET'
-          CALL SIS_ARRET(ESOMT,EMAX,HN,VARSOR,NPOIN,MN,
-     &                   SIS_FILES(SISRES)%LU,SIS_FILES(SISRES)%FMT,
-     &                   MAXVAR,AT0,RC,HIST,BINRESSIS,TEXTE,
-     &                   SORLEO,SORIMP,T1,T2)
-          IF(DEBUG.GT.0) WRITE(LU,*) 'END_ARRET'
-        ENDIF
+              IF(DEBUG.GT.0) WRITE(LU,*) 'ARRET'
+              CALL SIS_ARRET(ESOMT,EMAX,HN,VARSOR,NPOIN,MN,
+     &                       SIS_FILES(SISRES)%LU,
+     &                       SIS_FILES(SISRES)%FMT,MAXVAR,AT0,RC,HIST,
+     &                       BINRESSIS,TEXTE,SORLEO,SORIMP,T1,T2)
+              IF(DEBUG.GT.0) WRITE(LU,*) 'END_ARRET'
 !
-! ----     CONSTANT FLOW DISCHARGE
+            ENDIF !ENDIF(PART.EQ.-1.OR.(PART.EQ.3.AND.CODE(1:7).NE.'TELEMAC'))
 !
-        IF(LCONDIS) THEN
-          CALL CONDIS_SISYPHE(CONSTFLOW)
-        ELSE
-          CONSTFLOW =.FALSE.
-        ENDIF
+! ----      CONSTANT FLOW DISCHARGE
+!
+            IF(LCONDIS) THEN
+              CALL CONDIS_SISYPHE(CONSTFLOW)
+            ELSE
+              CONSTFLOW =.FALSE.
+            ENDIF
 !
 !=======================================================================
 ! : 8     MASS BALANCE
@@ -1683,75 +1695,77 @@
 !       COMPUTES THE COMPONENTS OF SAND TRANSPORT FOR THE MASS BALANCE,
 !       GRAPHIC OUTPUTS AND VALIDATION STAGE
 !
-        IF(BILMA) THEN
+            IF(BILMA) THEN
 ! CVL Bilan in volume
 ! not valid for cohesif or mixte
-          IF(.NOT.MIXTE.AND.(.NOT.SEDCO(1))) THEN
-          IF(DEBUG.GT.0) WRITE(LU,*) 'BILAN_SISYPHE'
-          CALL BILAN_SISYPHE(E,ESOMT,MESH,MSK,MASKEL,T1,T2,S,
-     &                       IELMU_SIS,VCUMU,DTS,NPTFR,ENTETS,
-     &                       ZFCL_C,ZFCL_S,ZFCL_MS,
-     &                       QSCLXC,QSCLYC,NSICLA,VOLTOT,DZF_GF,
-     &                       NUMLIQ%I,NFRLIQ,FLBCLA,VF,LT,NIT,
-     &                       NPOIN,VOLU2D,CSF_SABLE,MASDEP,MASDEPT,
-     &                       CHARR,SUSP,SLIDE)
-          ENDIF
-          IF(DEBUG.GT.0) WRITE(LU,*) 'END_BILAN_SISYPHE'
-        ENDIF
+              IF(.NOT.MIXTE.AND.(.NOT.SEDCO(1))) THEN
+                IF(DEBUG.GT.0) WRITE(LU,*) 'BILAN_SISYPHE'
+                CALL BILAN_SISYPHE(E,ESOMT,MESH,MSK,MASKEL,T1,T2,S,
+     &                           IELMU_SIS,VCUMU,DTS,NPTFR,ENTETS,
+     &                           ZFCL_C,ZFCL_S,ZFCL_MS,
+     &                           QSCLXC,QSCLYC,NSICLA,VOLTOT,DZF_GF,
+     &                           NUMLIQ%I,NFRLIQ,FLBCLA,VF,LT,NIT,
+     &                           NPOIN,VOLU2D,CSF_SABLE,MASDEP,MASDEPT,
+     &                           CHARR,SUSP,SLIDE,EVCL_M,MASSTOT)
+              ENDIF
+              IF(DEBUG.GT.0) WRITE(LU,*) 'END_BILAN_SISYPHE'
+            ENDIF
 !
 !       CONTROL SECTIONS
 !
-        IF(NCP.GT.0) THEN
-          IF(DEBUG.GT.0) WRITE(LU,*) 'FLUSEC_SISYPHE'
-          CALL FLUSEC_SISYPHE(U2D,V2D,HN,
-     &                        QSXC,QSYC,CHARR,QSXS,QSYS,SUSP,
-     &                        MESH%IKLE%I,
-     &                        MESH%NELMAX,MESH%NELEM,
-     &                        MESH%X%R,MESH%Y%R,
-     &                        DTS,NCP,CTRLSC,ENTETS,AT0)
-          IF(DEBUG.GT.0) WRITE(LU,*) 'END_FLUSEC_SISYPHE'
-        ENDIF
+            IF(NCP.GT.0) THEN
+              IF(DEBUG.GT.0) WRITE(LU,*) 'FLUSEC_SISYPHE'
+              CALL FLUSEC_SISYPHE(U2D,V2D,HN,
+     &                            QSXC,QSYC,CHARR,QSXS,QSYS,SUSP,
+     &                            MESH%IKLE%I,
+     &                            MESH%NELMAX,MESH%NELEM,
+     &                            MESH%X%R,MESH%Y%R,
+     &                            DTS,NCP,CTRLSC,ENTETS,AT0)
+              IF(DEBUG.GT.0) WRITE(LU,*) 'END_FLUSEC_SISYPHE'
+            ENDIF
 !
 !-----------------------------------------------------------------------
 !
-        IF(.NOT.PERMA.AND.SIS_FILES(SISHYD)%NAME(1:1).NE.' ') THEN
+            IF(.NOT.PERMA.AND.SIS_FILES(SISHYD)%NAME(1:1).NE.' ') THEN
 !
-!         UPDATES THE HYDRO
+!             UPDATES THE HYDRO
 !
-!         IF READING ON HYDRODYNAMIC FILE, INCREMENTS QU, QV AND Z
-          IF(SIS_FILES(SISHYD)%NAME(1:1).NE.' ')  THEN
-            CALL OS('X=X+Y   ', X=QU, Y=DEL_QU)
-            CALL OS('X=X+Y   ', X=QV, Y=DEL_QV)
-            CALL OS('X=X+Y   ', X=Z , Y=DEL_Z)
+!             IF READING ON HYDRODYNAMIC FILE, INCREMENTS QU, QV AND Z
+              IF(SIS_FILES(SISHYD)%NAME(1:1).NE.' ')  THEN
+                CALL OS('X=X+Y   ', X=QU, Y=DEL_QU)
+                CALL OS('X=X+Y   ', X=QV, Y=DEL_QV)
+                CALL OS('X=X+Y   ', X=Z , Y=DEL_Z)
 ! JWI 31/05/2012 - added line to use wave orbital velocities directly if found in hydro file
-            IF(HOULE.AND.UW%TYPR=='Q') CALL OS('X=X+Y   ',X=UW,Y=DEL_UW)
+                IF(HOULE.AND.UW%TYPR=='Q') THEN
+                  CALL OS('X=X+Y   ',X=UW,Y=DEL_UW)
+                ENDIF
 ! JWI END
-          ENDIF
-          CALL OS('X=Y-Z   ', X=HN, Y=Z, Z=ZF)
-!         CLIPS NEGATIVE DEPTHS
-          IF(OPTBAN.GT.0) THEN
-            DO I = 1, NPOIN
-              IF(HN%R(I).LT.HMIN) THEN
-                U2D%R(I)=0.D0
-                V2D%R(I)=0.D0
-                HN%R(I) = MAX(HN%R(I),HMIN)
-              ELSE
-                U2D%R(I)= QU%R(I)/HN%R(I)
-                V2D%R(I)= QV%R(I)/HN%R(I)
               ENDIF
-            ENDDO
-          ELSE
-            CALL OS('X=Y/Z   ', X=U2D, Y=QU,   Z=HN)
-            CALL OS('X=Y/Z   ', X=V2D, Y=QV,   Z=HN)
-          ENDIF
+              CALL OS('X=Y-Z   ', X=HN, Y=Z, Z=ZF)
+!             CLIPS NEGATIVE DEPTHS
+              IF(OPTBAN.GT.0) THEN
+                DO I = 1, NPOIN
+                  IF(HN%R(I).LT.HMIN) THEN
+                    U2D%R(I)=0.D0
+                    V2D%R(I)=0.D0
+                    HN%R(I) = MAX(HN%R(I),HMIN)
+                  ELSE
+                    U2D%R(I)= QU%R(I)/HN%R(I)
+                    V2D%R(I)= QV%R(I)/HN%R(I)
+                  ENDIF
+                ENDDO
+              ELSE
+                CALL OS('X=Y/Z   ', X=U2D, Y=QU,   Z=HN)
+                CALL OS('X=Y/Z   ', X=V2D, Y=QV,   Z=HN)
+              ENDIF
 !
-        ENDIF
+            ENDIF
 !
 !------------------------------------------------------------------
 !
 !> JR @ RWTH: ALGORITHMIC DIFFERENTIATION
 #if defined(COMPAD)
-        CALL AD_SISYPHE_SUBITERATION_END
+            CALL AD_SISYPHE_SUBITERATION_END
 #endif
 !< JR @ RWTH
 !
@@ -1759,164 +1773,165 @@
 !
 !       END OF THE LOOP ON SUB-TIMESTEPS NSOUS
 !
-        IF(ISOUS.LT.NSOUS) GO TO 702
+            IF(ISOUS.LT.NSOUS) GO TO 702
 !
 !=======================================================================
 ! : 9        PRINTS OUT EXTREME VALUES
 !=======================================================================
 !
-        IF(ENTET.AND.CHARR) THEN
-          WRITE(LU,*)
-          CALL MAXI(XMAX,IMAX,E%R,NPOIN)
-          IF(NCSIZE.GT.1) THEN
-            XMA=P_DMAX(XMAX)
-            IF(XMAX.EQ.XMA) THEN
-              IMA=MESH%KNOLG%I(IMAX)
-            ELSE
-              IMA=0
-            ENDIF
-            IMA=P_IMAX(IMA)
-          ELSE
-            IMA=IMAX
-            XMA=XMAX
-          ENDIF
-          IF(LNG.EQ.1) WRITE(LU,371) XMA,IMA
-          IF(LNG.EQ.2) WRITE(LU,372) XMA,IMA
-371       FORMAT(' EVOLUTION MAXIMUM        : ',G16.7,' NOEUD : ',I6)
-372       FORMAT(' MAXIMAL EVOLUTION        : ',G16.7,' NODE  : ',I6)
-          CALL MINI(XMIN,IMIN,E%R,NPOIN)
-          IF(NCSIZE.GT.1) THEN
-            XMI=P_DMIN(XMIN)
-            IF(XMIN.EQ.XMI) THEN
-              IMI=MESH%KNOLG%I(IMIN)
-            ELSE
-              IMI=0
-            ENDIF
-            IMI=P_IMAX(IMI)
-          ELSE
-            IMI=IMIN
-            XMI=XMIN
-          ENDIF
-          IF(LNG.EQ.1) WRITE(LU,373) XMI,IMI
-          IF(LNG.EQ.2) WRITE(LU,374) XMI,IMI
-373       FORMAT(' EVOLUTION MINIMUM        : ',G16.7,' NOEUD : ',I6)
-374       FORMAT(' MINIMAL EVOLUTION        : ',G16.7,' NODE  : ',I6)
+            IF(ENTET.AND.CHARR) THEN
+              WRITE(LU,*)
+              CALL MAXI(XMAX,IMAX,E%R,NPOIN)
+              IF(NCSIZE.GT.1) THEN
+                XMA=P_DMAX(XMAX)
+                IF(XMAX.EQ.XMA) THEN
+                  IMA=MESH%KNOLG%I(IMAX)
+                ELSE
+                  IMA=0
+                ENDIF
+                IMA=P_IMAX(IMA)
+              ELSE
+                IMA=IMAX
+                XMA=XMAX
+              ENDIF
+              IF(LNG.EQ.1) WRITE(LU,371) XMA,IMA
+              IF(LNG.EQ.2) WRITE(LU,372) XMA,IMA
+371           FORMAT(' EVOLUTION MAXIMUM        : ',G16.7,' NOEUD :',I6)
+372           FORMAT(' MAXIMAL EVOLUTION        : ',G16.7,' NODE  :',I6)
+              CALL MINI(XMIN,IMIN,E%R,NPOIN)
+              IF(NCSIZE.GT.1) THEN
+                XMI=P_DMIN(XMIN)
+                IF(XMIN.EQ.XMI) THEN
+                  IMI=MESH%KNOLG%I(IMIN)
+                ELSE
+                  IMI=0
+                ENDIF
+                IMI=P_IMAX(IMI)
+              ELSE
+                IMI=IMIN
+                XMI=XMIN
+              ENDIF
+              IF(LNG.EQ.1) WRITE(LU,373) XMI,IMI
+              IF(LNG.EQ.2) WRITE(LU,374) XMI,IMI
+373           FORMAT(' EVOLUTION MINIMUM        : ',G16.7,' NOEUD :',I6)
+374           FORMAT(' MINIMAL EVOLUTION        : ',G16.7,' NODE  :',I6)
 !
-          IF(CONST_ALAYER) THEN
-            IF(NSICLA.GT.1.AND.XMI.LT.-0.5D0*ELAY0) THEN
-              IF(LNG.EQ.1) WRITE(LU,885)
-              IF(LNG.EQ.2) WRITE(LU,886)
-885           FORMAT(' EROSION SUPERIEURE A EPAISSEUR DE COUCHE !')
-886           FORMAT(' EROSION GREATER THAN ONE LAYER THICKNESS !')
-            ENDIF
-            IF(NSICLA.GT.1.AND.XMA.GT.ELAY0) THEN
-              IF(LNG.EQ.1) WRITE(LU,887)
-              IF(LNG.EQ.2) WRITE(LU,888)
-887           FORMAT(' DEPOT SUPERIEUR A EPAISSEUR DE COUCHE !')
-888           FORMAT(' DEPOSITION MORE THAN ONE LAYER THICKNESS !')
-            ENDIF
-          ELSE
-            DO J=1,NPOIN
-              ELAY0 = 3.D0*ACLADM%R(J)
-              IF(NSICLA.GT.1.AND.E%R(J).LT.-0.5D0*ELAY0) THEN
-                IF(LNG.EQ.1) WRITE(LU,885)
-                IF(LNG.EQ.2) WRITE(LU,886)
+              IF(CONST_ALAYER) THEN
+                IF(NSICLA.GT.1.AND.XMI/XMVS.LT.-0.5D0*ELAY0) THEN
+                  IF(LNG.EQ.1) WRITE(LU,885)
+                  IF(LNG.EQ.2) WRITE(LU,886)
+885               FORMAT(' EROSION SUPERIEURE A EPAISSEUR DE COUCHE !')
+886               FORMAT(' EROSION GREATER THAN ONE LAYER THICKNESS !')
+                ENDIF
+                IF(NSICLA.GT.1.AND.XMA/XMVS.GT.ELAY0) THEN
+                  IF(LNG.EQ.1) WRITE(LU,887)
+                  IF(LNG.EQ.2) WRITE(LU,888)
+887               FORMAT(' DEPOT SUPERIEUR A EPAISSEUR DE COUCHE !')
+888               FORMAT(' DEPOSITION MORE THAN ONE LAYER THICKNESS !')
+                ENDIF
+              ELSE
+                write(lu,*)'check this part!'
+                DO J=1,NPOIN
+                  ELAY0 = 3.D0*ACLADM%R(J)
+                  IF(NSICLA.GT.1.AND.E%R(J)/XMVS.LT.-0.5D0*ELAY0) THEN
+                    IF(LNG.EQ.1) WRITE(LU,885)
+                    IF(LNG.EQ.2) WRITE(LU,886)
+                  ENDIF
+                  IF(NSICLA.GT.1.AND.E%R(J)/XMVS.GT.ELAY0) THEN
+                    IF(LNG.EQ.1) WRITE(LU,887)
+                    IF(LNG.EQ.2) WRITE(LU,888)
+                  ENDIF
+                ENDDO
               ENDIF
-              IF(NSICLA.GT.1.AND.E%R(J).GT.ELAY0) THEN
-                IF(LNG.EQ.1) WRITE(LU,887)
-                IF(LNG.EQ.2) WRITE(LU,888)
+            ENDIF
+            IF(ENTET) THEN
+              CALL MAXI(XMAX,IMAX,ESOMT%R,NPOIN)
+              IF(NCSIZE.GT.1) THEN
+                XMA=P_DMAX(XMAX)
+                IF(XMAX.EQ.XMA) THEN
+                  IMA=MESH%KNOLG%I(IMAX)
+                ELSE
+                  IMA=0
+                ENDIF
+                IMA=P_IMAX(IMA)
+              ELSE
+                IMA=IMAX
+                XMA=XMAX
               ENDIF
-            ENDDO
-          ENDIF
-        ENDIF
-        IF(ENTET) THEN
-          CALL MAXI(XMAX,IMAX,ESOMT%R,NPOIN)
-          IF(NCSIZE.GT.1) THEN
-            XMA=P_DMAX(XMAX)
-            IF(XMAX.EQ.XMA) THEN
-              IMA=MESH%KNOLG%I(IMAX)
-            ELSE
-              IMA=0
+              IF (LNG.EQ.1) WRITE(LU,881) XMA,IMA
+              IF (LNG.EQ.2) WRITE(LU,882) XMA,IMA
+881           FORMAT(' EVOLUTION MAXIMUM TOTALE : ',G16.7,' NOEUD :',I6)
+882           FORMAT(' TOTAL MAXIMAL EVOLUTION  : ',G16.7,' NODE  :',I6)
+              CALL MINI(XMIN,IMIN,ESOMT%R,NPOIN)
+              IF(NCSIZE.GT.1) THEN
+                XMI=P_DMIN(XMIN)
+                IF(XMIN.EQ.XMI) THEN
+                  IMI=MESH%KNOLG%I(IMIN)
+                ELSE
+                  IMI=0
+                ENDIF
+                IMI=P_IMAX(IMI)
+              ELSE
+                IMI=IMIN
+                XMI=XMIN
+              ENDIF
+              IF (LNG.EQ.1) WRITE(LU,883) XMI,IMI
+              IF (LNG.EQ.2) WRITE(LU,884) XMI,IMI
+883           FORMAT(' EVOLUTION MINIMUM TOTALE : ',G16.7,' NOEUD :',I6)
+884           FORMAT(' TOTAL MINIMAL EVOLUTION  : ',G16.7,' NODE  :',I6)
             ENDIF
-            IMA=P_IMAX(IMA)
-          ELSE
-            IMA=IMAX
-            XMA=XMAX
-          ENDIF
-          IF (LNG.EQ.1) WRITE(LU,881) XMA,IMA
-          IF (LNG.EQ.2) WRITE(LU,882) XMA,IMA
-881       FORMAT(' EVOLUTION MAXIMUM TOTALE : ',G16.7,' NOEUD : ',I6)
-882       FORMAT(' TOTAL MAXIMAL EVOLUTION  : ',G16.7,' NODE  : ',I6)
-          CALL MINI(XMIN,IMIN,ESOMT%R,NPOIN)
-          IF(NCSIZE.GT.1) THEN
-            XMI=P_DMIN(XMIN)
-            IF(XMIN.EQ.XMI) THEN
-              IMI=MESH%KNOLG%I(IMIN)
-            ELSE
-              IMI=0
-            ENDIF
-            IMI=P_IMAX(IMI)
-          ELSE
-            IMI=IMIN
-            XMI=XMIN
-          ENDIF
-          IF (LNG.EQ.1) WRITE(LU,883) XMI,IMI
-          IF (LNG.EQ.2) WRITE(LU,884) XMI,IMI
-883       FORMAT(' EVOLUTION MINIMUM TOTALE : ',G16.7,' NOEUD : ',I6)
-884       FORMAT(' TOTAL MINIMAL EVOLUTION  : ',G16.7,' NODE  : ',I6)
-        ENDIF
 !
 !=======================================================================
 ! : 10         PRINTS OUT RESULTS AT THIS TIMESTEP
 !              AND COMPARES AGAINST A REFERENCE FILE
 !=======================================================================
 !
-        IF(UNIT) CALL OS('X=CX    ', X=CS, C= XMVS)
+            IF(UNIT) CALL OS('X=CX    ', X=CS, C= XMVS)
 !
-        IF(DEBUG.GT.0) WRITE(LU,*) 'APPEL DE PREDES'
-        CALL PREDES(LT,AT0)
-        IF(DEBUG.GT.0) WRITE(LU,*) 'RETOUR DE PREDES'
-        IF(DEBUG.GT.0) WRITE(LU,*) 'APPEL DE BIEF_DESIMP'
-        CALL BIEF_DESIMP(SIS_FILES(SISRES)%FMT,VARSOR,
-     &                   NPOIN,SIS_FILES(SISRES)%LU,
-     &                   'STD',AT0,LT,LISPR,LEOPR,
-     &                   SORLEO,SORIMP,MAXVAR,TEXTE,PTINIG,PTINIL)
-        IF(DEBUG.GT.0) WRITE(LU,*) 'RETOUR DE BIEF_DESIMP'
+            IF(DEBUG.GT.0) WRITE(LU,*) 'APPEL DE PREDES'
+            CALL PREDES(LT,AT0)
+            IF(DEBUG.GT.0) WRITE(LU,*) 'RETOUR DE PREDES'
+            IF(DEBUG.GT.0) WRITE(LU,*) 'APPEL DE BIEF_DESIMP'
+            CALL BIEF_DESIMP(SIS_FILES(SISRES)%FMT,VARSOR,
+     &                       NPOIN,SIS_FILES(SISRES)%LU,
+     &                       'STD',AT0,LT,LISPR,LEOPR,
+     &                       SORLEO,SORIMP,MAXVAR,TEXTE,PTINIG,PTINIL)
+            IF(DEBUG.GT.0) WRITE(LU,*) 'RETOUR DE BIEF_DESIMP'
 !
-        IF(UNIT) CALL OS('X=CX    ', X=CS,  C= 1.D0/XMVS)
+            IF(UNIT) CALL OS('X=CX    ', X=CS,  C= 1.D0/XMVS)
 !
-!       SENDS THE NEW ZF TO TELEMAC-2D OR 3D
+!           SENDS THE NEW ZF TO TELEMAC-2D OR 3D
 !
-        IF(CODE(1:7).EQ.'TELEMAC') THEN
-          CALL OV ('X=Y     ', ZF_TEL%R, ZF%R, ZF%R, 0.D0, NPOIN)
-        ENDIF
+            IF(CODE(1:7).EQ.'TELEMAC') THEN
+              CALL OV ('X=Y     ', ZF_TEL%R, ZF%R, ZF%R, 0.D0, NPOIN)
+            ENDIF
 !
-!       THE SUBROUTINE VALIDA FROM THE LIBRARY IS STANDARD
-!       IT CAN BE MODIFIED FOR EACH PARTICULAR CASE
-!       BUT ITS CALL MUST BE LEFT IN THE LOOP ON TIME
+!           THE SUBROUTINE VALIDA FROM THE LIBRARY IS STANDARD
+!           IT CAN BE MODIFIED FOR EACH PARTICULAR CASE
+!           BUT ITS CALL MUST BE LEFT IN THE LOOP ON TIME
 !
 !------------------------------------------------------------------
 !
 !> JR @ RWTH: ALGORITHMIC DIFFERENTIATION
 #if defined(COMPAD)
-          CALL AD_SISYPHE_LOOPRECORDS_END
+            CALL AD_SISYPHE_LOOPRECORDS_END
 #endif
 !< JR @ RWTH
 !
 !------------------------------------------------------------------
 !
-        IF(VALID) THEN
-          IF(DEBUG.GT.0) WRITE(LU,*) 'APPEL DE BIEF_VALIDA'
-          CALL BIEF_VALIDA(TB,TEXTPR,SIS_FILES(SISREF)%LU,
-     &                     SIS_FILES(SISREF)%FMT,
-     &                     VARSOR,TEXTE,SIS_FILES(SISRES)%LU,
-     &                     SIS_FILES(SISRES)%FMT,
-     &                     MAXVAR,NPOIN,LT,VALNIT,ALIRV)
-          IF(DEBUG.GT.0) WRITE(LU,*) 'RETOUR DE BIEF_VALIDA'
-        ENDIF
+             IF(VALID) THEN
+               IF(DEBUG.GT.0) WRITE(LU,*) 'APPEL DE BIEF_VALIDA'
+               CALL BIEF_VALIDA(TB,TEXTPR,SIS_FILES(SISREF)%LU,
+     &                          SIS_FILES(SISREF)%FMT,
+     &                          VARSOR,TEXTE,SIS_FILES(SISRES)%LU,
+     &                          SIS_FILES(SISRES)%FMT,
+     &                          MAXVAR,NPOIN,LT,VALNIT,ALIRV)
+               IF(DEBUG.GT.0) WRITE(LU,*) 'RETOUR DE BIEF_VALIDA'
+             ENDIF
 !
-!       END OF THE LOOP ON THE RECORDS
-        ENDDO !MT
+!         END OF THE LOOP ON THE RECORDS
+          ENDDO !MT
 !
 !------------------------------------------------------------------
 !
@@ -1935,7 +1950,7 @@
 !-----------------------------------------------------------------------
 !
         IF(DEBUG.GT.0) WRITE(LU,*) 'END_TIME_LOOP'
-      ENDIF
+      ENDIF !ENDIF(PART==1.OR.PART==-1.OR.PART==3)
 !
 !-----------------------------------------------------------------------
 !
@@ -1949,4 +1964,3 @@
 !
       RETURN
       END
-

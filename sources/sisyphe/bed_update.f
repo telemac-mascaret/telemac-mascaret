@@ -2,7 +2,7 @@
                      SUBROUTINE BED_UPDATE
 !                    *********************
 !
-     &(ZR_T3D,ZF_T3D)
+     &(ZR,ZF,VOLU2D)
 !
 !***********************************************************************
 ! SISYPHE   V7P3                                             28/03/2017
@@ -18,25 +18,28 @@
 !+  Creation of the subroutine.
 !
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-!| ZF_T3D             |-->| ELEVATION OF BOTTOM
-!| ZR_T3D             |-->| NON ERODABLE BED
+!| VOLU2D         |-->| INTEGRAL OF TEST FUNCTIONS
+!| ZF             |<->| ELEVATION OF BOTTOM
+!| ZR             |<->| NON ERODABLE BED
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !
       USE BIEF
       USE DECLARATIONS_SISYPHE, ONLY: MASS_MIX_TOT,MASS_SAND_TOT,
      & MASS_MUD_TOT,MASS_MUD,MASS_SAND,NSAND,NMUD,RATIO_MUD,RATIO_SAND,
      & RATIO_MUD_SAND,NOMBLAY,CONC_MUD,ES,XKV,XMVS,MIN_SED_MASS_COMP,
-     & NPOIN
+     & NPOIN,MASSTOT,NUM_ICLA_IMUD,NUM_ICLA_ISAND,NSICLA
       USE DECLARATIONS_SPECIAL
+      USE INTERFACE_PARALLEL, ONLY : P_DSUM
       IMPLICIT NONE
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
-      TYPE (BIEF_OBJ),  INTENT(INOUT)    :: ZR_T3D,ZF_T3D
+      TYPE (BIEF_OBJ),  INTENT(INOUT)    :: ZR,ZF
+      TYPE (BIEF_OBJ),  INTENT(IN)       :: VOLU2D
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
-      INTEGER IPOIN,ILAYER,ISAND,IMUD
+      INTEGER IPOIN,ILAYER,ISAND,IMUD,ICLA,K,J,I
       DOUBLE PRECISION TOT,TERM,DISCR
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -44,43 +47,48 @@
 !--------------------------------------------------------------------------------------
 ! attention : all masses put to zero ->this part maybe necesssary only in intialization
 ! various masses are in [kg/m2]
-      DO IPOIN = 1,NPOIN
-!
-        DO ILAYER = 1,NOMBLAY
-          MASS_MIX_TOT(ILAYER,IPOIN) = 0.D0
-          MASS_SAND_TOT(ILAYER,IPOIN) = 0.D0
-          MASS_MUD_TOT(ILAYER,IPOIN) = 0.D0
-!
-          IF(NMUD.NE.0)THEN
-            DO IMUD = 1,NMUD
-              ! THIS CLIPPING IS - A PRIORI - NOT MANDATORY
-              IF(MASS_MUD(IMUD,ILAYER,IPOIN).LT.0.D0)THEN
-                MASS_MUD(IMUD,ILAYER,IPOIN) = 0.D0
-              ENDIF
-            ENDDO
-          ELSE
-! IL FAUT DECLARER MASS_MUD avec  MAX(NMUD,1)
-            MASS_MUD(1,ILAYER,IPOIN) = 0.D0
-          ENDIF
-!
-          IF(NSAND.NE.0)THEN
-            DO ISAND = 1,NSAND
-              ! THIS CLIPPING IS - A PRIORI - NOT MANDATORY
-              IF(MASS_SAND(ISAND,ILAYER,IPOIN).LT.0.D0)THEN
-                MASS_SAND(ISAND,ILAYER,IPOIN) = 0.D0
-              ENDIF
-            ENDDO
-          ELSE
-! IL FAUT DECLARER MASS_SAND avec  MAX(NSAND,1)
-            MASS_SAND(1,ILAYER,IPOIN) = 0.D0
-          ENDIF
-        ENDDO
-!
-      ENDDO
+!!      DO IPOIN = 1,NPOIN
+!!!
+!!        DO ILAYER = 1,NOMBLAY
+!!          MASS_MIX_TOT(ILAYER,IPOIN) = 0.D0
+!!          MASS_SAND_TOT(ILAYER,IPOIN) = 0.D0
+!!          MASS_MUD_TOT(ILAYER,IPOIN) = 0.D0
+!!!
+!!          IF(NMUD.NE.0)THEN
+!!            DO IMUD = 1,NMUD
+!!              ! THIS CLIPPING IS - A PRIORI - NOT MANDATORY
+!!              IF(MASS_MUD(IMUD,ILAYER,IPOIN).LT.0.D0)THEN
+!!                MASS_MUD(IMUD,ILAYER,IPOIN) = 0.D0
+!!              ENDIF
+!!            ENDDO
+!!          ELSE
+!!! IL FAUT DECLARER MASS_MUD avec  MAX(NMUD,1)
+!!            MASS_MUD(1,ILAYER,IPOIN) = 0.D0
+!!          ENDIF
+!!!
+!!          IF(NSAND.NE.0)THEN
+!!            DO ISAND = 1,NSAND
+!!              ! THIS CLIPPING IS - A PRIORI - NOT MANDATORY
+!!              IF(MASS_SAND(ISAND,ILAYER,IPOIN).LT.0.D0)THEN
+!!                MASS_SAND(ISAND,ILAYER,IPOIN) = 0.D0
+!!              ENDIF
+!!            ENDDO
+!!          ELSE
+!!! IL FAUT DECLARER MASS_SAND avec  MAX(NSAND,1)
+!!            MASS_SAND(1,ILAYER,IPOIN) = 0.D0
+!!          ENDIF
+!!        ENDDO
+!!!
+!!      ENDDO
 ! end attention
 !-----------------------------------------------------------------------------
 ! UPDATES TOT MASS PER LAYER
-! it means that after bedload here we receive MASS_SAND(ISAND,ILAYER,IPOIN)/MUD
+! it means that after bedload (or suspension or..)
+! here we receive MASS_SAND(ISAND,ILAYER,IPOIN) or MASS_MUD(IMUD,ILAYER,IPOIN).
+! IMPORTANT : MASS_SAND(ISAND,ILAYER,IPOIN) after bedload is just the
+! mass EVOLUTION (copied at the end of bedload_main.f) and not the real mass in
+! the layer for the class.
+! MASS_SAND_TOT contains the mass computed in init_sediment!
 !
       IF(NSAND.GE.1) THEN
         DO IPOIN = 1,NPOIN
@@ -110,6 +118,25 @@
         ENDDO
       ENDDO
 !
+! ATTENTION!!! HERE WE COME BACK TO THE REAL MASS OF SAND/MUD
+! WITH THE OLD RATIO (necessary for computing new ratio)
+!
+      DO IPOIN = 1,NPOIN
+        DO ILAYER = 1,NOMBLAY
+!   COMPUTES MASS FOR EVERY MUD
+          DO IMUD = 1,NMUD
+            MASS_MUD(IPOIN,ILAYER,IMUD) = MASS_MUD_TOT(ILAYER,IPOIN)
+     &      *RATIO_MUD(IMUD,ILAYER,IPOIN)
+          ENDDO
+!   COMPUTES MASS FOR EVERY SAND
+          DO ISAND = 1,NSAND
+            MASS_SAND(ISAND,ILAYER,IPOIN) = MASS_SAND_TOT(ILAYER,IPOIN)
+     &      *RATIO_SAND(ISAND,ILAYER,IPOIN)
+          ENDDO
+        ENDDO
+      ENDDO
+!
+!
 ! COMPUTES MASS RATIOS PER LAYER (SAND CLASSES)
 !
       IF(NSAND.GE.1)THEN
@@ -118,17 +145,17 @@
           DO ILAYER = 1,NOMBLAY
             TOT = 0.D0
             DO ISAND = 1,NSAND
-              IF (ISAND.NE.NSAND)THEN
+              IF(ISAND.NE.NSAND) THEN
                 IF(MASS_SAND_TOT(ILAYER,IPOIN).GE.MIN_SED_MASS_COMP)THEN
                    RATIO_SAND(ISAND,ILAYER,IPOIN) =
      &             MIN(1.D0,MASS_SAND(ISAND,ILAYER,IPOIN)
      &             / MASS_SAND_TOT(ILAYER,IPOIN))
                    TOT = TOT + RATIO_SAND(ISAND,ILAYER,IPOIN)
                 ELSE
-                  RATIO_SAND(IPOIN,ILAYER,ISAND) = 0.D0
+                  RATIO_SAND(ISAND,ILAYER,IPOIN) = 0.D0
                 ENDIF
               ELSE
-                RATIO_SAND(IPOIN,ILAYER,NSAND) = 1.D0-TOT
+                RATIO_SAND(NSAND,ILAYER,IPOIN) = 1.D0-TOT
               ENDIF
             ENDDO
           ENDDO
@@ -212,12 +239,62 @@
 ! COMPUTE ZF (NOTE: THIS COULD BE MOVED)
 !
       DO IPOIN = 1,NPOIN
-        ZF_T3D%R(IPOIN) = ZR_T3D%R(IPOIN)
+        ZF%R(IPOIN) = ZR%R(IPOIN)
         DO ILAYER = 1,NOMBLAY
-          ZF_T3D%R(IPOIN) = ZF_T3D%R(IPOIN) + ES(IPOIN,ILAYER)
+          ZF%R(IPOIN) = ZF%R(IPOIN) + ES(IPOIN,ILAYER)
         ENDDO
       ENDDO
 !
+! COMPUTE MASS SAND AND MASS MUD FOR NEXT ITERATION (with the new ratio)
+!
+      DO IPOIN = 1,NPOIN
+        DO ILAYER = 1,NOMBLAY
+!   COMPUTES MASS FOR EVERY MUD
+          DO IMUD = 1,NMUD
+            MASS_MUD(IPOIN,ILAYER,IMUD) = MASS_MUD_TOT(ILAYER,IPOIN)
+     &      *RATIO_MUD(IMUD,ILAYER,IPOIN)
+          ENDDO
+!   COMPUTES MASS FOR EVERY SAND
+          DO ISAND = 1,NSAND
+            MASS_SAND(ISAND,ILAYER,IPOIN) = MASS_SAND_TOT(ILAYER,IPOIN)
+     &      *RATIO_SAND(ISAND,ILAYER,IPOIN)
+          ENDDO
+        ENDDO
+      ENDDO
+!
+! COMPUTES MASSTOT AT EVERY TIME STEP, FOR EVERY CLASS
+! NECESSARY FOR BALANCE
+!
+      DO ICLA=1,NSICLA
+        MASSTOT(ICLA)=0.D0
+      ENDDO
+!
+      DO ICLA=1,NSICLA
+        K = NUM_ICLA_IMUD(ICLA)
+        J = NUM_ICLA_ISAND(ICLA)
+        IF(J.GT.0) THEN
+          DO IPOIN=1,NPOIN
+            DO I=1,NOMBLAY
+              MASSTOT(ICLA)= MASSTOT(ICLA) +
+     &                   MASS_SAND(J,I,IPOIN)*VOLU2D%R(IPOIN)
+            ENDDO
+          ENDDO
+        ENDIF
+        IF(K.GT.0) THEN
+          DO IPOIN=1,NPOIN
+            DO I=1,NOMBLAY
+              MASSTOT(ICLA)= MASSTOT(ICLA) +
+     &                   MASS_MUD(K,I,IPOIN)*VOLU2D%R(IPOIN)
+            ENDDO
+          ENDDO
+        ENDIF
+      ENDDO
+!
+      IF(NCSIZE.GT.1) THEN
+        DO I=1,NSICLA
+          MASSTOT(I)=P_DSUM(MASSTOT(I))
+        ENDDO
+      ENDIF
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
       RETURN

@@ -5,7 +5,7 @@
      &(MESH,S,EBOR,MASKEL,MASK,QSX,QSY,IELMT,NPOIN,NPTFR,KENT,KDIR,KDDL,
      & LIMTEC,DT,MSK,ENTET,T1,T2,T3,T4,T8,ZFCL,HZ,HZN,GLOSEG,DIMGLO,
      & FLODEL,FLULIM,NSEG,UNSV2D,CSF_SABLE,ICLA,FLBCLA,AVA,LIQBOR,QBOR,
-     & MAXADV)
+     & MAXADV,EVCL_M)
 !
 !***********************************************************************
 ! SISYPHE   V6P2                                   21/07/2011
@@ -13,9 +13,9 @@
 !
 !brief    SOLVES:
 !code
-!+     D(HZ)
-!+     ---- + DIV(QS) = 0
-!+      DT
+!+               D(HZ)
+!+    RHO_SAND*[ ---- + DIV(QS)] = 0
+!+                DT
 !
 !warning
 !+     LIMTEC is used here instead of LIEBOR. The difference is that
@@ -102,12 +102,13 @@
 !| DT             |-->| TIME STEP
 !| EBOR           |<->| BOUNDARY CONDITION FOR BED EVOLUTION (DIRICHLET)
 !| ENTET          |-->| LOGICAL, IF YES INFORMATION IS GIVEN ON MASS CONSERVATION
+!| EVCL_M         |<--| EVCL_M=RHO_S*(HZ-HZN)
 !| FLBCLA         |<->| FLUXES AT BOUNDARY FOR THE CLASS
 !| FLODEL         |<--| FLUXES BETWEEN POINTS (PER SEGMENT)
 !| FLULIM         |<--| LIMITATION OF FLUXES
 !| GLOSEG         |-->| CONNECTIVITY TABLE FOR SEGMENTS
-!| HZ             |<--| NEW AVAILABLE LAYER OF SEDIMENT
-!| HZN            |-->| OLD AVAILABLE LAYER OF SEDIMENT
+!| HZ             |<--| NEW AVAILABLE MASS OF SEDIMENT
+!| HZN            |-->| OLD AVAILABLE MASS OF SEDIMENT
 !| ICLA           |-->| CLASS NUMBER
 !| IELMT          |-->| NUMBER OF ELEMENTS
 !| KDDL           |-->| CONVENTION FOR DEGREE OF FREEDOM
@@ -139,7 +140,7 @@
 !
       USE BIEF
       USE INTERFACE_SISYPHE, EX_BEDLOAD_SOLVS_FE => BEDLOAD_SOLVS_FE
-      USE DECLARATIONS_SISYPHE, ONLY : DOFLUX,HN,HMIN_BEDLOAD
+      USE DECLARATIONS_SISYPHE, ONLY : DOFLUX,HN,HMIN_BEDLOAD,XMVS
 !
       USE DECLARATIONS_SPECIAL
       IMPLICIT NONE
@@ -156,7 +157,7 @@
       LOGICAL,          INTENT(IN)    :: MSK,ENTET
       TYPE(BIEF_OBJ),   INTENT(INOUT) :: FLODEL,T1,T2,T3,T4,T8
       TYPE(BIEF_OBJ),   INTENT(INOUT) :: HZ,EBOR,LIMTEC
-      TYPE(BIEF_OBJ),   INTENT(INOUT) :: ZFCL,FLBCLA
+      TYPE(BIEF_OBJ),   INTENT(INOUT) :: ZFCL,FLBCLA,EVCL_M
       TYPE(BIEF_OBJ),   INTENT(IN)    :: HZN,UNSV2D,LIQBOR,QBOR
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -169,6 +170,8 @@
 !
       CALL VECTOR(FLBCLA,'=','FLUBOR          ',IELBOR(IELMT,1),1.D0,
      &            S,S,S,QSX,QSY,S,MESH,.TRUE.,MASK)
+!
+!     THIS PART IS STILL TO CHANGE TO TRANSFORM FLUX IN kg/s
 !
 !     BOUNDARY CONDITIONS: EITHER EBOR OR QBOR PRESCRIBED (NOT THE 2)
 !
@@ -186,6 +189,7 @@
 !         HERE THE VARIABLE WILL BE THE LAYER DEPTH OF THE SEDIMENT CLASS,
 !         PUT IN T8, NOT THE EVOLUTION
           N=MESH%NBOR%I(K)
+! here we should replace : t8=masse imposee au bord+ masse precedente
           T8%R(K)=AVA(N)*EBOR%R(K)*CSF_SABLE+HZN%R(N)
         ENDIF
       ENDDO
@@ -207,6 +211,7 @@
 !     CANCELLING THE FLUXES TO AND FROM DRY POINTS
 !
       DO ISEG=1,NSEG
+!
         I1=GLOSEG(ISEG,1)
         I2=GLOSEG(ISEG,2)
         IF(HN%R(I1).LT.HMIN_BEDLOAD.OR.
@@ -230,10 +235,9 @@
      &                     'SISYPHE                 ',2,MAXADV)
 !                                                     2 : HARDCODED
 !                             OPTION FOR POSITIVE DEPTHS ALGORITHMS
-!                             HERE CHOICE OF OPTION INDEPENDENT OF
-!                             SEGMENT NUMBERING
+!                             HERE CHOICE OF OPTION WITH EDGE-BASED APPROACH
 !
-      CALL OS('X=Y-Z   ' ,X=ZFCL,Y=HZ,Z=HZN)
+      CALL OS('X=Y-Z   ' ,X=EVCL_M,Y=HZ,Z=HZN)
 !
 !-----------------------------------------------------------------------
 !

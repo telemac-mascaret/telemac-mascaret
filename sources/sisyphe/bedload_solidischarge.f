@@ -3,7 +3,7 @@
 !                    ********************************
 !
      &(MESH,U2D,V2D,UNORM,HN,TW,UW,MU,TOB,CF,TOBW,FW,THETAW,
-     & AVA,MASKPT,MASKEL,ACLADM,UNLADM,KSP,KSR,LIQBOR,
+     & RATIO_SAND,MASKPT,MASKEL,ACLADM,UNLADM,KSP,KSR,LIQBOR,
      & QBOR,DEBUG,NPOIN,NPTFR,IELMT,ICF,KENT,OPTBAN,
      & HIDFAC,GRAV,DM,D90,XWC,XMVE,XMVS,VCE,HMIN,
      & HIDI,KARMAN,ZERO,PI,KARIM_HOLLY_YANG,
@@ -17,7 +17,9 @@
 ! SISYPHE   V7P2                                   21/07/2011
 !***********************************************************************
 !
-!brief
+!brief    COMPUTATION OF SOLID DISCHARGE: QSC.
+!         ACCORDING TO THE FORMULA USED, IT ALSO COMPUTES QSS
+!
 !
 !history  E. PELTIER; C. LENORMANT; J.-M. HERVOUET
 !+        20/05/1995
@@ -80,7 +82,6 @@
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !| AC             |<->| CRITICAL SHIELDS PARAMETER
 !| ACLADM         |-->| MEAN DIAMETER OF SEDIMENT
-!| AVA            |-->| PERCENT AVAILABLE
 !| BETA           |-->| COEFFICIENT FOR SLOPING BED EFFECT ( KOCH AND FLOKSTRA)
 !| BETA2          |-->| COEFFICIENT FOR THE DEVIATION  (TALMON ET AL.)
 !| BIJK           |-->| COEFFICIENT OF THE BIJKER FORMULA
@@ -117,8 +118,9 @@
 !| PHISED         |-->| ANGLE OF REPOSE OF THE SEDIMENT
 !| PI             |-->| PI
 !| QBOR           |-->| BOUNDARY CONDITION FOR TRANSPORT RATE
-!| QSC            |<->| BED LOAD TRANSPORT
+!| QSC            |<->| BED LOAD TRANSPORT [m2/s]->[kg*(m-1*s-1)]
 !| QSS            |<->| SUSPENDED LOAD TRANSPORT RATE
+!| RATIO_SAND     |-->| MASS FRACTION OF SAND
 !| S              |-->| VOID STRUCTURE
 !| SALFA          |<->| SINUS OF THE ANGLE BETWEEN TRANSPORT RATE AND CURRENT
 !| SECCURRENT     |-->| LOGICAL, PARAMETRISATION FOR SECONDARY CURRENTS
@@ -190,7 +192,7 @@
       TYPE(BIEF_OBJ),   INTENT(IN)    :: ZF_C,S,UNSV2D
       TYPE(BIEF_OBJ),   INTENT(INOUT) :: CALFA,SALFA,COEFPN
 !
-      DOUBLE PRECISION, INTENT(IN)    :: BIJK,AVA(NPOIN)
+      DOUBLE PRECISION, INTENT(IN)    :: BIJK,RATIO_SAND(NPOIN)
 !
       TYPE(BIEF_OBJ),    INTENT(IN)    :: U3D,V3D
       CHARACTER(LEN=24), INTENT(IN)    :: CODE
@@ -256,8 +258,8 @@
 !
       CALL BEDLOAD_FORMULA
      &  (U2D,V2D, UNORM,HN, CF, MU,TOB, TOBW, UW, TW, THETAW, FW,
-     &   ACLADM, UNLADM, KSP,KSR,AVA, NPOIN, ICF, HIDFAC, XMVS, XMVE,
-     &   DM, GRAV, VCE, HMIN, XWC, D90, KARMAN, ZERO,
+     &   ACLADM, UNLADM, KSP,KSR,RATIO_SAND, NPOIN, ICF, HIDFAC, XMVS,
+     &   XMVE, DM, GRAV, VCE, HMIN, XWC, D90, KARMAN, ZERO,
      &   PI, SUSP, AC, HIDING, T1, T2, T3, T4, T5, T6, T7, T8, T9,
      &   T10, T11, T12, QSC, QSS, IELMT,SECCURRENT,
      &   SLOPEFF, COEFPN, CALFA, SALFA, BIJK, HOULE)
@@ -270,6 +272,10 @@
         CALL OS('X=XY    ', X=QSC, Y=MASKPT)
         IF (DEBUG > 0) WRITE(LU,*) 'END_TIDAL_FLATS_TREATMENT'
       ENDIF
+!
+!     SOLID DISCHARGE IS TRANSFORMED IN [kg/(m*s)]
+!
+      CALL OS('X=CX    ', X=QSC, C=XMVS)
 !
 !-----------------------------------------------------------------------
 !

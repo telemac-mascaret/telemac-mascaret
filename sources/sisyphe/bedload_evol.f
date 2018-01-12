@@ -7,15 +7,15 @@
      & IELMT,KENT,KDIR,KDDL,LOADMETH,
      & DTS,DM,D90,HMIN,LS0,GRAV,XMVS,XMVE,VCE,
      & VF,ENTET,MSK,CONST_ALAYER,LCONDIS,MESH,
-     & QS,T1,T2,T3,T4,T5,T6,T7,T8,T9,
-     & T10,T11,T12,T13,CSF_SABLE,BREACH,QSX,QSY,ZFCL,SLOPEFF,ICLA,
-     & FLBCLA,LIQBOR,QBOR,MAXADV)
+     & QS,T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,
+     & T11,T12,T13,CSF_SABLE,BREACH,QSX,QSY,ZFCL,SLOPEFF,
+     & ICLA,FLBCLA,LIQBOR,QBOR,MAXADV,MASS_SAND,RATIO_SAND,EVCL_M)
 !
 !***********************************************************************
 ! SISYPHE   V7P0                                    03/06/2014
 !***********************************************************************
 !
-!brief    COMPUTES THE EVOLUTION FOR THE BEDLOAD TRANSPORT.
+!brief    COMPUTES THE MASS EVOLUTION FOR THE BEDLOAD TRANSPORT.
 !
 !history  F. HUVELIN
 !+        14/09/2004
@@ -86,6 +86,8 @@
 !| LS0            |-->| (A SUPPRIMER)
 !| MASK           |-->| BLOCK OF MASKS, EVERY ONE FOR A TYPE OF BOUNDARY
 !| MASKEL         |-->| MASKING OF ELEMENTS
+!| EVCL_M         |<->| MASS EVOLUTION (PER CLASS) DURING A TIME STEP
+!| MASS_SAND      |-->| MASS OF SAND OF THE FIRST LAYER
 !| MAXADV         |-->| MAXIMUM NUMBER OF ITERATIONS (IN POSITIVE_DEPTHS)
 !| MESH           |<->| MESH STRUCTURE
 !| MSK            |-->| IF YES, THERE IS MASKED ELEMENTS
@@ -96,7 +98,8 @@
 !| QS             |<->| EDLOAD TRANSPORT RATE
 !| QSX            |<->| SOLID DISCHARGE X
 !| QSY            |<->| SOLID DISCHARGE Y
-!| S              |-->| VOID STRUCTURE
+!| QSY            |<->| SOLID DISCHARGE Y
+!| RATIO_SAND     |-->| MASS FRACTION OF SAND
 !| SALFA          |<->| SINUS OF THE ANGLE BETWEEN TRANSPORT RATE AND CURRENT
 !| SLOPEFF        |-->| LOGICAL, SLOPING BED EFFECT OR NOT
 !| T1             |<->| WORK BIEF_OBJ STRUCTURE
@@ -136,6 +139,7 @@
       INTEGER,          INTENT(IN)    :: MAXADV
       DOUBLE PRECISION, INTENT(IN)    :: DTS,DM,D90,HMIN,LS0
       DOUBLE PRECISION, INTENT(IN)    :: GRAV,XMVS,XMVE,VCE,AVA(NPOIN)
+      DOUBLE PRECISION, INTENT(IN)    :: RATIO_SAND(NPOIN)
       LOGICAL,          INTENT(IN)    :: VF,ENTET,MSK
       LOGICAL,          INTENT(IN)    :: CONST_ALAYER,LCONDIS
       TYPE(BIEF_MESH),  INTENT(INOUT) :: MESH
@@ -145,6 +149,8 @@
       DOUBLE PRECISION, INTENT(IN)    :: CSF_SABLE
       TYPE(BIEF_OBJ),   INTENT(INOUT) :: BREACH, QSX, QSY, ZFCL,LIMTEC
       TYPE(BIEF_OBJ),   INTENT(IN)    :: LIQBOR,QBOR
+      TYPE(BIEF_OBJ),   INTENT(INOUT) :: EVCL_M
+      DOUBLE PRECISION, INTENT(IN)    :: MASS_SAND(NPOIN)
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
@@ -170,9 +176,9 @@
       IF(VF) THEN
         IF(DEBUG.GT.0) WRITE(LU,*) 'CALLING BEDLOAD_NERBED_VF'
         CALL BEDLOAD_NERBED_VF
-     &        (MESH,LIMTEC,KDDL,ELAY%R,V2DPAR%R,QSX,QSY,AVA,NPOIN,
-     &         MESH%NSEG,NPTFR,DTS,QS,T1,T2,T3,BREACH,CSF_SABLE,
-     &         MESH%NUBO%I,MESH%VNOIN%R)
+     &        (MESH,LIMTEC,KDDL,ELAY%R,V2DPAR%R,QSX,QSY,
+     &         NPOIN,MESH%NSEG,NPTFR,DTS,QS,T1,T2,T3,BREACH,CSF_SABLE,
+     &         MESH%NUBO%I,MESH%VNOIN%R,MASS_SAND)
         IF(DEBUG.GT.0) WRITE(LU,*) 'RETURN FROM BEDLOAD_NERBED_VF'
         CALL OS('X=YZ    ', X=QSX, Y=QS, Z=CALFA)
         CALL OS('X=YZ    ', X=QSY, Y=QS, Z=SALFA)
@@ -184,17 +190,18 @@
         IF(DEBUG.GT.0) WRITE(LU,*) 'CALLING BEDLOAD_SOLVS_VF'
         CALL BEDLOAD_SOLVS_VF(MESH,QSX,QSY,LIMTEC,UNSV2D,EBOR,
      &                        BREACH,MESH%NSEG,NPTFR,NPOIN,
-     &                        KENT,KDIR,KDDL,DTS,T10,ZFCL,T11,
-     &                        CSF_SABLE,FLBCLA%ADR(ICLA)%P,AVA,
-     &                        LIQBOR,QBOR,MESH%NUBO%I,MESH%VNOIN%R)
+     &                        KENT,KDIR,KDDL,DTS,ZFCL,T11,
+     &                        CSF_SABLE,FLBCLA%ADR(ICLA)%P,
+     &                        LIQBOR,QBOR,MESH%NUBO%I,MESH%VNOIN%R,
+     &                        EVCL_M,RATIO_SAND,XMVS)
         IF(DEBUG.GT.0) WRITE(LU,*) 'RETURN FROM BEDLOAD_SOLVS_VF'
 !
 !     SOLVES THE BED-EVOLUTION EQUATION : F.E.
 !
       ELSE
         DO J=1,NPOIN
-!         T13 IS THE SEDIMENT HEIGHT (EXCLUDING VOIDS, SO *CSF_SABLE)
-          T13%R(J)=AVA(J)*ELAY%R(J)*CSF_SABLE
+!         T13 IS THE MASS OF THE ACTIVE LAYER (FOR THIS SEDIMENT CLASS)
+          T13%R(J)=MASS_SAND(J)
         ENDDO
         IF(DEBUG.GT.0) WRITE(LU,*) 'BEDLOAD_SOLVS_FE'
         CALL BEDLOAD_SOLVS_FE(MESH,S,EBOR,MASKEL,MASK,
@@ -204,7 +211,7 @@
      &                        MESH%GLOSEG%DIM1,MESH%MSEG%X,
      &                        FLULIM,MESH%NSEG,UNSV2D,CSF_SABLE,ICLA,
      &                        FLBCLA%ADR(ICLA)%P,AVA,LIQBOR,QBOR,
-     &                        MAXADV)
+     &                        MAXADV,EVCL_M)
         IF(DEBUG.GT.0) WRITE(LU,*) 'END_BEDLOAD_SOLVS_FE'
       ENDIF
 !

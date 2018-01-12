@@ -34,14 +34,14 @@
       USE BIEF
       USE DECLARATIONS_TELEMAC
       USE DECLARATIONS_SISYPHE, ONLY: NEW_BED_MODEL,AVAIL,ACLADM,UNLADM,
-     & FDM,NSICLA,RATIO_SAND,NPOIN
+     & FDM,NSICLA,RATIO_SAND,NPOIN,NSAND,NOMBLAY
 !
       USE DECLARATIONS_SPECIAL
       IMPLICIT NONE
 !
 !-----------------------------------------------------------------------
 !
-      INTEGER I,J
+      INTEGER I,J,ISAND
 !
 !-----------------------------------------------------------------------
 !
@@ -68,17 +68,26 @@
         DO J=1,NPOIN
           ACLADM%R(J) = 0.D0
           UNLADM%R(J) = 0.D0
-          IF(NSICLA.GT.1) THEN
-            DO I=1,NSICLA
-              IF(RATIO_SAND(I,1,J).GT.0.D0) THEN
-                ACLADM%R(J) = ACLADM%R(J) + FDM(I)*RATIO_SAND(I,1,J)
+          DO I=1,NSAND
+            IF(RATIO_SAND(I,1,J).GT.0.D0) THEN
+! HERE NSICLA=NSANDS
+              ACLADM%R(J) = ACLADM%R(J) + FDM(I)*RATIO_SAND(I,1,J)
+            ENDIF
+          ACLADM%R(J)=MAX(ACLADM%R(J),0.D0)
+          ENDDO
+          IF(ACLADM%R(J).LE.0.D0) ACLADM%R(J) = FDM(1)
+        ENDDO
+        IF(NOMBLAY.GT.1) THEN
+          DO J=1,NPOIN
+            DO ISAND=1,NSAND
+              IF(RATIO_SAND(I,2,J).GT.0.D0) THEN
                 UNLADM%R(J) = UNLADM%R(J) + FDM(I)*RATIO_SAND(I,2,J)
               ENDIF
+              UNLADM%R(J)=MAX(UNLADM%R(J),0.D0)
             ENDDO
-          ENDIF
-          IF(ACLADM%R(J).LE.0.D0) ACLADM%R(J) = FDM(1)
-          IF(UNLADM%R(J).LE.0.D0) UNLADM%R(J) = ACLADM%R(J)
-        ENDDO
+            IF(UNLADM%R(J).LE.0.D0) UNLADM%R(J) = ACLADM%R(J)
+          ENDDO
+        ENDIF
       ENDIF
 !
 !-----------------------------------------------------------------------
