@@ -753,6 +753,7 @@ files: declarations_sisyphe.f
   entete_sisyphe.f
   sisyphe.F
   update_activelayer_hirano.f
+  bed_update.f
 
 [special]
 path: <root>|sources|utils|special

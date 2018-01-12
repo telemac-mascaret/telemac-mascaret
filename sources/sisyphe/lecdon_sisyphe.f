@@ -412,7 +412,6 @@
 !     ONE IS TAKEN FOR THE FOLLOWING
 !     FOR EXAMPLE IF ONLY ONE IS GIVEN, ALL WILL HAVE
 !     THE SAME VALUE
-! a verifier avec Pablo!!!
       IF(DIMENS(2,6).LT.NSICLA) THEN
         IF(LNG.EQ.1) THEN
           WRITE(LU,*)'DONNER UNE VALEUR DE SHIELDS
@@ -459,7 +458,6 @@
         ENDIF
         CALL PLANTE(1)
         STOP
-! a verifier avec Pablo
 !        DO K=DIMENS(2,22)+1,NSICLA
 !          XWC(K) = MOTREA( ADRESS(2, 22)+DIMENS(2,22)-1 )
 !        ENDDO
@@ -591,7 +589,7 @@
         ENDDO
       ENDIF
 !
-!     MINIMUM DEPTH FOR BEDLOAD
+!     MINIMUM DEPTH FOR BEDLOAD WHEN USING FE
 !
       HMIN_BEDLOAD=MOTREA(ADRESS(2,52))
 !
@@ -756,6 +754,10 @@
       ALLOCATE(NUM_ISAND_ICLA(NSICLA))
       ALLOCATE(NUM_ICLA_ISAND(NSICLA))
         DO K=1,NSICLA
+          NUM_ICLA_ISAND(K)=0
+          NUM_ISAND_ICLA(K)=0
+          NUM_ICLA_IMUD(K)=0
+          NUM_IMUD_ICLA(K)=0
           TYPE_SED(K) = MOTCAR(ADRESS(4,59)+K-1)(1:3)
           IF(TYPE_SED(K).EQ.'CO') THEN
             SEDCO(K)=.TRUE.

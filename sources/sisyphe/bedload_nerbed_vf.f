@@ -2,8 +2,8 @@
                      SUBROUTINE BEDLOAD_NERBED_VF !
 !                    ******************************
 !
-     &(MESH,LIEBOR,KSORT,ELAY,V2DPAR,QSX,QSY,AVA,NPOIN,NSEG,NPTFR,
-     & DT,QS,T1,T2,T3,BREACH,CSF_SABLE,NUBO,VNOIN)
+     &(MESH,LIEBOR,KSORT,ELAY,V2DPAR,QSX,QSY,NPOIN,NSEG,
+     & NPTFR,DT,QS,T1,T2,T3,BREACH,CSF_SABLE,NUBO,VNOIN,MASS_SAND)
 !
 !***********************************************************************
 ! SISYPHE   V7P0                                   03/06/2014
@@ -46,7 +46,6 @@
 !+
 !
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-!| AVA            |-->| PERCENT AVAILABLE
 !| BREACH         |<->| INDICATOR FOR NON ERODIBLE BED (FINITE VOLUMES SCHEMES)
 !| DT             |-->| TIME STEP
 !| ELAY           |<->| THICKNESS OF SURFACE LAYER
@@ -66,6 +65,7 @@
 !| V2DPAR         |-->| INTEGRAL OF TEST FUNCTIONS, ASSEMBLED IN PARALLEL
 !| VNOIN          |-->| OUTWARD UNIT NORMALS
 !| CSF_SABLE      |-->| VOLUME CONCENTRATION OF SAND (1-POROSITY)
+!| MASS_SAND      |-->| MASS SAND OF THE ACTIVE LAYER
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !
       USE INTERFACE_SISYPHE, EX_BEDLOAD_NERBED_VF => BEDLOAD_NERBED_VF
@@ -83,10 +83,10 @@
       TYPE(BIEF_OBJ),   INTENT(INOUT) :: QS, T1, T2, T3
       TYPE(BIEF_OBJ),   INTENT(INOUT) :: BREACH
       DOUBLE PRECISION, INTENT(IN)    :: ELAY(NPOIN),V2DPAR(NPOIN)
-      DOUBLE PRECISION, INTENT(IN)    :: AVA(NPOIN), CSF_SABLE
-! RA
+      DOUBLE PRECISION, INTENT(IN)    :: CSF_SABLE
       INTEGER, INTENT(IN)             :: NUBO(2,NSEG)
       DOUBLE PRECISION, INTENT(IN)    :: VNOIN(3,NSEG)
+      DOUBLE PRECISION, INTENT(IN)    :: MASS_SAND(NPOIN)
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
@@ -207,7 +207,7 @@
 !
       DO I = 1, NPOIN
 !
-        T3%R(I)=ELAY(I)*V2DPAR(I)*AVA(I)* CSF_SABLE/DT
+        T3%R(I)=MASS_SAND(I)*V2DPAR(I)/DT
         IF (T3%R(I) < 0.D0) T3%R(I) = 0.D0
 !
         ! IF THE OUTGOING FLUX IS TOO LARGE, QS IS CAPPED AT THE NODE

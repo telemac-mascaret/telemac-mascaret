@@ -1,10 +1,9 @@
-! CV :XKV not used - à supprimer
 !                    **************************
                      SUBROUTINE BEDLOAD_FORMULA
 !                    **************************
 !
      &(U2D,V2D,UCMOY,HN,CF,MU,TOB,TOBW,UW,TW,THETAW,FW,
-     & ACLADM, UNLADM,KSP,KSR,AVA,NPOIN,ICF,HIDFAC,XMVS,XMVE,
+     & ACLADM, UNLADM,KSP,KSR,RATIO_SAND,NPOIN,ICF,HIDFAC,XMVS,XMVE,
      & DM,GRAV,VCE,HMIN,XWC,D90,KARMAN,ZERO,
      & PI,SUSP, AC, HIDING, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10,
      & T11,TETAP, QSC, QSS,IELMT,SECCURRENT,SLOPEFF,
@@ -60,7 +59,6 @@
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !| AC             |<->| SHIELDS PARAMETER
 !| ACLADM         |-->| MEAN DIAMETER
-!| AVA            |-->| PERCENT AVAILABLE
 !| BIJK           |-->| EMPIRICAL COEFFICIENT
 !| CF             |-->| QUADRATIC FRICTION COEFFICIENT
 !| COEFPN         |-->| COEFFICIENT FOR SLOPING BED EFFECTS
@@ -83,6 +81,7 @@
 !| PI             |-->| PI
 !| QSC            |<->| BED LOAD TRANSPORT RATE (m2/S)
 !| QSS            |<->| SUSPENDED LOAD TRANSPORT RATE (M2/S)
+!| RATIO_SAND     |-->| MASS FRACTION OF SAND
 !| SECCURRENT     |-->| EFFECT OF SECUNDARY CURRENTS
 !| SLOPEFF        |-->| FORMULA FOR SLOPING BED EFFECTS
 !| SUSP           |-->| SUSPENSION TREATMENT
@@ -138,7 +137,7 @@
       TYPE(BIEF_OBJ),   INTENT(INOUT) ::  COEFPN, CALFA, SALFA
       INTEGER,          INTENT(IN)    :: SLOPEFF
 !
-      DOUBLE PRECISION, INTENT (IN) :: BIJK,AVA(NPOIN)
+      DOUBLE PRECISION, INTENT (IN) :: BIJK,RATIO_SAND(NPOIN)
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
@@ -181,7 +180,7 @@
         CALL BEDLOAD_MEYER(TETAP,HIDING,HIDFAC,DENS,GRAV,DM,AC,
      &                     T1,QSC,SLOPEFF,COEFPN)
         DO I=1,NPOIN
-          QSC%R(I)=QSC%R(I)*AVA(I)
+          QSC%R(I)=QSC%R(I)*RATIO_SAND(I)
         ENDDO
 !
       ! =========================== !
@@ -191,7 +190,7 @@
       ELSEIF(ICF == 2) THEN
         CALL BEDLOAD_EINST(TETAP,NPOIN,DENS,GRAV,DM,DSTAR,QSC)
         DO I=1,NPOIN
-          QSC%R(I)=QSC%R(I)*AVA(I)*HIDING%R(I)
+          QSC%R(I)=QSC%R(I)*RATIO_SAND(I)*HIDING%R(I)
         ENDDO
 !
       ! =================================== !
@@ -206,7 +205,7 @@
         CALL BEDLOAD_ENGEL(TOB,CF,DENS,GRAV,DM,XMVE,T1,QSC)
 !       ARBITRARY DISTRIBUTION
         DO I=1,NPOIN
-          QSC%R(I)=QSC%R(I)*AVA(I)*HIDING%R(I)
+          QSC%R(I)=QSC%R(I)*RATIO_SAND(I)*HIDING%R(I)
         ENDDO
 !
       ! ======================================== !
@@ -220,7 +219,7 @@
      &       (TETAP,CF,NPOIN,GRAV,DM,DENS,T1,QSC)
 !       ARBITRARY DISTRIBUTION
         DO I=1,NPOIN
-          QSC%R(I)=QSC%R(I)*AVA(I)*HIDING%R(I)
+          QSC%R(I)=QSC%R(I)*RATIO_SAND(I)*HIDING%R(I)
         ENDDO
 !
       ! ============================== !
@@ -232,8 +231,8 @@
      &   (TOBW,TOB,MU,KSP,KSR,HN,NPOIN,DM,DENS,XMVE,GRAV,
      &    XWC,KARMAN,ZERO,T4,T7,T8,T9,QSC,QSS,BIJK,HOULE)
         DO I=1,NPOIN
-          QSC%R(I)=QSC%R(I)*AVA(I)*HIDING%R(I)
-          QSS%R(I)=QSS%R(I)*AVA(I)*HIDING%R(I)
+          QSC%R(I)=QSC%R(I)*RATIO_SAND(I)*HIDING%R(I)
+          QSS%R(I)=QSS%R(I)*RATIO_SAND(I)*HIDING%R(I)
         ENDDO
 !
       ! ============================== !
@@ -245,8 +244,8 @@
      &       (UCMOY,HN,UW,NPOIN,DENS,GRAV,DM,DSTAR,HMIN,
      &        D90,QSC,QSS)
         DO I=1,NPOIN
-          QSC%R(I)=QSC%R(I)*AVA(I)*HIDING%R(I)
-          QSS%R(I)=QSS%R(I)*AVA(I)*HIDING%R(I)
+          QSC%R(I)=QSC%R(I)*RATIO_SAND(I)*HIDING%R(I)
+          QSS%R(I)=QSS%R(I)*RATIO_SAND(I)*HIDING%R(I)
         ENDDO
 !
       ! ================================================== !
@@ -258,7 +257,7 @@
      &       (TOB, MU, ACLADM, UNLADM, NPOIN, DENS, XMVE, GRAV,
      &        DM, AC, T1, T2, T3, HIDING, QSC)
         DO I=1,NPOIN
-          QSC%R(I)=QSC%R(I)*AVA(I)
+          QSC%R(I)=QSC%R(I)*RATIO_SAND(I)
         ENDDO
 !
       ! =========================== !
@@ -271,7 +270,7 @@
 !     &       (TOB,MU,NPOIN,DM,DENS,GRAV,DSTAR,AC,QSC)
      &       (TETAP,MU,NPOIN,DM,DENS,GRAV,DSTAR,AC,QSC)
         DO I=1,NPOIN
-          QSC%R(I)=QSC%R(I)*AVA(I)*HIDING%R(I)
+          QSC%R(I)=QSC%R(I)*RATIO_SAND(I)*HIDING%R(I)
         ENDDO
 !
       ! ============================== !
@@ -285,8 +284,8 @@
      &        PI,XMVE,GRAV,DENS,XWC,T1,T2,T3,T4,T5,T6,T7,
      &        T8,T9,T10,T11,QSC,QSS,HOULE)
         DO I=1,NPOIN
-          QSC%R(I)=QSC%R(I)*AVA(I)*HIDING%R(I)
-          QSS%R(I)=QSS%R(I)*AVA(I)*HIDING%R(I)
+          QSC%R(I)=QSC%R(I)*RATIO_SAND(I)*HIDING%R(I)
+          QSS%R(I)=QSS%R(I)*RATIO_SAND(I)*HIDING%R(I)
         ENDDO
 !
       ! ======================================= !
@@ -301,7 +300,7 @@
      &        T5, T6, T7, T8, T9, T10, T11, QSC,HOULE)
 !       ARBITRARY DISTRIBUTION
         DO I=1,NPOIN
-          QSC%R(I)=QSC%R(I)*AVA(I)*HIDING%R(I)
+          QSC%R(I)=QSC%R(I)*RATIO_SAND(I)*HIDING%R(I)
         ENDDO
 !
       ! ============================================ !
@@ -312,8 +311,8 @@
      &       (U2D, V2D, TOB, HN, XMVE, TETAP, MU, NPOIN, DM,
      &       DENS, GRAV, DSTAR, AC, QSC, QSS)
         DO I=1,NPOIN
-           QSC%R(I)=QSC%R(I)*AVA(I)*HIDING%R(I)
-           QSS%R(I)=QSS%R(I)*AVA(I)*HIDING%R(I)
+           QSC%R(I)=QSC%R(I)*RATIO_SAND(I)*HIDING%R(I)
+           QSS%R(I)=QSS%R(I)*RATIO_SAND(I)*HIDING%R(I)
         ENDDO
       ! ================= !
       ! IV(ELSE) - ERROR  !

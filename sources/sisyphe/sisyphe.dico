@@ -3650,8 +3650,10 @@ DEFAUT1 = 1.E-2
 RUBRIQUE = 'CALCUL';'GENERAL'
 RUBRIQUE1 = 'COMPUTATIONAL INFORMATION';'GENERAL'
 NIVEAU = 1
-AIDE = 'Suppression des flux de sediment de et vers les points secs'
-AIDE1 = 'To cancel sediment fluxes to and from dry points'
+AIDE = 'Suppression des flux de sediment de et vers les points secs,
+valable seulement en elements finis'
+AIDE1 = 'To cancel sediment fluxes to and from dry points, only for
+finite element solver'
 
 /
 / ADDITIONAL USER VARIABLES (ALGORITHMIC DIFFERENTIATION)

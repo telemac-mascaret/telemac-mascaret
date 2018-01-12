@@ -6,7 +6,7 @@
      & INFO,ZFCL_C,ZFCL_S,ZFCL_MS,
      & QSCLXC,QSCLYC,NSICLA,VOLTOT,DZF_GF,
      & NUMLIQ,NFRLIQ,FLBCLA,VF,LT,NIT,NPOIN,VOLU2D,CSF_SABLE,MASDEP,
-     & MASDEPT,CHARR,SUSP,SLIDE)
+     & MASDEPT,CHARR,SUSP,SLIDE,EVCL_M,MASSTOT)
 !
 !***********************************************************************
 ! SISYPHE   V6P2                                   21/07/2011
@@ -52,6 +52,7 @@
 !| DZF_GF         |---| A SUPPRIMER
 !| E              |-->| BED EVOLUTION AT A GIVEN TIME STEP
 !| ESOMT          |-->| CUMULATED BED EVOLUTION
+!| EVCL_M         |<->| BEDLOAD MASS EVOLUTION FOR EACH SEDIMENT CLASS
 !| FLBCLA         |-->| BLOCK OF FLUXES AT BOUNDARY FOR EACH CLASS
 !| IELMU          |-->| NUMER OF ELEMENTS
 !| INFO           |-->| IF YES : INFORMATION IS PRINTED
@@ -63,6 +64,7 @@
 !| MASKEL         |-->| MASKING OF ELEMENTS
 !| MESH           |<->| MESH STRUCTURE
 !| MSK            |-->| IF YES, THERE IS MASKED ELEMENTS
+!| MASSTOT        |-->| TOTAL MASS PER CLASS OF SEDIMENT
 !| NFRLIQ         |-->| NUMBER OF LIQUID BOUNDARIES
 !| NIT            |-->| NUMBER OF TIME STEPS
 !| NPOIN          |-->| NUMBER OF POINTS
@@ -84,7 +86,8 @@
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !
       USE BIEF
-      USE DECLARATIONS_SISYPHE, ONLY : NSICLM,MAXFRO
+      USE DECLARATIONS_SISYPHE, ONLY : NSICLM,MAXFRO,NUM_ICLA_ISAND,
+     &                                 NUM_ICLA_IMUD
 !
       USE DECLARATIONS_SPECIAL
       IMPLICIT NONE
@@ -98,7 +101,7 @@
 !
       DOUBLE PRECISION, INTENT(INOUT) :: VCUMU
       DOUBLE PRECISION, INTENT(IN)    :: CSF_SABLE,VOLTOT(NSICLA)
-      DOUBLE PRECISION, INTENT(IN)    :: MASDEP(NSICLA)
+      DOUBLE PRECISION, INTENT(IN)    :: MASDEP(NSICLA),MASSTOT(NSICLA)
       DOUBLE PRECISION, INTENT(INOUT) :: MASDEPT(NSICLA)
 !
 !-----------------------------------------------------------------------
@@ -107,7 +110,7 @@
 !
       TYPE(BIEF_OBJ), INTENT(IN)    :: MASKEL,S,ZFCL_C,QSCLXC,QSCLYC
       TYPE(BIEF_OBJ), INTENT(IN)    :: E,ESOMT,DZF_GF,VOLU2D,ZFCL_S
-      TYPE(BIEF_OBJ), INTENT(IN)    :: ZFCL_MS
+      TYPE(BIEF_OBJ), INTENT(IN)    :: ZFCL_MS,EVCL_M
       TYPE(BIEF_OBJ), INTENT(INOUT) :: T1,T2,FLBCLA
 !
 !-----------------------------------------------------------------------
@@ -118,7 +121,7 @@
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
-      INTEGER I,IFRLIQ,IPTFR,ICLA
+      INTEGER I,IFRLIQ,IPTFR,ICLA,K
       DOUBLE PRECISION RMASSE,RCUMU,RMASCLA(NSICLM)
       DOUBLE PRECISION VCUMUCLA(NSICLM),FLUXT,FLUXTCLA,VOLDEP
 !     DOUBLE PRECISION MASST
@@ -129,7 +132,7 @@
 !
 !-----------------------------------------------------------------------
 !
-!     COMPUTES THE EVOLUTION (E)
+!     COMPUTES THE MASS EVOLUTION (E)
 !
       RMASSE=0.D0
       DO I=1,NPOIN
@@ -189,7 +192,10 @@
         ENDDO
       ENDIF
 !
-      VCUMU = VCUMU - FLUXT*DT/CSF_SABLE
+!     note : VCUMU is now the mass entered in the domain
+!     the division by csf_sable is no more necessary
+!     change the name of the variable later
+      VCUMU = VCUMU - FLUXT*DT
 !
 !     BALANCE IN EXTENDED GRANULOMETRY
 !
@@ -197,68 +203,70 @@
 !
         DO ICLA=1,NSICLA
 !
-!       COMPUTES THE EVOLUTION PER CLASS
+          K=NUM_ICLA_ISAND(ICLA)
+!         COMPUTES THE EVOLUTION PER CLASS
 !
-        RMASCLA(ICLA)=0.D0
-        IF(SUSP.AND.SLIDE.AND.CHARR) THEN
-          DO I=1,NPOIN
-            RMASCLA(ICLA)=RMASCLA(ICLA)
-     &                   +( ZFCL_C%ADR(ICLA)%P%R(I)
-     &                     +ZFCL_S%ADR(ICLA)%P%R(I)
-     &                     +ZFCL_MS%ADR(ICLA)%P%R(I) )*VOLU2D%R(I)
-          ENDDO
-        ELSEIF(SLIDE.AND.CHARR) THEN
-          DO I=1,NPOIN
-            RMASCLA(ICLA)=RMASCLA(ICLA)
-     &                   +( ZFCL_C%ADR(ICLA)%P%R(I)
-     &                     +ZFCL_MS%ADR(ICLA)%P%R(I) )*VOLU2D%R(I)
-          ENDDO
-        ELSEIF(SUSP.AND.CHARR) THEN
-          DO I=1,NPOIN
-            RMASCLA(ICLA)=RMASCLA(ICLA)
-     &                   +( ZFCL_C%ADR(ICLA)%P%R(I)
-     &                     +ZFCL_S%ADR(ICLA)%P%R(I) )*VOLU2D%R(I)
-          ENDDO
-        ELSEIF(SUSP.AND.SLIDE) THEN
-          DO I=1,NPOIN
-            RMASCLA(ICLA)=RMASCLA(ICLA)
-     &                   +( ZFCL_S%ADR(ICLA)%P%R(I)
-     &                     +ZFCL_MS%ADR(ICLA)%P%R(I) )*VOLU2D%R(I)
-          ENDDO
-        ELSEIF(SUSP) THEN
-          DO I=1,NPOIN
-            RMASCLA(ICLA)=RMASCLA(ICLA)
-     &                   +ZFCL_S%ADR(ICLA)%P%R(I)*VOLU2D%R(I)
-          ENDDO
-        ELSEIF(SLIDE) THEN
-          DO I=1,NPOIN
-            RMASCLA(ICLA)=RMASCLA(ICLA)
-     &                   +ZFCL_MS%ADR(ICLA)%P%R(I)*VOLU2D%R(I)
-          ENDDO
-        ELSEIF(CHARR) THEN
-          DO I=1,NPOIN
-            RMASCLA(ICLA)=RMASCLA(ICLA)
-     &                   +ZFCL_C%ADR(ICLA)%P%R(I)*VOLU2D%R(I)
-          ENDDO
-        ENDIF
-        IF(NCSIZE.GT.1) RMASCLA(ICLA) = P_DSUM(RMASCLA(ICLA))
-!
-!       COMPUTES THE FREE FLUXES BY CLASS
-!
-        FLUXTCLA=0.D0
-        IF(NFRLIQ.GT.0.AND.CHARR) THEN
-          IF(NPTFR.GT.0) THEN
-            DO IPTFR=1,NPTFR
-              IFRLIQ=NUMLIQ(IPTFR)
-              IF(IFRLIQ.GT.0) THEN
-                FLUXTCLA=FLUXTCLA+FLBCLA%ADR(ICLA)%P%R(IPTFR)
-              ENDIF
+          RMASCLA(ICLA)=0.D0
+          IF(SUSP.AND.SLIDE.AND.CHARR) THEN
+            DO I=1,NPOIN
+              RMASCLA(ICLA)=RMASCLA(ICLA)
+     &                     +( ZFCL_C%ADR(ICLA)%P%R(I)
+     &                       +ZFCL_S%ADR(ICLA)%P%R(I)
+     &                       +ZFCL_MS%ADR(ICLA)%P%R(I) )*VOLU2D%R(I)
+            ENDDO
+          ELSEIF(SLIDE.AND.CHARR) THEN
+            DO I=1,NPOIN
+              RMASCLA(ICLA)=RMASCLA(ICLA)
+     &                     +( ZFCL_C%ADR(ICLA)%P%R(I)
+     &                       +ZFCL_MS%ADR(ICLA)%P%R(I) )*VOLU2D%R(I)
+            ENDDO
+          ELSEIF(SUSP.AND.CHARR) THEN
+            DO I=1,NPOIN
+              RMASCLA(ICLA)=RMASCLA(ICLA)
+     &                     +( ZFCL_C%ADR(ICLA)%P%R(I)
+     &                       +ZFCL_S%ADR(ICLA)%P%R(I) )*VOLU2D%R(I)
+            ENDDO
+          ELSEIF(SUSP.AND.SLIDE) THEN
+            DO I=1,NPOIN
+              RMASCLA(ICLA)=RMASCLA(ICLA)
+     &                     +( ZFCL_S%ADR(ICLA)%P%R(I)
+     &                       +ZFCL_MS%ADR(ICLA)%P%R(I) )*VOLU2D%R(I)
+            ENDDO
+          ELSEIF(SUSP) THEN
+            DO I=1,NPOIN
+              RMASCLA(ICLA)=RMASCLA(ICLA)
+     &                     +ZFCL_S%ADR(ICLA)%P%R(I)*VOLU2D%R(I)
+            ENDDO
+          ELSEIF(SLIDE) THEN
+            DO I=1,NPOIN
+              RMASCLA(ICLA)=RMASCLA(ICLA)
+     &                     +ZFCL_MS%ADR(ICLA)%P%R(I)*VOLU2D%R(I)
+            ENDDO
+          ELSEIF(CHARR) THEN
+            DO I=1,NPOIN
+              RMASCLA(ICLA)=RMASCLA(ICLA)
+     &                     +EVCL_M%ADR(K)%P%R(I)*VOLU2D%R(I)
             ENDDO
           ENDIF
-          IF(NCSIZE.GT.1) FLUXTCLA=P_DSUM(FLUXTCLA)
-        ENDIF
+          IF(NCSIZE.GT.1) RMASCLA(ICLA) = P_DSUM(RMASCLA(ICLA))
 !
-        VCUMUCLA(ICLA) = - FLUXTCLA*DT/CSF_SABLE
+!         COMPUTES THE FREE FLUXES BY CLASS
+!
+          FLUXTCLA=0.D0
+          IF(NFRLIQ.GT.0.AND.CHARR) THEN
+            IF(NPTFR.GT.0) THEN
+              DO IPTFR=1,NPTFR
+                IFRLIQ=NUMLIQ(IPTFR)
+                IF(IFRLIQ.GT.0) THEN
+                  FLUXTCLA=FLUXTCLA+FLBCLA%ADR(ICLA)%P%R(IPTFR)
+                ENDIF
+              ENDDO
+            ENDIF
+            IF(NCSIZE.GT.1) FLUXTCLA=P_DSUM(FLUXTCLA)
+          ENDIF
+!
+!         suppression of division by CSF since now mass flux
+          VCUMUCLA(ICLA) = - FLUXTCLA*DT
 !
         ENDDO
 !
@@ -314,25 +322,25 @@
             WRITE(LU,*)
             IF(LNG.EQ.1) THEN
               WRITE(LU,*) 'BILAN POUR LA CLASSE DE SEDIMENT :',I
-              WRITE(LU,*) 'VOLUME TOTAL DE LA CLASSE :',VOLTOT(I)
+              WRITE(LU,*) 'MASSE TOTALE DE LA CLASSE :',MASSTOT(I)
               WRITE(LU,3011) RMASCLA(I)
               WRITE(LU,3032) VCUMUCLA(I)
               IF(SUSP) THEN
-                WRITE(LU,3033) MASDEPT(I)/CSF_SABLE
+                WRITE(LU,3033) MASDEPT(I)
                 WRITE(LU,1033) RMASCLA(I)-VCUMUCLA(I)
-     &                                   -MASDEPT(I)/CSF_SABLE
+     &                                   -MASDEPT(I)
               ELSE
                 WRITE(LU,1033) RMASCLA(I)-VCUMUCLA(I)
               ENDIF
             ELSEIF(LNG.EQ.2) THEN
               WRITE(LU,*) 'MASS BALANCE FOR SEDIMENT CLASS :',I
-              WRITE(LU,*) 'TOTAL VOLUME:',VOLTOT(I)
+              WRITE(LU,*) 'TOTAL MASS:',MASSTOT(I)
               WRITE(LU,3010) RMASCLA(I)
               WRITE(LU,3031) VCUMUCLA(I)
               IF(SUSP) THEN
-                WRITE(LU,3034) MASDEPT(I)/CSF_SABLE
+                WRITE(LU,3034) MASDEPT(I)
                 WRITE(LU,1033) RMASCLA(I)-VCUMUCLA(I)
-     &                                   -MASDEPT(I)/CSF_SABLE
+     &                                   -MASDEPT(I)
               ELSE
                 WRITE(LU,2033) RMASCLA(I)-VCUMUCLA(I)
               ENDIF
@@ -365,54 +373,55 @@
 !
       ENDIF
 !
-1000  FORMAT(1X,'BILAN DE MASSE (EN VOLUME, VIDES INCLUS) : ')
-1010  FORMAT(1X,'SOMME DES EVOLUTIONS : ',G16.7,' M3')
-!1020  FORMAT(1X,'FLUX IMPOSE          : ', G16.7,' M3/S'
-!     &         ,'  ( M3/S  >0 = ENTRANT )')
-!1021  FORMAT(1X,'FLUX LIBRE           : ', G16.7,' M3/S'
-!     &         ,'  ( M3/S  >0 = ENTRANT )')
+1000  FORMAT(1X,'BILAN DE MASSE : ')
+1010  FORMAT(1X,'SOMME DES EVOLUTIONS : ',G16.7,' KG')
+!1020  FORMAT(1X,'FLUX IMPOSE          : ', G16.7,' KG/S'
+!     &         ,'  ( KG/S  >0 = ENTRANT )')
+!1021  FORMAT(1X,'FLUX LIBRE           : ', G16.7,' KG/S'
+!     &         ,'  ( KG/S  >0 = ENTRANT )')
 1030  FORMAT(1X,'SOMME DES EVOLUTIONS CUMULEES : ',G16.7)
-1031  FORMAT(1X,'VOLUME ENTRE AUX FRONTIERES   : ',G16.7,' M3'
-     &         ,'  ( SI <0 VOLUME SORTI )')
-1032  FORMAT(1X,'VOLUME DEPOSE SUR LE FOND     : ',G16.7,' M3'
-     &         ,'  ( SI <0 VOLUME ERODE )')
-1033  FORMAT(1X,'VOLUME PERDU                  : ',G16.7,' M3'
-     &         ,'  ( SI <0 VOLUME SORTI )')
+1031  FORMAT(1X,'MASSE ENTREE AUX FRONTIERES   : ',G16.7,' KG'
+     &         ,'  ( SI <0 MASSE SORTI )')
+1032  FORMAT(1X,'MASSE DEPOSEE SUR LE FOND     : ',G16.7,' KG'
+     &         ,'  ( SI <0 MASSE ERODEE )')
+1033  FORMAT(1X,'MASSE PERDUE                  : ',G16.7,' KG'
+     &         ,'  ( SI <0 MASSE SORTIE )')
 1110  FORMAT(1X,'FRONTIERE ',1I3,' FLUX EN CHARRIAGE = ',G16.7,
-     &          ' M3/S >0=ENTRANT, AVEC VIDES')
+     &          ' KG/S >0=ENTRANT, AVEC VIDES')
 1111  FORMAT(1X,'TOTAL         FLUX EN CHARRIAGE = ',G16.7,
-     &          ' M3/S >0=ENTRANT, AVEC VIDES')
+     &          ' KG/S >0=ENTRANT, AVEC VIDES')
 1112  FORMAT(1X,'DEPOT DE SUSPENSION SUR LE FOND = ',G16.7,
-     &          ' ( M3/S )')
-2000  FORMAT(1X,'MASS-BALANCE (IN VOLUME, INCLUDING VOID): ')
-2010  FORMAT(1X,'SUM OF THE EVOLUTIONS : ',G16.7,' M3')
-!2020  FORMAT(1X,'PRESCRIBED FLOW       : ',G16.7,' M3/S'
-!     &         ,'  M3/S >0=ENTERING, WITH VOIDS')
-!2021  FORMAT(1X,'FREE FLOW             : ',G16.7,' M3/S'
-!     &         ,'  M3/S >0=ENTERING, WITH VOIDS')
+     &          ' ( KG/S )')
+2000  FORMAT(1X,'MASS-BALANCE: ')
+2010  FORMAT(1X,'SUM OF THE EVOLUTIONS : ',G16.7,' KG')
+!2020  FORMAT(1X,'PRESCRIBED FLOW       : ',G16.7,' KG/S'
+!     &         ,'  KG/S >0=ENTERING, WITH VOIDS')
+!2021  FORMAT(1X,'FREE FLOW             : ',G16.7,' KG/S'
+!     &         ,'  KG/S >0=ENTERING, WITH VOIDS')
 2030  FORMAT(1X,'SUM OF THE CUMULATED EVOLUTIONS : ',G16.7)
-2031  FORMAT(1X,'VOLUME THAT ENTERED THE DOMAIN  : ',G16.7,' M3'
+2031  FORMAT(1X,'MASS THAT ENTERED THE DOMAIN  : ',G16.7,' KG'
      &         ,'  ( IF <0 EXIT )')
-2032  FORMAT(1X,'VOLUME DEPOSITED ON THE BOTTOM  : ',G16.7,' M3'
+2032  FORMAT(1X,'MASS DEPOSITED ON THE BOTTOM  : ',G16.7,' KG'
      &         ,'  ( IF <0 ERODED )')
-2033  FORMAT(1X,'LOST VOLUME                     : ',G16.7,' M3'
+2033  FORMAT(1X,'LOST MASS                     : ',G16.7,' KG'
      &         ,'  ( IF <0 EXIT )')
 2110  FORMAT(1X,'BOUNDARY ',1I3,' BEDLOAD FLUX = ',G16.7,
-     &          '  ( M3/S  >0 = ENTERING )')
+     &          '  ( KG/S  >0 = ENTERING )')
 2111  FORMAT(1X,'TOTAL        BEDLOAD FLUX = ',G16.7,
-     &          '  ( M3/S  >0 = ENTERING )')
+     &          '  ( KG/S  >0 = ENTERING )')
 2112  FORMAT(1X,'DEPOSIT ON BOTTOM         = ',G16.7,
-     &          '  ( M3/S )')
-3010  FORMAT(1X,'SUM OF THE EVOLUTIONS FOR THIS CLASS: ',G16.7)
-3031  FORMAT(1X,'VOLUME THAT ENTERED THE DOMAIN FOR THIS CLASS: '
-     &       ,G16.7,' M3')
-3034  FORMAT(1X,'VOLUME DEPOSITED ON BOTTOM FOR THIS CLASS:     '
-     &       ,G16.7,' M3')
-3011  FORMAT(1X,'SOMME DES EVOLUTIONS POUR CETTE CLASSE : ',G16.7)
-3032  FORMAT(1X,'VOLUME ENTRE DANS LE DOMAINE POUR CETTE CLASSE : '
-     &       ,G16.7,' M3')
-3033  FORMAT(1X,'VOLUME DEPOSE SUR LE FOND POUR CETTE CLASSE    : '
-     &       ,G16.7,' M3')
+     &          '  ( KG/S )')
+3010  FORMAT(1X,'SUM OF MASS EVOLUTIONS FOR THIS CLASS: ',G16.7)
+3031  FORMAT(1X,'MASS THAT ENTERED THE DOMAIN FOR THIS CLASS: '
+     &       ,G16.7,' KG')
+3034  FORMAT(1X,'MASS DEPOSITED ON BOTTOM FOR THIS CLASS:     '
+     &       ,G16.7,' KG')
+3011  FORMAT(1X,'SOMME DES EVOLUTIONS MASSIQUES POUR CETTE CLASSE : '
+     &       ,G16.7)
+3032  FORMAT(1X,'MASS ENTRE DANS LE DOMAINE POUR CETTE CLASSE : '
+     &       ,G16.7,' KG')
+3033  FORMAT(1X,'MASS DEPOSE SUR LE FOND POUR CETTE CLASSE    : '
+     &       ,G16.7,' KG')
 !4000  FORMAT(1X,'GRAIN-FEEDING A CET INSTANT       : ',G16.7)
 !4010  FORMAT(1X,'GRAIN-FEEDING JUSQU''A MAINTENANT : ',G16.7)
 !4001  FORMAT(1X,'GRAIN-FEEDING THIS MOMENT : ',G16.7)

@@ -3,14 +3,15 @@
 !                    ***************************
 !
      &(MESH,QSX,QSY,LIMTEC,UNSV2D,EBOR,BREACH,NSEG,NPTFR,NPOIN,
-     & KENT,KDIR,KDDL,DT,T10,ZFCL,FLUX,CSF_SABLE,FLBCLA,AVA,LIQBOR,QBOR,
-     & NUBO,VNOIN)
+     & KENT,KDIR,KDDL,DT,ZFCL,FLUX,CSF_SABLE,FLBCLA,
+     & LIQBOR,QBOR,NUBO,VNOIN,EVCL_M,RATIO_SAND,XMVS)
 !
 !***********************************************************************
 ! SISYPHE   V7P0                                      03/06/2014
 !***********************************************************************
 !
-!brief    SOLVES EXNER EQUATION WITH THE FINITE VOLUME METHOD.
+!brief    SOLVES A PART OF EXNER EQUATION (DIVERGENCE TERM)
+!         WITH THE FINITE VOLUME METHOD.
 !
 !history  M. GONZALES DE LINARES
 !+        07/05/2002
@@ -59,7 +60,6 @@
 !+  after changes in FV data structure of Telemac2d
 !+
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-!| AVA            |-->| PERCENTAGE OF CLASS IN SEDIMENT
 !| BREACH         |<->| INDICATOR FOR NON ERODIBLE BED
 !| DT             |-->| TIME STEP
 !| EBOR           |<->| BOUNDARY CONDITION FOR BED EVOLUTION (DIRICHLET)
@@ -70,6 +70,7 @@
 !| KENT           |-->| CONVENTION FOR PRESCRIBED VALUE AT ENTRANCE
 !| LIMTEC         |-->| TECHNICAL BOUNDARY CONDITIONS FOR BED EVOLUTION
 !| LIQBOR         |-->| TYPE OF BOUNDARY CONDITIONS FOR BEDLOAD DISCHARGE
+!| EVCL_M         |<->| MASS EVOLUTION DURING A TIME STEP
 !| MESH           |<->| MESH STRUCTURE
 !| NPOIN          |-->| NUMBER OF POINTS
 !| NPTFR          |-->| NUMBER OF BOUNDARY POINTS
@@ -78,9 +79,10 @@
 !| QBOR           |-->| PRESCRIBED BEDLOAD DISCHARGES
 !| QSX            |<->| BEDLOAD TRANSPORT RATE X-DIRECTION
 !| QSY            |<->| BEDLOAD TRANSPORT RATE Y-DIRECTION
-!| T10            |<->| WORK BIEF_OBJ STRUCTURE
+!| RATIO_SAND     |-->| MASS FRACTION OF SAND, FOR THE CLASS
 !| UNSV2D         |-->| INVERSE OF INTEGRALS OF TEST FUNCTIONS
 !| VNOIN          |-->| OUTWARD UNIT NORMALS
+!| XMVS           |-->| SEDIMENT DENSITY
 !| ZFCL           |<->| BEDLOAD EVOLUTION FOR EACH SEDIMENT CLASS
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !
@@ -96,17 +98,17 @@
       TYPE(BIEF_OBJ),   INTENT(IN)    :: BREACH,LIQBOR,QBOR
       INTEGER,          INTENT(IN)    :: NSEG,NPTFR,NPOIN,KENT,KDIR,KDDL
       DOUBLE PRECISION, INTENT(IN)    :: DT,CSF_SABLE
-      DOUBLE PRECISION, INTENT(IN)    :: AVA(NPOIN)
-      TYPE(BIEF_OBJ),   INTENT(INOUT) :: T10,FLBCLA,ZFCL,FLUX
-! RA
+      TYPE(BIEF_OBJ),   INTENT(INOUT) :: FLBCLA,ZFCL,FLUX
+      TYPE(BIEF_OBJ),   INTENT(INOUT) :: EVCL_M
       INTEGER, INTENT(IN)             :: NUBO(2,NSEG)
       DOUBLE PRECISION, INTENT(IN)    :: VNOIN(3,NSEG)
+      DOUBLE PRECISION, INTENT(IN)    :: RATIO_SAND(NPOIN),XMVS
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
       INTEGER          :: ISEGIN,K,N,IEL,IEL1,IEL2
       DOUBLE PRECISION :: QSMOY1,QSMOY2,QSP,VNOIN1,VNOIN2,RNORM,XN,YN
-      DOUBLE PRECISION :: ZFCLDIR,PROD_SCAL
+      DOUBLE PRECISION :: EVCL_MDIR,PROD_SCAL
 !
 !======================================================================!
 !======================================================================!
@@ -174,6 +176,8 @@
 !       LIMTEC=KDIR WILL NOT BE CONSIDERED, SEE BEDLOAD_SOLVS_FE
 !       FOR MORE EXPLANATIONS
 !
+!       QBOR AND FLUX MUST HAVE THE SAME DIMENSION !
+!
         IF(LIQBOR%I(K).EQ.KENT) THEN
           FLBCLA%R(K) = QBOR%R(K)
           FLUX%R(IEL) = FLUX%R(IEL) + FLBCLA%R(K)
@@ -195,7 +199,10 @@
 !     SOLVING, NEGATIVE SIGN BECAUSE OUTGOING FLUX IS POSITIVE
 !     NOTE JMH: FLUX MUST BE HERE DIV(QS)
 !
-      CALL OS('X=CYZ   ', X=ZFCL, Y=FLUX, Z=UNSV2D, C=-DT)
+      CALL OS('X=CYZ   ', X=EVCL_M, Y=FLUX, Z=UNSV2D, C=-DT)
+!
+!     THIS PART HAS STILL TO BE CHANGED IN MASS!
+!     ebor*xmvs replaced by a unique value given by the user??
 !
       DO K=1,NPTFR
 !                                  PRIORITY OF LIQBOR, SEE ABOVE
@@ -203,11 +210,14 @@
           N = MESH%NBOR%I(K)
 !         ZFCLDIR: DIRICHLET VALUE OF EVOLUTION, ZFCL WILL BE DIVIDED BY
 !         CSF_SABLE AFTER, AND THEN IT WILL BE AVA(N)*EBOR...
-          ZFCLDIR = AVA(N)*EBOR%R(K)*CSF_SABLE
+!         when mass: we do not need to multiply by csf_sable
+          EVCL_MDIR = RATIO_SAND(N)*EBOR%R(K)*CSF_SABLE*XMVS
 !         CORRECTION OF BOUNDARY FLUX TO GET ZFCLDIR
-          FLBCLA%R(K)=FLBCLA%R(K)-(ZFCLDIR-ZFCL%R(N))/(DT*UNSV2D%R(N))
-!         ZFCLDIR FINALLY IMPOSED
-          ZFCL%R(N) = ZFCLDIR
+!         flbcla must be previously multiplied by xmvs!!
+          FLBCLA%R(K)=FLBCLA%R(K)-(EVCL_MDIR-EVCL_M%R(N))/
+     &                (DT*UNSV2D%R(N))
+!         EVCL_MDIR FINALLY IMPOSED
+          EVCL_M%R(N) = EVCL_MDIR
         ENDIF
 !
       ENDDO

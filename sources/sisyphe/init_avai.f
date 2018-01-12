@@ -112,6 +112,8 @@
 !       THE HEIGHT OF SEDIMENT (SUM OF ES) MUST NOT BE MORE THAN ZF-ZR
 !       IF SO, THE HEIGHT OF THE LAST LAYER IS REDUCED
 !       IF THERE ARE LAYERS UNDER ZR, THEY ARE NOT TAKEN INTO ACCOUNT
+!
+!  quel est la difference avec ce qu'on fait dans init_compo pour le check?
         HAUTSED = 0.D0
         DO K=1,IT1%I(J)
           IF(HAUTSED + ES(J,K) .GE. ZF%R(J) - ZR%R(J)) THEN

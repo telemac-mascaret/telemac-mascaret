@@ -19,7 +19,7 @@
      & QSCLXC, QSXC, QSCLYC, QSYC, SALFA_CL, ZF_C, ZFCL_C, NSOUS,
      & ENTETS, SECCURRENT, SLOPEFF,
      & PHISED, DEVIA, BETA2, BIJK,SEDCO,HOULE,
-     & U3D,V3D,CODE,FLBCLA,MAXADV)
+     & U3D,V3D,CODE,FLBCLA,MAXADV,RATIO_SAND)
 !
 !***********************************************************************
 ! SISYPHE   V7P2                                   21/07/2011
@@ -143,6 +143,7 @@
 !| QSXC           |<->| BEDLOAD TRANSPORT RATE X-DIRECTION
 !| QSYC           |<->| BEDLOAD TRANSPORT RATE Y-DIRECTION
 !| QS_C           |<->| BEDLOAD TRANSPORT RATE
+!| RATIO_SAND     |<->| MASS FRACTION OF SAND
 !| S              |-->| VOID STRUCTURE
 !| SALFA          |<->| SINUS OF THE ANGLE BETWEEN TRANSPORT RATE AND CURRENT
 !| SECCURRENT     |-->| LOGICAL, PARAMETRISATION FOR SECONDARY CURRENTS
@@ -189,7 +190,8 @@
 !
       USE BIEF
       USE INTERFACE_SISYPHE, EX_BEDLOAD_MAIN => BEDLOAD_MAIN
-      USE DECLARATIONS_SISYPHE, ONLY : NESTOR,NOMBLAY
+      USE DECLARATIONS_SISYPHE, ONLY : NESTOR,NOMBLAY,MASS_SAND,NSAND,
+     &                                 NUM_ICLA_ISAND,EVCL_M,EVOL_M
       USE DECLARATIONS_SPECIAL
       IMPLICIT NONE
 !
@@ -225,6 +227,7 @@
       TYPE(BIEF_OBJ),   INTENT(INOUT) :: T8,T9,T10,T11,T12,T13
       DOUBLE PRECISION, INTENT(INOUT) :: AC(NSICLA), AT0, DTS, ELAY0
       DOUBLE PRECISION, INTENT(INOUT) :: AVAIL(NPOIN,NOMBLAY,NSICLA)
+      DOUBLE PRECISION, INTENT(INOUT) :: RATIO_SAND(NSAND,NOMBLAY,NPOIN)
       TYPE(BIEF_OBJ),   INTENT(INOUT) :: BREACH, CALFA_CL, COEFPN
       TYPE(BIEF_OBJ),   INTENT(INOUT) :: DZF_GF
       TYPE(BIEF_OBJ),   INTENT(INOUT) :: HIDING
@@ -241,7 +244,7 @@
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
-      INTEGER I
+      INTEGER I,K,IPOIN
 !
 !
 !======================================================================!
@@ -262,6 +265,7 @@
       IF (DEBUG > 0) WRITE(LU,*) 'END_BEDLOAD_DIFFIN'
 !
       DO I = 1, NSICLA
+        K=NUM_ICLA_ISAND(I)
 !
 !       FOR SAND
         IF(.NOT.SEDCO(I)) THEN
@@ -269,7 +273,7 @@
      &      'BEDLOAD_SOLIDISCHARGE : ',I,'/',NSICLA
           CALL BEDLOAD_SOLIDISCHARGE
      &       (MESH, U2D, V2D, UNORM,HN, TW, UW, MU,TOB,CF,
-     &         TOBW,FW,THETAW,AVAIL(1:NPOIN,1,I),
+     &         TOBW,FW,THETAW,RATIO_SAND(K,1,1:NPOIN),
      &         MASKPT, MASKEL, ACLADM,
      &         UNLADM,KSP,KSR, LIQBOR, QBOR%ADR(I)%P, DEBUG, NPOIN,
      &         NPTFR, IELMT, ICF, KENT, OPTBAN, HIDFAC, GRAV,
@@ -297,6 +301,9 @@
 !     COMPUTES THE EVOLUTION FOR EACH CLASS
 !
       DO I = 1, NSICLA
+        K=NUM_ICLA_ISAND(I)
+!
+!     VERIFY THAT NSICLA = NSAND FOR MASS_SAND OR CHANGE THE LOOP: NSAND?
 !
         IF(.NOT.SEDCO(I)) THEN
 !
@@ -313,7 +320,9 @@
      &                      T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,
      &                      T13,CSF_SABLE,BREACH,QSCLXC%ADR(I)%P,
      &                      QSCLYC%ADR(I)%P,ZFCL_C%ADR(I)%P,SLOPEFF,
-     &                      I,FLBCLA,LIQBOR,QBOR%ADR(I)%P,MAXADV)
+     &                      I,FLBCLA,LIQBOR,QBOR%ADR(I)%P,MAXADV,
+     &                      MASS_SAND(I,1,1:NPOIN),
+     &                      RATIO_SAND(K,1,1:NPOIN),EVCL_M%ADR(K)%P)
           IF(DEBUG.GT.0) WRITE(LU,*) 'END_BEDLOAD_EVOL'
 !
 !         NOW DIVIDING BY CSF_SABLE TO GET THE EVOLUTION OF BED
@@ -322,7 +331,7 @@
 !                   CSF_SABLE, SO THIS COULD BE SIMPLIFIED, BUT FOR THE
 !                   FINITE ELEMENT OPTION ONLY, THE FINITE VOLUME IMPLEMENTATION
 !                   SEEMS MORE COMPLICATED TO SORT OUT.
-!                  
+!
           CALL OS('X=CX    ',X= ZFCL_C%ADR(I)%P,C=1.D0/CSF_SABLE)
 !
         ELSE
@@ -345,20 +354,34 @@
       CALL OS('X=0     ', X=ZF_C)
       CALL OS('X=0     ',X=QSXC)
       CALL OS('X=0     ',X=QSYC)
+      CALL OS('X=0     ',X=EVOL_M)
       ! II.2 - ADDS THE CLASSES
       ! ----------------------
       !
       DO I=1,NSICLA
+        K=NUM_ICLA_ISAND(I)
         IF(.NOT.SEDCO(I)) THEN
           CALL OS('X=X+Y   ', X=QS_C, Y=QSCL_C%ADR(I)%P)
           CALL OS('X=X+Y   ', X=ZF_C, Y=ZFCL_C%ADR(I)%P)
-           CALL OS('X=X+YZ  ', X=QSXC, Y=QSCL_C%ADR(I)%P, 
-     &                               Z=CALFA_CL%ADR(I)%P)
-           CALL OS('X=X+YZ  ', X=QSYC, Y=QSCL_C%ADR(I)%P, 
-     &                               Z=SALFA_CL%ADR(I)%P)
-
+          CALL OS('X=X+YZ  ', X=QSXC, Y=QSCL_C%ADR(I)%P,
+     &                              Z=CALFA_CL%ADR(I)%P)
+          CALL OS('X=X+YZ  ', X=QSYC, Y=QSCL_C%ADR(I)%P,
+     &                              Z=SALFA_CL%ADR(I)%P)
+          CALL OS('X=X+Y   ', X=EVOL_M, Y=EVCL_M%ADR(K)%P)
         ENDIF
       ENDDO
+!
+!     THE MASS EVOLUTION DUE TO BEDLOAD IS COPIED INTO MASS_SAND
+!     (OF THE FIRST LAYER)
+!
+      DO I=1,NSICLA
+        K=NUM_ICLA_ISAND(I)
+        DO IPOIN=1,NPOIN
+          MASS_SAND(K,1,IPOIN)=EVCL_M%ADR(K)%P%R(IPOIN)
+        ENDDO
+      ENDDO
+!
+!
 !
 !     TIDAL FLATS WITH MASKING     JMH ON 27/07/2006
 !
