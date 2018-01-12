@@ -1,0 +1,47 @@
+/-----------------------------------------------------------------------
+/     FICHIER DES PARAMETRES DE SISYPHE
+/-----------------------------------------------------------------------
+FICHIER DES CONDITIONS AUX LIMITES = hyppodrome.cli
+FICHIER DE GEOMETRIE               = hyppodrome.geo
+FICHIER DES RESULTATS              = res_sis.slf
+FICHIER FORTRAN                    = 'user_fortran'
+/DEBUGGER = 1
+/-----------------------------------------------------------------------
+/ INFORMATIONS SUR LE CALCUL
+/-----------------------------------------------------------------------
+PAS DE TEMPS = 5
+/-----------------------------------------------------------------------
+/ PARAMETRES DE SORTIE
+/-----------------------------------------------------------------------
+VARIABLES POUR LES SORTIES GRAPHIQUES = 'U,V,S,E,H,B,M,TOB,1A*,2A*,*ES'
+BILAN DE MASSE                        = OUI
+/-----------------------------------------------------------------------
+/ PARAMETRES NUMERIQUES
+/-----------------------------------------------------------------------
+NOUVEAU MODELE DE LIT                        = OUI
+VOLUMES FINIS                                = OUI
+BANCS DECOUVRANTS                            = OUI
+OPTION DE TRAITEMENT DES BANCS DECOUVRANTS   = 1
+OPTION DE TRAITEMENT DES FONDS NON ERODABLES = 4
+/-----------------------------------------------------------------------
+/ PARAMETRES PHYSIQUES
+/-----------------------------------------------------------------------
+TYPE DE SEDIMENT = NCO;NCO;NCO;NCO
+CHARRIAGE POUR TOUTES LES SABLES = OUI
+SUSPENSION POUR TOUTES LES SABLES = NO
+FORMULE DE TRANSPORT SOLIDE POUR TOUS LES SABLES = 5
+VITESSES DE CHUTE = -9;-9;-9;-9
+PARAMETRES DE SHIELDS = -9;-9;-9;-9
+DIAMETRES DES GRAINS = 0.0002;0.00031;0.00103;0.00169
+D90                           = 0.0002;0.00031;0.00103;0.00169
+/ commented since ratio_sand defined in init_sediment.f
+/FRACTION INITIALE PAR CLASSE SEDIMENTOLOGIQUE = 0.25;0.25;0.25;0.25
+POROSITE DU LIT NON COHESIF   = 0.4
+FORMULE POUR EFFET DE PENTE   = 0
+FORMULE POUR LA DEVIATION     = 0
+GLISSEMENT DU SEDIMENT        = NON
+/ si on ne donne pas le nombre de couche -> 2 par defaut in .dico!
+/ si on met 1, lorqu'on a plusieurs sables, il faut decider si le
+/ modele de sol sera forcement du hirano (donc il vaut mieux
+/ mettre 2 couches par defaut) ou autre
+NOMBRE DE COUCHES POUR GRANULO ETENDUE       = 1

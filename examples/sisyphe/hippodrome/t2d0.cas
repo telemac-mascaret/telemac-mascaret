@@ -1,0 +1,77 @@
+/----------------------------------------------------------------------
+/                      ENVIRONNEMENT INFORMATIQUE
+/----------------------------------------------------------------------
+LANGUE = 1
+COUPLAGE AVEC = SISYPHE
+FICHIER DES PARAMETRES DE SISYPHE = sisyphe1_vf.cas
+PERIODE DE COUPLAGE POUR SISYPHE = 1
+FICHIER DES CONDITIONS AUX LIMITES          : hyppodrome.cli
+FICHIER DE GEOMETRIE                        : hyppodrome.geo
+FICHIER DES RESULTATS                       : res_t2d.slf
+FICHIER FORTRAN                             : princi_V7P2_2.f
+/DEBUGGER = 1
+/
+/SUITE DE CALCUL = OUI
+/FICHIER DU CALCUL PRECEDENT='./res_t2d_init'
+/----------------------------------------------------------------------
+/                        OPTIONS GENERALES
+/----------------------------------------------------------------------
+/
+TITRE : 'TEST MASSE'
+/
+DUREE DU CALCUL                                   : 19800
+/DUREE DU CALCUL                                   : 20.
+PAS DE TEMPS                                      : 5.
+PERIODE DE SORTIE LISTING                         : 120
+PERIODE POUR LES SORTIES GRAPHIQUES               : 120
+VARIABLES POUR LES SORTIES GRAPHIQUES             : 'U,V,S,B,H,X,Y,M'
+/----------------------------------------------------------------------
+/                    CONDITIONS INITIALES
+/----------------------------------------------------------------------
+CONDITIONS INITIALES                              :  'COTE CONSTANTE'
+COTE INITIALE                                     :   5.D0
+/----------------------------------------------------------------------
+/                      FROTTEMENT
+/----------------------------------------------------------------------
+LOI DE FROTTEMENT SUR LE FOND =  3
+COEFFICIENT DE FROTTEMENT     = 45.
+/----------------------------------------------------------------------
+/                     TURBULENCE
+/----------------------------------------------------------------------
+DIFFUSION DES VITESSES = OUI
+MODELE DE TURBULENCE = 4
+COEFFICIENT DE DIFFUSION DES VITESSES = 1.D-6
+/----------------------------------------------------------------------
+/                       VENT
+/----------------------------------------------------------------------
+VENT                                 : OUI
+OPTION DU VENT = 2
+/********vent applique dans le fortran
+COEFFICIENT D'INFLUENCE DU VENT = 6.0D-6
+PROFONDEUR LIMITE POUR LE VENT = 0.1D0
+/
+/----------------------------------------------------------------------
+/                       OPTIONS NUMERIQUES
+/----------------------------------------------------------------------
+FORME DE LA CONVECTION               =1;5
+/ solver 1: conjugate gradient
+SOLVEUR                              =1
+PRECISION DU SOLVEUR                 =1e-09
+MAXIMUM D'ITERATIONS POUR LE SOLVEUR =200
+MASS-LUMPING SUR H            =1.
+MASS-LUMPING SUR LA VITESSE   =0.9
+IMPLICITATION POUR LA HAUTEUR =0.6
+IMPLICITATION POUR LA VITESSE =0.6
+/
+TRAITEMENT DU SYSTEME LINEAIRE                    =2
+COMPATIBILITE DU GRADIENT DE SURFACE LIBRE        =0.9
+/ par default
+/NOMBRE DE SOUS-ITERATIONS POUR LES NON-LINEARITES =1
+/
+BANCS DECOUVRANTS                                 =VRAI
+/ par default
+/OPTION DE TRAITEMENT DES BANCS DECOUVRANTS        =1
+CORRECTION DE CONTINUITE                          =OUI
+TRAITEMENT DES HAUTEURS NEGATIVES                 =2
+/
+OPTION DE SUPG                                    =2;0
