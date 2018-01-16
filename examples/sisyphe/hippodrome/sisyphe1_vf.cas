@@ -4,7 +4,7 @@
 FICHIER DES CONDITIONS AUX LIMITES = hyppodrome.cli
 FICHIER DE GEOMETRIE               = hyppodrome.geo
 FICHIER DES RESULTATS              = res_sis.slf
-FICHIER FORTRAN                    = 'user_fortran'
+FICHIER FORTRAN                    = 'user_fortran1'
 /DEBUGGER = 1
 /-----------------------------------------------------------------------
 / INFORMATIONS SUR LE CALCUL
