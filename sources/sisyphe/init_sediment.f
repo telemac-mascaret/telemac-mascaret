@@ -424,7 +424,7 @@
         IF(LNG.EQ.1) THEN
           WRITE(LU,*)'MASSE TOTALE DE LA CLASSE ',I ,' :',MASSTOT(I)
         ENDIF
-        IF(LNG.EQ.1) THEN
+        IF(LNG.EQ.2) THEN
           WRITE(LU,*)'TOTAL MASS OF CLASS ',I ,' :',MASSTOT(I)
         ENDIF
       ENDDO

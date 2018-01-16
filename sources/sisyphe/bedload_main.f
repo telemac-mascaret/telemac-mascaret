@@ -26,6 +26,7 @@
 !***********************************************************************
 !
 !brief    MAIN SUBROUTINE FOR THE BEDLOAD TRANSPORT.
+!         UPDATE OF SAND MASS DUE TO BEDLOAD TRANSPORT.
 !
 !history  F. HUVELIN
 !+        14/09/2004
@@ -371,13 +372,14 @@
         ENDIF
       ENDDO
 !
-!     THE MASS EVOLUTION DUE TO BEDLOAD IS COPIED INTO MASS_SAND
+!     UPDATE OF SAND MASS WITH EVOLUTION DUE TO BEDLOAD
 !     (OF THE FIRST LAYER)
 !
       DO I=1,NSICLA
         K=NUM_ICLA_ISAND(I)
         DO IPOIN=1,NPOIN
-          MASS_SAND(K,1,IPOIN)=EVCL_M%ADR(K)%P%R(IPOIN)
+          MASS_SAND(K,1,IPOIN) = MASS_SAND(K,1,IPOIN) +
+     &                         EVCL_M%ADR(K)%P%R(IPOIN)
         ENDDO
       ENDDO
 !

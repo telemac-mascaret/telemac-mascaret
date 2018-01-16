@@ -45,13 +45,15 @@
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
 !--------------------------------------------------------------------------------------
-! attention : all masses put to zero ->this part maybe necesssary only in intialization
-! various masses are in [kg/m2]
-!!      DO IPOIN = 1,NPOIN
+! ONLY MASS_SAND_TOT(1,IPOIN) SET TO ZERO SINCE AFTER BEDLOAD MASS_SAND (BUT ONLY THE
+! FIRST LAYER) IS UPDATED IN BEDLOAD_MAIN
+! to do for all the layers if masses are updated/computed somewhere before
+! VARIOUS MASSES ARE STILL IN [kg/m2]
+      DO IPOIN = 1,NPOIN
 !!!
 !!        DO ILAYER = 1,NOMBLAY
 !!          MASS_MIX_TOT(ILAYER,IPOIN) = 0.D0
-!!          MASS_SAND_TOT(ILAYER,IPOIN) = 0.D0
+          MASS_SAND_TOT(1,IPOIN) = 0.D0
 !!          MASS_MUD_TOT(ILAYER,IPOIN) = 0.D0
 !!!
 !!          IF(NMUD.NE.0)THEN
@@ -62,7 +64,7 @@
 !!              ENDIF
 !!            ENDDO
 !!          ELSE
-!!! IL FAUT DECLARER MASS_MUD avec  MAX(NMUD,1)
+!!! IL FAUT DECLARER MASS_MUD avec MAX(NMUD,1)
 !!            MASS_MUD(1,ILAYER,IPOIN) = 0.D0
 !!          ENDIF
 !!!
@@ -79,16 +81,12 @@
 !!          ENDIF
 !!        ENDDO
 !!!
-!!      ENDDO
+      ENDDO
 ! end attention
 !-----------------------------------------------------------------------------
 ! UPDATES TOT MASS PER LAYER
-! it means that after bedload (or suspension or..)
-! here we receive MASS_SAND(ISAND,ILAYER,IPOIN) or MASS_MUD(IMUD,ILAYER,IPOIN).
-! IMPORTANT : MASS_SAND(ISAND,ILAYER,IPOIN) after bedload is just the
-! mass EVOLUTION (copied at the end of bedload_main.f) and not the real mass in
-! the layer for the class.
-! MASS_SAND_TOT contains the mass computed in init_sediment!
+! here we receive MASS_SAND(ISAND,ILAYER,IPOIN) or MASS_MUD(IMUD,ILAYER,IPOIN)
+! after bedload/suspension/...
 !
       IF(NSAND.GE.1) THEN
         DO IPOIN = 1,NPOIN
@@ -118,25 +116,6 @@
         ENDDO
       ENDDO
 !
-! ATTENTION!!! HERE WE COME BACK TO THE REAL MASS OF SAND/MUD
-! WITH THE OLD RATIO (necessary for computing new ratio)
-!
-      DO IPOIN = 1,NPOIN
-        DO ILAYER = 1,NOMBLAY
-!   COMPUTES MASS FOR EVERY MUD
-          DO IMUD = 1,NMUD
-            MASS_MUD(IPOIN,ILAYER,IMUD) = MASS_MUD_TOT(ILAYER,IPOIN)
-     &      *RATIO_MUD(IMUD,ILAYER,IPOIN)
-          ENDDO
-!   COMPUTES MASS FOR EVERY SAND
-          DO ISAND = 1,NSAND
-            MASS_SAND(ISAND,ILAYER,IPOIN) = MASS_SAND_TOT(ILAYER,IPOIN)
-     &      *RATIO_SAND(ISAND,ILAYER,IPOIN)
-          ENDDO
-        ENDDO
-      ENDDO
-!
-!
 ! COMPUTES MASS RATIOS PER LAYER (SAND CLASSES)
 !
       IF(NSAND.GE.1)THEN
@@ -147,10 +126,10 @@
             DO ISAND = 1,NSAND
               IF(ISAND.NE.NSAND) THEN
                 IF(MASS_SAND_TOT(ILAYER,IPOIN).GE.MIN_SED_MASS_COMP)THEN
-                   RATIO_SAND(ISAND,ILAYER,IPOIN) =
-     &             MIN(1.D0,MASS_SAND(ISAND,ILAYER,IPOIN)
-     &             / MASS_SAND_TOT(ILAYER,IPOIN))
-                   TOT = TOT + RATIO_SAND(ISAND,ILAYER,IPOIN)
+                  RATIO_SAND(ISAND,ILAYER,IPOIN) =
+     &            MIN(1.D0,MASS_SAND(ISAND,ILAYER,IPOIN)
+     &            / MASS_SAND_TOT(ILAYER,IPOIN))
+                  TOT = TOT + RATIO_SAND(ISAND,ILAYER,IPOIN)
                 ELSE
                   RATIO_SAND(ISAND,ILAYER,IPOIN) = 0.D0
                 ENDIF
@@ -242,23 +221,6 @@
         ZF%R(IPOIN) = ZR%R(IPOIN)
         DO ILAYER = 1,NOMBLAY
           ZF%R(IPOIN) = ZF%R(IPOIN) + ES(IPOIN,ILAYER)
-        ENDDO
-      ENDDO
-!
-! COMPUTE MASS SAND AND MASS MUD FOR NEXT ITERATION (with the new ratio)
-!
-      DO IPOIN = 1,NPOIN
-        DO ILAYER = 1,NOMBLAY
-!   COMPUTES MASS FOR EVERY MUD
-          DO IMUD = 1,NMUD
-            MASS_MUD(IPOIN,ILAYER,IMUD) = MASS_MUD_TOT(ILAYER,IPOIN)
-     &      *RATIO_MUD(IMUD,ILAYER,IPOIN)
-          ENDDO
-!   COMPUTES MASS FOR EVERY SAND
-          DO ISAND = 1,NSAND
-            MASS_SAND(ISAND,ILAYER,IPOIN) = MASS_SAND_TOT(ILAYER,IPOIN)
-     &      *RATIO_SAND(ISAND,ILAYER,IPOIN)
-          ENDDO
         ENDDO
       ENDDO
 !
