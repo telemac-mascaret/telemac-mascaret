@@ -285,7 +285,7 @@
           ENDDO
           IF(NOMBLAY.GT.1) THEN
             DO J=1,NPOIN
-              DO ISAND=1,NSAND
+              DO I=1,NSAND
                 IF(RATIO_SAND(I,2,J).GT.0.D0) THEN
                   UNLADM%R(J) = UNLADM%R(J) + FDM(I)*RATIO_SAND(I,2,J)
                 ENDIF
@@ -318,6 +318,16 @@
 !          ES(I,NOMBLAY)=...
 !        ENDDO
 !
+! to add: if users define es(..,..) then check that sum(es)=zf-zr!!
+!
+!    FOR SEVERAL SANDS AND LAYERS.GT.2 : ELAY IS THE FIRST UPPER LAYER
+        IF(NSAND.GT.1.AND.NOMBLAY.GT.1) THEN
+          DO I=1,NPOIN
+            ELAY%R(I)=ES(I,1)
+! OPTION ACTIVE LAYER NOT CONSTANT: TO DO!
+!            ELAY%R(I)=3.D0 * ACLADM%R(J)
+          ENDDO
+        ENDIF
 ! 4) USERS DEFINE RATIO_MUD_SAND
 !
 !     INITIALISATION
