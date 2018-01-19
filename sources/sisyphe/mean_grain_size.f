@@ -79,7 +79,7 @@
         ENDDO
         IF(NOMBLAY.GT.1) THEN
           DO J=1,NPOIN
-            DO ISAND=1,NSAND
+            DO I=1,NSAND
               IF(RATIO_SAND(I,2,J).GT.0.D0) THEN
                 UNLADM%R(J) = UNLADM%R(J) + FDM(I)*RATIO_SAND(I,2,J)
               ENDIF

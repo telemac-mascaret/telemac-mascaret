@@ -46,12 +46,10 @@
 !
 !     INITIALIZATION
       DO IPOIN = 1,NPOIN
-! delete this part! - Sara
         MASS_SAND_TOT(1,IPOIN) = 0.D0
         MASS_MUD_TOT(1,IPOIN) = 0.D0
         MASS_SAND_TOT(2,IPOIN) = 0.D0
         MASS_MUD_TOT(2,IPOIN) = 0.D0
-! end delete - Sara
         IF(NMUD.GE.1) THEN
           DO IMUD = 1,NMUD
             FLUX_MASS_MUD(IMUD,IPOIN) = 0.D0
@@ -63,9 +61,9 @@
           ENDDO
         ENDIF
       ENDDO
-!     UPDATE MASSES OF THE FIRST TWO LAYERS AFTER BEDLOAD/SUSPENSION/OTHER..
-!     note: after bedload we only add/remove mass in the FIRST layer, so
-!     is it useful to 'update' the second layer?
+!
+!     UPDATE OF TOTAL MASSES OF THE FIRST TWO LAYERS AFTER BEDLOAD/SUSPENSION/OTHER..
+!
       IF(NSAND.GE.1) THEN
         DO IPOIN = 1,NPOIN
             DO ISAND = 1,NSAND
@@ -177,8 +175,8 @@
 !      DEPOSITION CASE
 !-----------------------------------------------------------------------
 !
-        IF(THICK_TRANSFER.LT.0.D0) THEN ! active layer too large: transfer of mass needed to layer 2
-
+        IF(THICK_TRANSFER.LT.0.D0) THEN
+! active layer too large: transfer of mass from layer 1 to layer 2
           IF(NMUD.GE.1) THEN
             DO IMUD = 1,NMUD
               FLUX_MASS_MUD(IMUD,IPOIN)=(THICK_TRANSFER/ES(IPOIN,1))
@@ -197,18 +195,18 @@
 !-----------------------------------------------------------------------
 !
 ! why ELSEIF and not ELSE (it includes thick_tr=0.d0)?
-        ELSEIF(THICK_TRANSFER.GT.0.D0) THEN ! active layer too small: transfer of mass needed from layer 2
-!           IF(MASS_SAND_TOT(2,IPOIN).GT.MIN_SED_MASS_COMP) THEN
-!              ES_PORO_SAND(IPOIN,2) = (MASS_SAND_TOT(2,IPOIN)*XKV(2)) ! thickness of second layer
-!     &                                /((1-XKV(2))*XMVS)
-!              ES_MUD_ONLY(IPOIN,2) = MASS_MUD_TOT(2,IPOIN)
-!     &                                /CONC_MUD((2,IPOIN)
-!           IF(ES_MUD_ONLY(IPOIN,2).GE.ES_PORO_SAND(IPOIN,2)) THEN
-!              ES(IPOIN,2) = MASS_SAND_TOT(2,IPOIN)/XMVS
-!     &                      +ES_MUD_ONLY(IPOIN,2)
-!           ELSE
-!               ES(IPOIN,2) = MASS_SAND_TOT(2,IPOIN)/((1-XKV(2))*XMVS)
-!           ENDIF
+        ELSEIF(THICK_TRANSFER.GT.0.D0) THEN
+! active layer too small: transfer of mass needed from layer 2 to layer 1
+!     TERM REPRESENTS THE DIFFERENCE BETWEEN MUD VOLUME AND VOID VOLUME
+          TERM=RATIO_MUD_SAND(2,IPOIN)/CONC_MUD(2)-
+     &    (XKV(2)*(1.D0-RATIO_MUD_SAND(2,IPOIN)))/
+     &    (XMVS*(1.D0-XKV(2)))
+          DISCR=MAX(0.D0,TERM)
+!     IF DISCR IS POSITIVE IT MEANS THAT MUD VOLUME IS LARGER THAN VOID VOLUME
+!     IF DISCR IS NEGATIVE, THE VOID VOLUME IS NOT COMPLETELY FILLED BY MUD
+          ES(IPOIN,2)=MASS_MIX_TOT(2,IPOIN)*
+     &    ((1.D0-RATIO_MUD_SAND(2,IPOIN))/(XMVS*(1.D0-XKV(2)))
+     &    + DISCR)
           THICK_TRANSFER=MIN(THICK_TRANSFER,ES(IPOIN,2)) ! if not enough sediment in layer 2 active layer thickness will be smaller than ESTRAT
           IF(NMUD.GE.1) THEN
             DO IMUD=1,NMUD
@@ -245,6 +243,7 @@
 !     TRANSFER OF SAND MASSES
 !-----------------------------------------------------------------------
 !
+!     NEGATIVE FLUX_MASS_SAND MEANS THE FLUX IS FROM UPPER LAYER TO LOWER LAYER
       IF(NSAND.GE.1) THEN
         DO IPOIN=1,NPOIN
           DO ISAND=1,NSAND

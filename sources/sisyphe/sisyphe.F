@@ -1394,10 +1394,10 @@
      &             OPTBAN,LS0,BETA,FD90,FDM,GRAV,HIDI,HMIN,
      &             VCE,CSF_SABLE,XMVE,XMVS,XWC,PI,KARMAN,ZERO,
      &             KARIM_HOLLY_YANG,MSK,SUSP,VF,ENTET,
-     &             CONST_ALAYER,LCONDIS,MESH,
+     &             LCONDIS,MESH,
      &             ELAY,LIEBOR,LIMTEC,MASKTR,
      &             IT1,T1,T2,T3,T4,T5,T6,T7,T8,T9,
-     &             T10,T11,T12,T13,UNORM,AC,AT0,DTS,ELAY0,
+     &             T10,T11,T12,T13,UNORM,AC,AT0,DTS,
      &             AVAIL,BREACH,CALFA_CL,COEFPN,DZF_GF,HIDING,
      &             QSCL_C,QSCL_S,QS_C,QSCLXC,QSXC,QSCLYC,
      &             QSYC,SALFA_CL,ZF_C,ZFCL_C,NSOUS,ENTETS,
@@ -1441,17 +1441,20 @@
                 CALL PLANTE(1)
                 STOP
               ENDIF
-!              IF(NOMBLAY.GE.2.AND.NSICLA.GE.2.AND.(.NOT.TASS)) THEN
-!                 IF(DEBUG.GT.0) WRITE(LU,*)'UPDATE_ACTIVELAYER_HIRANO'
-!                 CALL UPDATE_ACTIVELAYER_HIRANO
-!                 IF(DEBUG.GT.0) THEN
-!                   WRITE(LU,*)'END UPDATE_ACTIVELAYER_HIRANO'
-!                 ENDIF
-!              ENDIF
+              IF(NOMBLAY.GE.2.AND.NSICLA.GE.2.AND.(.NOT.TASS)) THEN
+                 IF(DEBUG.GT.0) WRITE(LU,*)'UPDATE_ACTIVELAYER_HIRANO'
+                 CALL UPDATE_ACTIVELAYER_HIRANO
+                 IF(DEBUG.GT.0) THEN
+                   WRITE(LU,*)'END UPDATE_ACTIVELAYER_HIRANO'
+                 ENDIF
+              ENDIF
               IF(DEBUG.GT.0) WRITE(LU,*)'BED_UPDATE'
               CALL BED_UPDATE(ZR,ZF,VOLU2D)
-              CALL OS('X=Y-Z   ',X=ELAY,Y=ZF,Z=ZR)
               IF(DEBUG.GT.0) WRITE(LU,*)'END BED_UPDATE'
+              IF(NOMBLAY.LT.2.AND.NSICLA.LT.2) THEN
+                CALL OS('X=Y-Z   ',X=ELAY,Y=ZF,Z=ZR)
+!             ELSE: ELAY=ES(1) DONE IN BED_UPDATE
+              ENDIF
 !
             ENDIF !ENDIF(CHARR)
       ! ********************** !
