@@ -3,7 +3,7 @@
 !                    ***************************
 !
      &(MESH,QSX,QSY,LIMTEC,UNSV2D,EBOR,BREACH,NSEG,NPTFR,NPOIN,
-     & KENT,KDIR,KDDL,DT,ZFCL,FLUX,CSF_SABLE,FLBCLA,
+     & KENT,KDIR,KDDL,DT,FLUX,FLBCLA,
      & LIQBOR,QBOR,NUBO,VNOIN,EVCL_M,RATIO_SAND,XMVS)
 !
 !***********************************************************************
@@ -83,7 +83,6 @@
 !| UNSV2D         |-->| INVERSE OF INTEGRALS OF TEST FUNCTIONS
 !| VNOIN          |-->| OUTWARD UNIT NORMALS
 !| XMVS           |-->| SEDIMENT DENSITY
-!| ZFCL           |<->| BEDLOAD EVOLUTION FOR EACH SEDIMENT CLASS
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !
       USE INTERFACE_SISYPHE, EX_BEDLOAD_SOLVS_VF => BEDLOAD_SOLVS_VF
@@ -97,8 +96,8 @@
       TYPE(BIEF_OBJ),   INTENT(IN)    :: QSX,QSY,LIMTEC,UNSV2D,EBOR
       TYPE(BIEF_OBJ),   INTENT(IN)    :: BREACH,LIQBOR,QBOR
       INTEGER,          INTENT(IN)    :: NSEG,NPTFR,NPOIN,KENT,KDIR,KDDL
-      DOUBLE PRECISION, INTENT(IN)    :: DT,CSF_SABLE
-      TYPE(BIEF_OBJ),   INTENT(INOUT) :: FLBCLA,ZFCL,FLUX
+      DOUBLE PRECISION, INTENT(IN)    :: DT
+      TYPE(BIEF_OBJ),   INTENT(INOUT) :: FLBCLA,FLUX
       TYPE(BIEF_OBJ),   INTENT(INOUT) :: EVCL_M
       INTEGER, INTENT(IN)             :: NUBO(2,NSEG)
       DOUBLE PRECISION, INTENT(IN)    :: VNOIN(3,NSEG)
@@ -109,12 +108,6 @@
       INTEGER          :: ISEGIN,K,N,IEL,IEL1,IEL2
       DOUBLE PRECISION :: QSMOY1,QSMOY2,QSP,VNOIN1,VNOIN2,RNORM,XN,YN
       DOUBLE PRECISION :: EVCL_MDIR,PROD_SCAL
-!
-!======================================================================!
-!======================================================================!
-!                               PROGRAM                                !
-!======================================================================!
-!======================================================================!
 !
 !     INTIALISES THE DIVERGENCE
 !
@@ -127,8 +120,8 @@
         IEL1 = NUBO(1,ISEGIN)
         IEL2 = NUBO(2,ISEGIN)
 !
-        ! II.1 - SEGMENT LENGTH (RNORM)
-        ! ----------------------------------
+!       1 - SEGMENT LENGTH (RNORM)
+!
         VNOIN1 = VNOIN(1,ISEGIN)
         VNOIN2 = VNOIN(2,ISEGIN)
         RNORM  = VNOIN(3,ISEGIN)
@@ -138,15 +131,15 @@
           IEL1 = NUBO(2,ISEGIN)
           IEL2 = NUBO(1,ISEGIN)
         ENDIF
-        ! II.2 - QS FOR THE SEGMENT, BROKEN UP ACCORDING TO X AND Y
-        ! ---------------------------------------------
+!       2 - QS FOR THE SEGMENT, BROKEN UP ACCORDING TO X AND Y
+!
         QSMOY1 = 0.5D0*(QSX%R(IEL1) + QSX%R(IEL2))
         QSMOY2 = 0.5D0*(QSY%R(IEL1) + QSY%R(IEL2))
-        ! II.3 - PROJECTS QS FOR THE SEGMENT ONTO THE SEGMENT NORMAL
-        ! ------------------------------------------------------------
+!       3 - PROJECTS QS FOR THE SEGMENT ONTO THE SEGMENT NORMAL
+!
         QSP = VNOIN1*QSMOY1 + VNOIN2*QSMOY2
-        ! II.4 - UPWIND SCHEME ON NODES WITH A "PROBLEM"
-        ! ----------------------------------------------
+!       4 - UPWIND SCHEME ON NODES WITH A "PROBLEM"
+!
         IF(BREACH%I(IEL1).EQ.1.AND.QSP.GT.0.D0) THEN
           QSMOY1 = QSX%R(IEL1)
           QSMOY2 = QSY%R(IEL1)
@@ -156,8 +149,8 @@
           QSMOY2 = QSY%R(IEL2)
         ENDIF
         QSP = VNOIN1*QSMOY1 + VNOIN2*QSMOY2
-        ! II.5 - INTEGRATES BY THE SEGMENT LENGTH
-        ! ---------------------------------------------
+!       5 - INTEGRATES BY THE SEGMENT LENGTH
+!
         FLUX%R(IEL1) = FLUX%R(IEL1) + RNORM*QSP
         FLUX%R(IEL2) = FLUX%R(IEL2) - RNORM*QSP
       ENDDO
@@ -179,7 +172,7 @@
 !       QBOR AND FLUX MUST HAVE THE SAME DIMENSION !
 !
         IF(LIQBOR%I(K).EQ.KENT) THEN
-          FLBCLA%R(K) = QBOR%R(K)
+          FLBCLA%R(K) = -QBOR%R(K)
           FLUX%R(IEL) = FLUX%R(IEL) + FLBCLA%R(K)
         ELSEIF(LIMTEC%I(K).EQ.KDDL.OR.LIMTEC%I(K).EQ.KDIR) THEN
 !         IF KDIR WILL BE UPDATED LATER
@@ -201,19 +194,14 @@
 !
       CALL OS('X=CYZ   ', X=EVCL_M, Y=FLUX, Z=UNSV2D, C=-DT)
 !
-!     THIS PART HAS STILL TO BE CHANGED IN MASS!
-!     ebor*xmvs replaced by a unique value given by the user??
+!     ebor*xmvs replaced by a unique value given by the user?
 !
       DO K=1,NPTFR
 !                                  PRIORITY OF LIQBOR, SEE ABOVE
         IF(LIMTEC%I(K).EQ.KDIR.AND.LIQBOR%I(K).NE.KENT) THEN
           N = MESH%NBOR%I(K)
-!         ZFCLDIR: DIRICHLET VALUE OF EVOLUTION, ZFCL WILL BE DIVIDED BY
-!         CSF_SABLE AFTER, AND THEN IT WILL BE AVA(N)*EBOR...
-!         when mass: we do not need to multiply by csf_sable
-          EVCL_MDIR = RATIO_SAND(N)*EBOR%R(K)*CSF_SABLE*XMVS
-!         CORRECTION OF BOUNDARY FLUX TO GET ZFCLDIR
-!         flbcla must be previously multiplied by xmvs!!
+          EVCL_MDIR = RATIO_SAND(N)*EBOR%R(K)*XMVS
+!         CORRECTION OF BOUNDARY FLUX TO GET EVCL_MDIR
           FLBCLA%R(K)=FLBCLA%R(K)-(EVCL_MDIR-EVCL_M%R(N))/
      &                (DT*UNSV2D%R(N))
 !         EVCL_MDIR FINALLY IMPOSED

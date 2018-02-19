@@ -3,9 +3,9 @@
 !                    ***************************
 !
      &(MESH,S,EBOR,MASKEL,MASK,QSX,QSY,IELMT,NPOIN,NPTFR,KENT,KDIR,KDDL,
-     & LIMTEC,DT,MSK,ENTET,T1,T2,T3,T4,T8,ZFCL,HZ,HZN,GLOSEG,DIMGLO,
-     & FLODEL,FLULIM,NSEG,UNSV2D,CSF_SABLE,ICLA,FLBCLA,AVA,LIQBOR,QBOR,
-     & MAXADV,EVCL_M)
+     & LIMTEC,DT,MSK,ENTET,T1,T2,T3,T4,T8,HZ,HZN,GLOSEG,DIMGLO,
+     & FLODEL,FLULIM,NSEG,UNSV2D,ICLA,FLBCLA,RATIO_SAND,
+     & LIQBOR,QBOR,MAXADV,EVCL_M)
 !
 !***********************************************************************
 ! SISYPHE   V6P2                                   21/07/2011
@@ -17,6 +17,7 @@
 !+    RHO_SAND*[ ---- + DIV(QS)] = 0
 !+                DT
 !
+!     the main output of this subroutine is EVCL_M=RHO_S*(HZ-HZN)
 !warning
 !+     LIMTEC is used here instead of LIEBOR. The difference is that
 !+     LIMTEC is LIEBOR corrected in view of sign of u.n at boundaries
@@ -135,7 +136,6 @@
 !| T4             |<->| WORK BIEF_OBJ STRUCTURE
 !| T8             |<->| WORK BIEF_OBJ STRUCTURE
 !| UNSV2D         |-->| INVERSE OF INTEGRALS OF TEST FUNCTIONS
-!| ZFCL           |<--| ZFCL=HZ-HZN
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !
       USE BIEF
@@ -152,12 +152,12 @@
       INTEGER,          INTENT(IN)    :: IELMT,NPOIN,NPTFR,KENT,KDIR
       INTEGER,          INTENT(IN)    :: DIMGLO,NSEG,ICLA,KDDL,MAXADV
       INTEGER,          INTENT(IN)    :: GLOSEG(DIMGLO,2)
-      DOUBLE PRECISION, INTENT(IN)    :: DT,CSF_SABLE,AVA(NPOIN)
+      DOUBLE PRECISION, INTENT(IN)    :: DT,RATIO_SAND(NPOIN)
       DOUBLE PRECISION, INTENT(INOUT) :: FLULIM(NSEG)
       LOGICAL,          INTENT(IN)    :: MSK,ENTET
       TYPE(BIEF_OBJ),   INTENT(INOUT) :: FLODEL,T1,T2,T3,T4,T8
       TYPE(BIEF_OBJ),   INTENT(INOUT) :: HZ,EBOR,LIMTEC
-      TYPE(BIEF_OBJ),   INTENT(INOUT) :: ZFCL,FLBCLA,EVCL_M
+      TYPE(BIEF_OBJ),   INTENT(INOUT) :: FLBCLA,EVCL_M
       TYPE(BIEF_OBJ),   INTENT(IN)    :: HZN,UNSV2D,LIQBOR,QBOR
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -171,7 +171,7 @@
       CALL VECTOR(FLBCLA,'=','FLUBOR          ',IELBOR(IELMT,1),1.D0,
      &            S,S,S,QSX,QSY,S,MESH,.TRUE.,MASK)
 !
-!     THIS PART IS STILL TO CHANGE TO TRANSFORM FLUX IN kg/s
+!     FLBCLA built from qsx and qsx, so already in kg/s or kg/(m*s)
 !
 !     BOUNDARY CONDITIONS: EITHER EBOR OR QBOR PRESCRIBED (NOT THE 2)
 !
@@ -190,7 +190,7 @@
 !         PUT IN T8, NOT THE EVOLUTION
           N=MESH%NBOR%I(K)
 ! here we should replace : t8=masse imposee au bord+ masse precedente
-          T8%R(K)=AVA(N)*EBOR%R(K)*CSF_SABLE+HZN%R(N)
+          T8%R(K)=RATIO_SAND(N)*EBOR%R(K)*XMVS+HZN%R(N)
         ENDIF
       ENDDO
 !
