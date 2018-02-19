@@ -8,7 +8,7 @@
      & DTS,DM,D90,HMIN,LS0,GRAV,XMVS,XMVE,VCE,
      & VF,ENTET,MSK,LCONDIS,MESH,
      & QS,T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,
-     & T11,T12,T13,CSF_SABLE,BREACH,QSX,QSY,ZFCL,SLOPEFF,
+     & T11,T12,T13,BREACH,QSX,QSY,SLOPEFF,
      & ICLA,FLBCLA,LIQBOR,QBOR,MAXADV,MASS_SAND,RATIO_SAND,EVCL_M)
 !
 !***********************************************************************
@@ -119,7 +119,6 @@
 !| VF             |-->| LOGICAL, FINITE VOLUMES OR NOT
 !| XMVE           |-->| FLUID DENSITY
 !| XMVS           |-->| SEDIMENT DENSITY
-!| ZFCL           |<->| BED EVOLUTION PER CLASS, DUE TO SUSPENDED SEDIMENT
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !
       USE INTERFACE_SISYPHE, EX_BEDLOAD_EVOL => BEDLOAD_EVOL
@@ -144,8 +143,7 @@
       TYPE(BIEF_OBJ),   INTENT(INOUT) :: QS,EBOR,FLBCLA
       TYPE(BIEF_OBJ),   INTENT(INOUT) :: T1, T2, T3, T4, T5, T6, T7
       TYPE(BIEF_OBJ),   INTENT(INOUT) :: T8, T9, T10, T11, T12, T13
-      DOUBLE PRECISION, INTENT(IN)    :: CSF_SABLE
-      TYPE(BIEF_OBJ),   INTENT(INOUT) :: BREACH, QSX, QSY, ZFCL,LIMTEC
+      TYPE(BIEF_OBJ),   INTENT(INOUT) :: BREACH, QSX, QSY, LIMTEC
       TYPE(BIEF_OBJ),   INTENT(IN)    :: LIQBOR,QBOR
       TYPE(BIEF_OBJ),   INTENT(INOUT) :: EVCL_M
       DOUBLE PRECISION, INTENT(IN)    :: MASS_SAND(NPOIN)
@@ -175,7 +173,7 @@
         IF(DEBUG.GT.0) WRITE(LU,*) 'CALLING BEDLOAD_NERBED_VF'
         CALL BEDLOAD_NERBED_VF
      &        (MESH,LIMTEC,KDDL,ELAY%R,V2DPAR%R,QSX,QSY,
-     &         NPOIN,MESH%NSEG,NPTFR,DTS,QS,T1,T2,T3,BREACH,CSF_SABLE,
+     &         NPOIN,MESH%NSEG,NPTFR,DTS,QS,T1,T2,T3,BREACH,
      &         MESH%NUBO%I,MESH%VNOIN%R,MASS_SAND)
         IF(DEBUG.GT.0) WRITE(LU,*) 'RETURN FROM BEDLOAD_NERBED_VF'
         CALL OS('X=YZ    ', X=QSX, Y=QS, Z=CALFA)
@@ -188,8 +186,8 @@
         IF(DEBUG.GT.0) WRITE(LU,*) 'CALLING BEDLOAD_SOLVS_VF'
         CALL BEDLOAD_SOLVS_VF(MESH,QSX,QSY,LIMTEC,UNSV2D,EBOR,
      &                        BREACH,MESH%NSEG,NPTFR,NPOIN,
-     &                        KENT,KDIR,KDDL,DTS,ZFCL,T11,
-     &                        CSF_SABLE,FLBCLA%ADR(ICLA)%P,
+     &                        KENT,KDIR,KDDL,DTS,T11,
+     &                        FLBCLA%ADR(ICLA)%P,
      &                        LIQBOR,QBOR,MESH%NUBO%I,MESH%VNOIN%R,
      &                        EVCL_M,RATIO_SAND,XMVS)
         IF(DEBUG.GT.0) WRITE(LU,*) 'RETURN FROM BEDLOAD_SOLVS_VF'
@@ -205,10 +203,10 @@
         CALL BEDLOAD_SOLVS_FE(MESH,S,EBOR,MASKEL,MASK,
      &                        QSX,QSY,IELMT,NPOIN,NPTFR,KENT,KDIR,KDDL,
      &                        LIMTEC,DTS,MSK,ENTET,T1,T2,T3,T4,T8,
-     &                        ZFCL,T12,T13,MESH%GLOSEG%I,
+     &                        T12,T13,MESH%GLOSEG%I,
      &                        MESH%GLOSEG%DIM1,MESH%MSEG%X,
-     &                        FLULIM,MESH%NSEG,UNSV2D,CSF_SABLE,ICLA,
-     &                        FLBCLA%ADR(ICLA)%P,AVA,LIQBOR,QBOR,
+     &                        FLULIM,MESH%NSEG,UNSV2D,ICLA,
+     &                        FLBCLA%ADR(ICLA)%P,RATIO_SAND,LIQBOR,QBOR,
      &                        MAXADV,EVCL_M)
         IF(DEBUG.GT.0) WRITE(LU,*) 'END_BEDLOAD_SOLVS_FE'
       ENDIF
