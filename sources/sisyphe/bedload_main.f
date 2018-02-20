@@ -307,7 +307,7 @@
         IF(.NOT.SEDCO(I)) THEN
 !
           IF (DEBUG > 0) WRITE(LU,*) 'BEDLOAD_EVOL : ',I,'/',NSICLA
-          CALL BEDLOAD_EVOL(HN,Q,S,ELAY,ACLADM,AVAIL(1:NPOIN,1,I),
+          CALL BEDLOAD_EVOL(HN,Q,S,ELAY,ACLADM,
      &                      COEFPN,CALFA_CL%ADR(I)%P,SALFA_CL%ADR(I)%P,
      &                      LIMTEC,
      &                      EBOR%ADR(I)%P,MASKEL,MASK,
