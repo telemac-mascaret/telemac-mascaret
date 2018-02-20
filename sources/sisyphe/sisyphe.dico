@@ -1211,36 +1211,6 @@ AIDE1 = 'Since the algorithms used for solving the propagation step are
 iterative, the allowed number of iterations should be limited.
 NOTE:Used only if the key-word MASS LUMPING is equal to false .'
 
-NOM = 'OPTION DE TRAITEMENT DES FONDS NON ERODABLES'
-NOM1 = 'OPTION FOR THE TREATMENT OF NON ERODABLE BEDS'
-TYPE = ENTIER
-INDEX = 21
-MNEMO = 'CHOIX'
-TAILLE = 0
-DEFAUT = 0
-DEFAUT1 = 0
-RUBRIQUE = 'GENERAL'
-RUBRIQUE1 = 'GENERAL'
-NIVEAU = 2
-AIDE = 'Ce parametre permet de fixer la methode retenue pour traiter
-les fonds non erodables :
-        0 = FONDS ERODABLES PARTOUT
-        1 = MINIMISATION DU DEBIT SOLIDE POUR LES FONDS NON ERODABLES
-        2 = DEBIT SOLIDE NUL POUR LES FONDS NON ERODABLES
-        3 = MINIMISATION DU DEBIT SOLIDE EN ELEMENTS FINIS/MASS-LUMPING
-        4 = MINIMISATION DU DEBIT SOLIDE EN VOLUMES FINIS
-Quand le fond rigide peut etre atteint lors de la simulation, il est
-conseille d utiliser la metode 3 ou bien 4'
-AIDE1 = 'This parameters determines the method used to treat the
-non erodable bottoms :
-        0 = ERODABLE BOTTOMS EVERYWHERE
-        1 = MINIMISATION OF THE SOLID DISCHARGE
-        2 = NUL SOLID DISCHARGE
-        3 = MINIMISATION OF THE SOLID DISCHARGE IN FE / MASS-LUMPING
-        4 = MINIMISATION OF THE SOLID DISCHARGE IN FINITE VOLUMES
-When the rigid bed can be reached during the computation, it is advised
-to use the method 3 or the method 4'
-
 NOM = 'RAPPORT D''EVOLUTION CRITIQUE'
 NOM1 = 'CRITICAL EVOLUTION RATIO'
 TYPE = REEL

@@ -2,7 +2,7 @@
                      SUBROUTINE NOEROD
 !                    *****************
 !
-     & (H , ZF , ZR , Z , X , Y , NPOIN , CHOIX , NLISS )
+     & (H , ZF , ZR , Z , X , Y , NPOIN , NLISS )
 !
 !***********************************************************************
 ! SISYPHE   V6P1                                   21/07/2011
@@ -31,7 +31,6 @@
 !+   cross-referencing of the FORTRAN sources
 !
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-!| CHOIX          |-->| SELECTED METHOD FOR THE TREATMENT OF RIGID BEDS
 !| H              |-->| WATER DEPTH
 !| NLISS          |<->| NUMBER OF SMOOTHINGS
 !| NPOIN          |-->| NUMBER OF 2D POINTS
@@ -48,7 +47,7 @@
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
-      INTEGER, INTENT(IN):: NPOIN , CHOIX
+      INTEGER, INTENT(IN):: NPOIN
       INTEGER, INTENT(INOUT):: NLISS
 !
       DOUBLE PRECISION, INTENT(IN)::  Z(NPOIN) , ZF(NPOIN)

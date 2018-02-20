@@ -2,7 +2,7 @@
                         SUBROUTINE NOEROD
 !                       *****************
 !
-     & (H , ZF , ZR , Z , X , Y , NPOIN , CHOIX , NLISS )
+     & (H , ZF , ZR , Z , X , Y , NPOIN , NLISS )
 !
 !***********************************************************************
 ! SISYPHE VERSION 5.1                             C. LENORMANT
@@ -30,7 +30,6 @@
 ! |   Z            | -->| FREE SURFACE
 ! |   X,Y          | -->| 2D COORDINATES
 ! |   NPOIN        | -->| NUMBER OF 2D POINTS
-! |   CHOIX        | -->| SELECTED METHOD FOR THE TREATMENT OF RIGID BEDS
 ! |   NLISS        |<-->| NUMBER OF SMOOTHINGS
 ! |________________|____|______________________________________________
 ! MODE : -->(INPUT), <--(RESULT), <-->(MODIFIED DATA)
@@ -40,7 +39,7 @@
       USE DECLARATIONS_SPECIAL
       IMPLICIT NONE
 !
-      INTEGER, INTENT(IN):: NPOIN , CHOIX
+      INTEGER, INTENT(IN):: NPOIN
       INTEGER, INTENT(INOUT):: NLISS
 !
       DOUBLE PRECISION, INTENT(IN)::  Z(NPOIN) , ZF(NPOIN)

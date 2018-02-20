@@ -21,7 +21,6 @@ NOUVEAU MODELE DE LIT                        = OUI
 VOLUMES FINIS                                = OUI
 BANCS DECOUVRANTS                            = OUI
 OPTION DE TRAITEMENT DES BANCS DECOUVRANTS   = 1
-OPTION DE TRAITEMENT DES FONDS NON ERODABLES = 4
 /-----------------------------------------------------------------------
 / PARAMETRES PHYSIQUES
 /-----------------------------------------------------------------------
