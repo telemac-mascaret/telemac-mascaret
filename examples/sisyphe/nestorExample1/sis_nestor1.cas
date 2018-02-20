@@ -51,7 +51,6 @@ MPM COEFFICIENT = 0.D0
 /MORPHOLOGICAL FACTOR = 2.D0
 /----------------------------------------------------------------------|
 SEDIMENT DENSITY                                  = 2650.
-OPTION FOR THE TREATMENT OF NON ERODABLE BEDS     = 3
 SLOPE EFFECT                                      = YES
 FORMULA FOR SLOPE EFFECT                       = 2
 FRICTION ANGLE OF THE SEDIMENT                 = 35 /default 40

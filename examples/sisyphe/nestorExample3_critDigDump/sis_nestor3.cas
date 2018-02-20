@@ -108,7 +108,6 @@ TREATMENT OF FLUXES AT THE BOUNDARIES = 1
  CRITICAL EVOLUTION RATIO                          = 1000.0
 /     COEFFICIENT FUNCTION OF THE POROSITY             = 1.83    /default 1.6
  SEDIMENT DENSITY                                  = 2650.
- OPTION FOR THE TREATMENT OF NON ERODABLE BEDS     = 3 / 4  fuer FINITE VOLUME
 /     NONEQUILIBRIUM BED LOAD                           = NO
 / slope effect: Hangabwärtstriebs (gravitationeller Transport)
  SLOPE EFFECT                                      = YES

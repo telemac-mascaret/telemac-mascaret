@@ -2,7 +2,7 @@
                         SUBROUTINE NOEROD
 !                       *****************
 !
-     & (H , ZF , ZR , Z , X , Y , NPOIN , CHOIX , NLISS )
+     & (H , ZF , ZR , Z , X , Y , NPOIN , NLISS )
 !
 !***********************************************************************
 ! TSEF VERSION 3.2                                          C. LENORMANT
@@ -28,8 +28,6 @@
 ! |   Z            | -->| COTE DE SURFACE LIBRE
 ! |   X,Y          | -->| COORDONNEES DU MAILLAGE
 ! |   NPOIN        | -->| NOMBRE DE POINTS DU MAILLAGE
-! |   CHOIX        | -->| METHODE CHOISIE POUR LE TRAITEMENT DES FONDS
-! |                | -->| NON ERODABLES
 ! |   NLISS        |<-->| NOMBRE DE LISSAGES
 ! |________________|____|______________________________________________
 ! MODE : -->(DONNEE NON MODIFIEE), <--(RESULTAT), <-->(DONNEE MODIFIEE)
@@ -41,7 +39,7 @@
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
-      INTEGER, INTENT(IN):: NPOIN , CHOIX
+      INTEGER, INTENT(IN):: NPOIN
       INTEGER, INTENT(INOUT):: NLISS
       DOUBLE PRECISION, INTENT(IN)::  Z(NPOIN) , ZF(NPOIN)
       DOUBLE PRECISION, INTENT(IN)::  X(NPOIN) , Y(NPOIN), H(NPOIN)

@@ -21,8 +21,6 @@ NOUVEAU MODELE DE LIT                        = OUI
 VOLUMES FINIS                                = NON
 BANCS DECOUVRANTS                            = OUI
 OPTION DE TRAITEMENT DES BANCS DECOUVRANTS   = 1
-/CETTE OPTION SERT A QQCH?
-OPTION DE TRAITEMENT DES FONDS NON ERODABLES = 3
 /-----------------------------------------------------------------------
 / PARAMETRES PHYSIQUES
 /-----------------------------------------------------------------------

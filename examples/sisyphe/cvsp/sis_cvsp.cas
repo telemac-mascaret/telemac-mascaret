@@ -60,7 +60,6 @@ BED-LOAD TRANSPORT FORMULA                       = 1
 CRITICAL EVOLUTION RATIO                         = 1000.0
 /COEFFICIENT FUNCTION OF THE POROSITY             = 1.6    /1.25
 SEDIMENT DENSITY                                 = 2650.
-OPTION FOR THE TREATMENT OF NON ERODABLE BEDS    = 3
 /NONEQUILIBRIUM BED LOAD                          = NO
 SLOPE EFFECT                                     = YES
 FORMULA FOR DEVIATION                           = 2

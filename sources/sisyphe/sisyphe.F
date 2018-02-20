@@ -861,7 +861,7 @@
         IF(.NOT.DEBU.OR..NOT.YAZR) THEN
           IF(DEBUG.GT.0) WRITE(LU,*) 'NOEROD'
           CALL NOEROD(HN%R,ZF%R,ZR%R,Z%R,MESH%X%R,
-     &                MESH%Y%R,NPOIN,CHOIX,NLISS)
+     &                MESH%Y%R,NPOIN,NLISS)
           IF(DEBUG.GT.0) WRITE(LU,*) 'END NOEROD'
         ENDIF
 !
