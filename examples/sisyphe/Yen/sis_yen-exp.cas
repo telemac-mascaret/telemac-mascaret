@@ -2,6 +2,7 @@
 / Sisyphe: Wesel-Xanten minimalistic nw97 Q(Wesel)
 / The Rhine River, Rhein-km 812.5 - 821.5
 /======================================================================
+NEW BED MODEL      = YES
 SECONDARY CURRENTS = YES
 SECONDARY CURRENTS ALPHA COEFFICIENT = 1.0
 /SECONDARY CURRENTS = NO
@@ -40,6 +41,7 @@ MASS-LUMPING                             = YES
 / PHYSICAL PARAMETERS - BED LOAD
 /----------------------------------------------
 / MANDATORY KEY WORDS
+NUMBER OF BED LOAD MODEL LAYERS = 1
 TYPE OF SEDIMENT = NCO
 BED LOAD FOR ALL SANDS = YES
 SUSPENSION FOR ALL SANDS = NO
