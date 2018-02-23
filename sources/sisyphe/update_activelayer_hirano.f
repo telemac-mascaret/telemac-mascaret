@@ -25,7 +25,7 @@
 !
       USE BIEF
       USE DECLARATIONS_TELEMAC
-      USE DECLARATIONS_SISYPHE, ONLY: MIN_SED_MASS_COMP,ES,ESTRAT,
+      USE DECLARATIONS_SISYPHE, ONLY: MIN_SED_MASS_COMP,ES,
      &    MASS_SAND,MASS_MUD,MASS_SAND_TOT,MASS_MUD_TOT,MASS_MIX_TOT,
      &    RATIO_MUD_SAND,RATIO_MUD,RATIO_SAND,NSAND,NMUD,NPOIN,
      &    XKV,XMVS,CONC_MUD,ELAY
@@ -34,15 +34,38 @@
 !
 !----------------------------------------------------------------------
 !
-      INTEGER IPOIN,ILAYER,ISAND,IMUD
+      INTEGER IPOIN,ILAYER,ISAND,IMUD,IERR
       DOUBLE PRECISION THICK_TRANSFER,TERM,DISCR,TOT
       DOUBLE PRECISION, ALLOCATABLE :: FLUX_MASS_MUD(:,:)
       DOUBLE PRECISION, ALLOCATABLE :: FLUX_MASS_SAND(:,:)
 !
 !----------------------------------------------------------------------
 !
-      ALLOCATE(FLUX_MASS_MUD(NMUD,NPOIN))
-      ALLOCATE(FLUX_MASS_SAND(NSAND,NPOIN))
+!       ALLOCATE FLUXES
+        IF(.NOT.ALLOCATED(FLUX_MASS_MUD)) THEN
+          ALLOCATE(FLUX_MASS_MUD(NMUD,NPOIN), STAT=IERR)
+          IF(IERR.NE.0) THEN
+            IF(LNG.EQ.1) THEN
+              WRITE(LU,*)'FLUX_MASS_MUD : ERREUR D''ALLOCATION',IERR
+            ELSEIF(LNG.EQ.2) THEN
+              WRITE(LU,*)'ERROR REALLOCATING FLUX_MASS_MUD:',IERR
+            ENDIF
+            CALL PLANTE(1)
+            STOP
+          ENDIF
+        ENDIF
+        IF(.NOT.ALLOCATED(FLUX_MASS_SAND)) THEN
+          ALLOCATE(FLUX_MASS_SAND(NSAND,NPOIN), STAT=IERR)
+          IF(IERR.NE.0) THEN
+            IF(LNG.EQ.1) THEN
+              WRITE(LU,*)'FLUX_MASS_SAND : ERREUR D''ALLOCATION',IERR
+            ELSEIF(LNG.EQ.2) THEN
+              WRITE(LU,*)'ERROR REALLOCATING FLUX_MASS_SAND:',IERR
+            ENDIF
+            CALL PLANTE(1)
+            STOP
+          ENDIF
+        ENDIF
 !
 !     INITIALIZATION
       DO IPOIN = 1,NPOIN
@@ -155,9 +178,12 @@
 !     before computing thickness, shouldn't we update the ratio?
       DO IPOIN = 1,NPOIN
 !     TERM REPRESENTS THE DIFFERENCE BETWEEN MUD VOLUME AND VOID VOLUME
-        TERM=RATIO_MUD_SAND(1,IPOIN)/CONC_MUD(1)-
-     &  (XKV(1)*(1.D0-RATIO_MUD_SAND(1,IPOIN)))/
-     &  (XMVS*(1.D0-XKV(1)))
+        TERM=0.D0
+        IF(NMUD.GT.0) THEN
+          TERM=RATIO_MUD_SAND(1,IPOIN)/CONC_MUD(1)-
+     &    (XKV(1)*(1.D0-RATIO_MUD_SAND(1,IPOIN)))/
+     &    (XMVS*(1.D0-XKV(1)))
+        ENDIF
         DISCR=MAX(0.D0,TERM)
 !     IF DISCR IS POSITIVE IT MEANS THAT MUD VOLUME IS LARGER THAN VOID VOLUME
 !     IF DISCR IS NEGATIVE, THE VOID VOLUME IS NOT COMPLETELY FILLED BY MUD
@@ -198,16 +224,20 @@
         ELSEIF(THICK_TRANSFER.GT.0.D0) THEN
 ! active layer too small: transfer of mass needed from layer 2 to layer 1
 !     TERM REPRESENTS THE DIFFERENCE BETWEEN MUD VOLUME AND VOID VOLUME
-          TERM=RATIO_MUD_SAND(2,IPOIN)/CONC_MUD(2)-
-     &    (XKV(2)*(1.D0-RATIO_MUD_SAND(2,IPOIN)))/
-     &    (XMVS*(1.D0-XKV(2)))
+          TERM=0.D0
+          IF(NMUD.GT.0) THEN
+            TERM=RATIO_MUD_SAND(2,IPOIN)/CONC_MUD(2)-
+     &      (XKV(2)*(1.D0-RATIO_MUD_SAND(2,IPOIN)))/
+     &      (XMVS*(1.D0-XKV(2)))
+          ENDIF
           DISCR=MAX(0.D0,TERM)
 !     IF DISCR IS POSITIVE IT MEANS THAT MUD VOLUME IS LARGER THAN VOID VOLUME
 !     IF DISCR IS NEGATIVE, THE VOID VOLUME IS NOT COMPLETELY FILLED BY MUD
           ES(IPOIN,2)=MASS_MIX_TOT(2,IPOIN)*
      &    ((1.D0-RATIO_MUD_SAND(2,IPOIN))/(XMVS*(1.D0-XKV(2)))
      &    + DISCR)
-          THICK_TRANSFER=MIN(THICK_TRANSFER,ES(IPOIN,2)) ! if not enough sediment in layer 2 active layer thickness will be smaller than ESTRAT
+! if not enough sediment in layer 2 active layer thickness will be smaller than ...
+          THICK_TRANSFER=MIN(THICK_TRANSFER,ES(IPOIN,2))
           IF(NMUD.GE.1) THEN
             DO IMUD=1,NMUD
               FLUX_MASS_MUD(IMUD,IPOIN)=(THICK_TRANSFER/ES(IPOIN,2))
