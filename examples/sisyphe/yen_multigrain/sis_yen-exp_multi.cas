@@ -2,6 +2,8 @@
 / Sisyphe: Wesel-Xanten minimalistic nw97 Q(Wesel)
 / The Rhine River, Rhein-km 812.5 - 821.5
 /======================================================================
+DEBUGGER           = 1
+NEW BED MODEL      = YES
 SECONDARY CURRENTS = YES
 SECONDARY CURRENTS ALPHA COEFFICIENT = 1.0
 /SECONDARY CURRENTS = NO
@@ -39,22 +41,24 @@ MASS-LUMPING                             = YES
 /----------------------------------------------
 / PHYSICAL PARAMETERS - BED LOAD
 /----------------------------------------------
-BED LOAD = YES
-SUSPENSION = NO
-BED-LOAD TRANSPORT FORMULA                 = 3
+TYPE OF SEDIMENT = NCO;NCO;NCO;NCO;NCO
+BED LOAD FOR ALL SANDS = YES
+SUSPENSION FOR ALL SANDS = NO
+BED-LOAD TRANSPORT FORMULA FOR ALL SANDS = 3
 SHIELDS PARAMETERS = 0.047;0.047;0.047;0.047;0.047
+SETTLING VELOCITIES = -9;-9;-9;-9;-9
 CRITICAL EVOLUTION RATIO                   = 1000.
 /COEFFICIENT FUNCTION OF THE POROSITY       = 1.6
-NON COHESIVE BED POROSITY                   = 0.37500
-NUMBER OF SIZE-CLASSES OF BED MATERIAL           = 5
+NON COHESIVE BED POROSITY                   = 0.37500;0.375
 NUMBER OF BED LOAD MODEL LAYERS         = 2
 
 SEDIMENT DIAMETERS =
 0.00031;0.00064;0.00103;0.00169;0.00336
 INITIAL FRACTION FOR PARTICULAR SIZE CLASS       =
 0.2;0.2;0.2;0.2;0.2
-CONSTANT ACTIVE LAYER THICKNESS                  = YES
-ACTIVE LAYER THICKNESS                           = 0.10D0
+/these keywords are now useless
+/CONSTANT ACTIVE LAYER THICKNESS                  = YES
+/ACTIVE LAYER THICKNESS                           = 0.10D0
 /
 SLOPE EFFECT = YES
 FORMULA FOR DEVIATION  = 2

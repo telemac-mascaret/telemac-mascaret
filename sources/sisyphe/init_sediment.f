@@ -185,6 +185,17 @@
         ENDIF
 !
 ! 1) USERS DEFINES WHICH RATIO IN WHICH LAYER (OR WHICH MASS IN WHICH LAYER, to do)
+!    FIRST CHECK IF RATIO IS GIVEN IN THE STEERING FILE (up to now, only for sands)
+!
+        IF(NSAND.GE.1.AND.NMUD.EQ.0) THEN
+          DO I = 1, NPOIN
+            DO ILAYER = 1, NOMBLAY
+              DO ISAND = 1, NSAND
+                RATIO_SAND(ISAND,ILAYER,I)=AVA0(ISAND)
+              ENDDO
+            ENDDO
+          ENDDO
+        ENDIF
 !
 !    FOR SAND
 !    FIRST LAYER
@@ -212,13 +223,13 @@
 !          RATIO_MUD(1,1,I)=...
 !          RATIO_MUD(2,1,I)=...
 !          ...
-!          RATIO_MUD(NSAND,1,I)=...
+!          RATIO_MUD(NMUD,1,I)=...
 !
 !    SECOND LAYER
 !          RATIO_MUD(1,2,I)=...
 !          RATIO_MUD(2,2,I)=...
 !          ...
-!          RATIO_MUD(NSAND,2,I)=...
+!          RATIO_MUD(NMUD,2,I)=...
 !
 !    NOMBLAY
 !          RATIO_MUD(1,NOMBLAY,I)=...
@@ -320,6 +331,7 @@
 !
 ! to add: if users define es(..,..) then check that sum(es)=zf-zr!!
 !
+!    DEFINITION OF ACTIVE LAYER
 !    FOR SEVERAL SANDS AND LAYERS.GT.2 : ELAY IS THE FIRST UPPER LAYER
         IF(NSAND.GT.1.AND.NOMBLAY.GT.1) THEN
           DO I=1,NPOIN
@@ -366,10 +378,13 @@
 !
         DO I = 1,NPOIN
           DO ILAYER = 1,NOMBLAY
-            TERM=RATIO_MUD_SAND(ILAYER,I)/CONC_MUD(ILAYER)-
-     &      (XKV(ILAYER)*(1.D0-RATIO_MUD_SAND(ILAYER,I)))/
-     &      (XMVS*(1.D0-XKV(ILAYER)))
+            TERM=0.D0
+            IF(NMUD.GT.0) THEN
+              TERM=RATIO_MUD_SAND(ILAYER,I)/CONC_MUD(ILAYER)-
+     &        (XKV(ILAYER)*(1.D0-RATIO_MUD_SAND(ILAYER,I)))/
+     &        (XMVS*(1.D0-XKV(ILAYER)))
 !    TERM REPRESENTS THE DIFFERENCE BETWEEN MUD VOLUME AND VOID VOLUME
+            ENDIF
 !    DISCR IS POSITIVE WHEN MUD FILLS ALL THE SAND POROSITY OTHERWISE IS ZERO
             DISCR=MAX(0.D0,TERM)
             MASS_TOT = ES(I,ILAYER)/

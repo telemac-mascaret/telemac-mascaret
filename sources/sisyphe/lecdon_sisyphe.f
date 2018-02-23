@@ -317,7 +317,6 @@
       DEVIA         = MOTINT( ADRESS(1, 40) )
       NOMBLAY       = MOTINT( ADRESS(1,251) )
       NSICLA        = DIMENS(4,59)
-      write(lu,*)'NSICLA EST',NSICLA
       HIDFAC        = MOTINT( ADRESS(1,253) )
       ICQ           = MOTINT( ADRESS(1, 41) )
 !     CONTROL SECTIONS
@@ -509,6 +508,7 @@
           CONC_MUD(K)=MOTREA( ADRESS(2,32) + K-1 )
         ENDDO
       ENDIF
+
 !
 !     OBSOLETE KEY WORD : CSF_VASE = MOTREA( ADRESS(2, 29) )
 !
@@ -780,6 +780,12 @@
             CALL PLANTE(1)
             STOP
           ENDIF
+        ENDDO
+      ENDIF
+!
+      IF(NMUD.EQ.0) THEN
+        DO I=1,NOMBLAY
+          CONC_MUD(I)=0.D0
         ENDDO
       ENDIF
 !

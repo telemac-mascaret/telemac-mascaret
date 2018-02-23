@@ -59,7 +59,7 @@
 !+        17/03/2017
 !+        V7P3
 !+        Add conditional for liquid boundary file for QS
-!                     
+!
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !| NBOR           |-->| GLOBAL NUMBER OF BOUNDARY POINT
 !| AT             |-->| TEMPS (s)
@@ -105,7 +105,10 @@
       IF(NSICLA.GT.1) THEN
         DO I=NSICLA,1,-1
           DO K=1,NPTFR
-            EBOR%ADR(I)%P%R(K)=AVAIL(NBOR(K),1,I)*EBOR%ADR(1)%P%R(K)
+! --TEMPORARY!!-- RATIO_SAND NEED TO BE REPLACED BY A GENERAL VARIABLE
+! (NOT RELATED TO ONLY SANDS)
+            EBOR%ADR(I)%P%R(K)=RATIO_SAND(I,1,NBOR(K))
+     &                         *EBOR%ADR(1)%P%R(K)
           ENDDO
         ENDDO
       ENDIF
@@ -166,11 +169,11 @@
 !         READING BOUNDARY CONDITION FILE WITH SOLID DISCHARGE
 !
       IF(CHARR) THEN
-!     AVOID OVERRIDING WITH SUSPENDED SEDIMENT TRANSPORT             
+!     AVOID OVERRIDING WITH SUSPENDED SEDIMENT TRANSPORT
           IF(SIS_FILES(SISLIQ)%NAME(1:1).NE.' ') THEN
                 SOLDIS(IFRLIQ)=QGL(IFRLIQ,AT)
           ENDIF
-      ENDIF       
+      ENDIF
 
             CALL DISIMP(SOLDIS(IFRLIQ),Q2BOR,NUMLIQ%I,IFRLIQ,NSOLDIS,
      &                  T5,T1,
@@ -182,7 +185,9 @@
                 DO K=1,NPTFR
                   IF(NUMLIQ%I(K).EQ.IFRLIQ.AND.
      &               LIQBOR%I(K).EQ.KENT) THEN
-                    QBOR%ADR(I)%P%R(K)=AVAIL(NBOR(K),1,I)*T1%R(K)
+! --TEMPORARY!!-- RATIO_SAND NEED TO BE REPLACED BY A GENERAL VARIABLE
+! (NOT RELATED TO ONLY SANDS)
+                    QBOR%ADR(I)%P%R(K)=RATIO_SAND(I,1,NBOR(K))*T1%R(K)
                   ENDIF
                 ENDDO
               ENDDO

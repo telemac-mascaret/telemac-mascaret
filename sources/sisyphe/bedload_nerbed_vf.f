@@ -2,7 +2,7 @@
                      SUBROUTINE BEDLOAD_NERBED_VF !
 !                    ******************************
 !
-     &(MESH,LIEBOR,KSORT,ELAY,V2DPAR,QSX,QSY,NPOIN,NSEG,
+     &(MESH,LIEBOR,KSORT,V2DPAR,QSX,QSY,NPOIN,NSEG,
      & NPTFR,DT,QS,T1,T2,T3,BREACH,NUBO,VNOIN,MASS_SAND)
 !
 !***********************************************************************
@@ -48,7 +48,6 @@
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !| BREACH         |<->| INDICATOR FOR NON ERODIBLE BED (FINITE VOLUMES SCHEMES)
 !| DT             |-->| TIME STEP
-!| ELAY           |<->| THICKNESS OF SURFACE LAYER
 !| KSORT          |-->| CONVENTION FOR FREE OUTPUT
 !| LIEBOR         |<->| PHYSICAL BOUNDARY CONDITIONS FOR BED EVOLUTION
 !| MESH           |<->| MESH STRUCTURE
@@ -81,7 +80,7 @@
       DOUBLE PRECISION, INTENT(IN)    :: DT
       TYPE(BIEF_OBJ),   INTENT(INOUT) :: QS, T1, T2, T3
       TYPE(BIEF_OBJ),   INTENT(INOUT) :: BREACH
-      DOUBLE PRECISION, INTENT(IN)    :: ELAY(NPOIN),V2DPAR(NPOIN)
+      DOUBLE PRECISION, INTENT(IN)    :: V2DPAR(NPOIN)
       INTEGER, INTENT(IN)             :: NUBO(2,NSEG)
       DOUBLE PRECISION, INTENT(IN)    :: VNOIN(3,NSEG)
       DOUBLE PRECISION, INTENT(IN)    :: MASS_SAND(NPOIN)
