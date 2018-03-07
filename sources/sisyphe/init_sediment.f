@@ -139,7 +139,6 @@
       DOUBLE PRECISION   :: CHECK_RS,CHECK_RM
       DOUBLE PRECISION   :: TERM,DISCR
       DOUBLE PRECISION   :: MASS_TOT
-	  DOUBLE PRECISION   :: EPAI_INIT0,EPAI_INIT(NPOIN)
 !======================================================================!
 !======================================================================!
 !                               PROGRAM                                !
@@ -170,16 +169,19 @@
 !     NEW BED MODEL!
 !
 ! 1) USERS DEFINE LAYER THICKNESS
+!  faire call bed_init_user pour remplir estratum et ratio_init
 !
 !    INITIALISATION ES:
-		EPAI_INIT0 = 100.D0
 		DO IPOIN=1,NPOIN
-			EPAI_INIT(IPOIN)=EPAI_INIT0
+		 DO ILAYER=1,NOMBLAY
+		    ES(IPOIN,ILAYER)=0.D0
+		 ENDDO
 		ENDDO
-      IF (NSAND.LE.1)THEN
+!
+      IF (.NOT.HIRANO)THEN
         IF (NOMBLAY.EQ.1)THEN
             DO IPOIN=1,NPOIN
-				ES(IPOIN,NOMBLAY)=EPAI_INIT(IPOIN) 
+				ES(IPOIN,NOMBLAY)= ESTRATUM(IPOIN,NOMBLAY) 
             ENDDO
 			ELSE
             WRITE(LU,*) 'NOMBLAY > 1 et un seul sable'
@@ -187,40 +189,15 @@
             STOP
         ENDIF
       ELSE
-		IF (NOMBLAY.EQ.1)THEN
-! ce cas sera prevu dans lecdon NOMBLAY=NOMBSTRAT+1
-			WRITE(LU,*)'NSAND > 1, you have to define layers'
-C***************meme chose lorsque nmud+nsand>1 a voir apres
-            CALL PLANTE(1)
-            STOP
-        ELSE
 !   first layer is active layer
 			DO IPOIN=1,NPOIN
                 ELAY%R(IPOIN)= ELAY0 ! on pourra mettre une autre option ( 3 * Dm) a gerer dans bed_udate_hirano
-                ES(IPOIN,1)= MIN(ELAY%R(IPOIN),EPAI_INIT(IPOIN))
-              IF(NOMBLAY.EQ.2)THEN
-! cas a generaliser lorsque NOMBSTRAT > 1 donc NOMBLAY > 2
-                ES(IPOIN,2)= EPAI_INIT(IPOIN)-ES(IPOIN,1)
-              ELSE
-!   a. every layer of substratum has the same thickness
-!        DO ILAYER=2,NOMBLAY
-!          DO IPOIN=1,NPOIN
-!             ES(IPOIN,ILAYER)=..
-!          ENDDO
-!        ENDDO
-!   b. different thickness for layers of substratum
-!        DO IPOIN=1,NPOIN
-!          ES(IPOIN,2)=...
-!          ES(IPOIN,3)=...
-!          ...
-!          ES(IPOIN,NOMBLAY)=...
-!        ENDDO
-             WRITE(LU,*)'NOMBLAY > 2 ' ! you have to define ES(IPOIN,ILAY) in '
-             CALL PLANTE(1)
-             STOP
-            ENDIF
-           ENDDO            
-        ENDIF
+				ES(1,IPOIN) = 0.D0 ! la couche active est remplie dans le premeier appel de bed_update_hirano
+				DO ILAYER = 2,NOMBLAY
+				   ISTRAT=ILAYER-1
+				   ES(IPOIN,ILAYER) = ESTRATUM(IPOIN,ISTRAT)
+				ENDDO
+            ENDDO            
       ENDIF
        DO IPOIN=1,NPOIN 
          ZR%R(IPOIN)=ZF%R(IPOIN)
@@ -229,117 +206,87 @@ C***************meme chose lorsque nmud+nsand>1 a voir apres
          ENDDO
        ENDDO
 ! 2) USERS DEFINES: INITIALISATION OF RATIO_SAND 
-!
-        IF(NSAND.EQ.1) THEN
-          DO IPOIN = 1,NPOIN
-            DO ILAYER = 1,NOMBLAY
-              RATIO_SAND(NSAND,ILAYER,IPOIN)=1.D0
-            ENDDO
-          ENDDO
-         ELSE
-!    FIRST CHECK IF RATIO IS GIVEN IN THE STEERING FILE (up to now, only for sands)
-          DO IPOIN = 1, NPOIN
-            DO ILAYER = 1, NOMBLAY
-              DO ISAND = 1, NSAND
-                RATIO_SAND(ISAND,ILAYER,IPOIN)=AVA0(ISAND)
-              ENDDO
-            ENDDO
-          ENDDO
-!
-!    FOR SAND
-!    FIRST LAYER
-!        DO IPOIN=1,NPOIN
-!          RATIO_SAND(1,1,IPOIN)=...
-!          RATIO_SAND(2,1,IPOIN)=...
-!          ...
-!          RATIO_SAND(NSAND,1,IPOIN)=...
-!
-!    SECOND LAYER
-!          RATIO_SAND(1,2,IPOIN)=...
-!          RATIO_SAND(2,2,IPOIN)=...
-!          ...
-!          RATIO_SAND(NSAND,2,IPOIN)=...
-!
-!    NOMBLAY
-!          RATIO_SAND(1,NOMBLAY,IPOIN)=...
-!          RATIO_SAND(2,NOMBLAY,IPOIN)=...
-!          ...
-!          RATIO_SAND(NSAND,NOMBLAY,IPOIN)=...
-!       ENDDO
-        ENDIF
-!
-! 3) USERS DEFINES: INITIALISATION OF RATIO_MUD
-        IF(NMUD.EQ.1) THEN
-          DO IPOIN = 1,NPOIN
-            DO ILAYER = 1,NOMBLAY
-              RATIO_MUD(NMUD,ILAYER,IPOIN)=1.D0
-            ENDDO
-          ENDDO
-         ELSE
-          DO IPOIN = 1,NPOIN
-            DO ILAYER = 1,NOMBLAY
-              DO IMUD = 1, NMUD
-                 RATIO_MUD(IMUD,ILAYER,IPOIN)=1.D0
-              ENDDO
-            ENDDO
-          ENDDO
-!    FOR MUD
-!
-!    FIRST LAYER
-!        DO IPOIN=1,NPOIN
-!          RATIO_MUD(1,1,IPOIN)=...
-!          RATIO_MUD(2,1,IPOIN)=...
-!          ...
-!          RATIO_MUD(NMUD,1,IPOIN)=...
-!
-!    SECOND LAYER
-!          RATIO_MUD(1,2,IPOIN)=...
-!          RATIO_MUD(2,2,IPOIN)=...
-!          ...
-!          RATIO_MUD(NMUD,2,IPOIN)=...
-!
-!    NOMBLAY
-!          RATIO_MUD(1,NOMBLAY,IPOIN)=...
-!          RATIO_MUD(2,NOMBLAY,IPOIN)=...
-!          ...
-!          RATIO_MUD(NMUD,NOMBLAY,IPOIN)=...
-!
-!        ENDDO
-        ENDIF
-!
-! 4) USERS DEFINES:  RATIO_MUD_SAND
-!
-        IF(NMUD.EQ.0.AND.NSAND.GE.1) THEN
-          DO IPOIN=1,NPOIN
-            DO ILAYER=1,NOMBLAY
-              RATIO_MUD_SAND(ILAYER,IPOIN) = 0.D0
-            ENDDO
-          ENDDO
-        ELSEIF(NSAND.EQ.0.AND.NMUD.GE.1) THEN
-          DO IPOIN=1,NPOIN
-            DO ILAYER=1,NOMBLAY
-              RATIO_MUD_SAND(ILAYER,IPOIN) = 1.D0
-            ENDDO
-          ENDDO
-        ELSEIF(NSAND.GE.1.AND.NMUD.GE.1)THEN
-!   a. every layer has the same ratio_mud_sand
-!        DO ILAYER=1,NOMBLAY
-!          DO IPOIN=1,NPOIN
-!             RATIO_MUD_SAND(ILAYER,IPOIN)=...
-!          ENDDO
-!        ENDDO
-!   b. different ratio for layers
-!        DO IPOIN=1,NPOIN
-!          RATIO_MUD_SAND(1,IPOIN)=...
-!          RATIO_MUD_SAND(2,IPOIN)=...
-!          ...
-!          RATIO_MUD_SAND(NOMBLAY,IPOIN)=...
-!        ENDDO
-         WRITE(LU,*)'VERIFY RATIO_MUD_SAND'
-         CALL PLANTE(1)
-         STOP
+!************FAIRE LE CALCUL DES RATIO_SAND, RATIO_MUD et RATIO_MUD_SAND à partir des RATIO_INIT(NCLA,NSTRAT,NPOIN)
 
-        ENDIF
+		DO IPOIN=1,NPOIN
+			DO ISTRAT=1,NSTRAT
+			    tot=0.D0
+				tot2=0.D0
+				DO ISAND=1,NSAND
+				tot= tot + RATIO_INIT(NUM_ISAND_ICLA(ISAND),ISTRAT,IPOIN)
+				ENDDO
+				DO ISAND=1,NSAND
+					IF(HIRANO)THEN
+						ILAYER = ISTRAT+1
+!la couche active est remplie dans le premeier appel de bed_update_hirano
+					ELSE
+						ILAYER=ISTRAT
+					ENDIF
+					IF(ISAND.LT.NSAND)THEN
+						IF(tot.GT.0.D0)THEN
+							RATIO_SAND(NSAND,ILAYER,IPOIN)=RATIO_INIT(NUM_ISAND_ICLA(ISAND),ISTAT,IPOIN)/tot
+						ELSE
+							RATIO_SAND(NSAND,ILAYER,IPOIN)=0.D0
+						ENDIF
+						tot2=tot2+RATIO_SAND(NSAND,ILAYER,IPOIN)
+					ELSE
+						RATIO_SAND(NSAND,ILAYER,IPOIN)=1.D0-tot2
+					ENDIF
+				ENDDO
+			ENDDO
+		ENDDO
+! 3) USERS DEFINES: INITIALISATION OF RATIO_MUD 
+		DO IPOIN=1,NPOIN
+			DO ISTRAT=1,NSTRAT
+			    tot=0.D0
+				tot2=0.D0
+				DO IMUD=1,NMUD
+				tot= tot + RATIO_INIT(NUM_IMUD_ICLA(IMUD),ISTRAT,IPOIN)
+				ENDDO
+				DO IMUD=1,NMUD
+					IF(HIRANO)THEN
+						ILAYER = ISTRAT+1
+!la couche active est remplie dans le premeier appel de bed_update_hirano
+					ELSE
+						ILAYER=ISTRAT
+					ENDIF
+					IF(IMUD.LT.NMUD)THEN
+						IF(tot.GT.0.D0)THEN
+							RATIO_MUD(NMUD,ILAYER,IPOIN)=RATIO_INIT(NUM_IMUD_ICLA(IMUD),ISTAT,IPOIN)/tot
+						ELSE
+							RATIO_MUD(NMUD,ILAYER,IPOIN)=0.D0
+						ENDIF
+						tot2=tot2+RATIO_MUD(NMUD,ILAYER,IPOIN)
+					ELSE
+						RATIO_MUD(NMUD,ILAYER,IPOIN)=1.D0-tot2
+					ENDIF
+				ENDDO
+			ENDDO
+		ENDDO
+! 4) USERS DEFINES: INITIALISATION OF RATIO_MUD_SAND
+		DO IPOIN=1,NPOIN
+			DO ISTRAT=1,NSTRAT
+			    totmud=0.D0
+				totsand=0.D0
+				DO IMUD=1,NMUD
+				totmud= totmud + RATIO_INIT(NUM_IMUD_ICLA(IMUD),ISTRAT,IPOIN)
+				ENDDO
+				DO ISAND=1,NSAND
+				totsand= totsand + RATIO_INIT(NUM_ISAND_ICLA(ISAND),ISTRAT,IPOIN)
+				ENDDO				
+				IF(HIRANO)THEN
+					ILAYER = ISTRAT+1
+!la couche active est remplie dans le premeier appel de bed_update_hirano
+				ELSE
+					ILAYER=ISTRAT
+				ENDIF
+				IF(totmud+totsand.GT.0.D0)THEN
+					RATIO_MUD_SAND(ILAYER,IPOIN)=totmud/(totmud+totsand)
+				ELSE
+					RATIO_MUD_SAND(ILAYER,IPOIN)=1.D0
+				ENDIF
+			ENDDO
+		ENDDO		
 !
 !  CHECK THE RATIOS
         DO IPOIN=1,NPOIN
@@ -377,7 +324,7 @@ C***************meme chose lorsque nmud+nsand>1 a voir apres
           ENDDO
        ENDDO
 !
-! 4) MASS COMPUTATION : ALL MASSES IN [kg/m^2]
+! 5) MASS COMPUTATION : ALL MASSES IN [kg/m^2]
 !     -> MASS_MUD;MASS_SAND;MASS_MUD_TOT;MASS_SAND_TOT
 !
 !    WARNING : FOR MASS COMPUTATION IS MANDATORY RATIO_MUD_SAND,
@@ -462,8 +409,6 @@ C***************meme chose lorsque nmud+nsand>1 a voir apres
         ENDIF
       ENDDO
 !
-! 6) INITIALIZATION OF ACLADM AND UNLADM
-        CALL MEAN_GRAIN_SIZE
 !
       ENDIF !(NEW BED MODEL)
 !
