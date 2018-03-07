@@ -77,6 +77,8 @@ files: bief_def.f
   strche.f
   fonstr.f
   read_dataset.f
+  read_partel_info.f
+  leclim.f
   vc13cc.f
   vc04tt.f
   vc01tt0.f
@@ -316,6 +318,7 @@ files: bief_def.f
   mt03cc.f
   mt12ab.f
   mt01aa.f
+  mt12aa.f
   mt99bb.f
   mt04pp.f
   mt08bb.f
@@ -330,7 +333,7 @@ files: bief_def.f
   mt06oo.f
   mt06pp.f
   mt06aa.f
-  mt02pp.f
+  mt04bb.f
   mt05pp.f
   mt04tt.f
   mt12bb.f
@@ -344,7 +347,7 @@ files: bief_def.f
   mt05aa.f
   mt11aa.f
   mt11ab.f
-  mt11ac.f
+  mt02pp.f
   mt03aa.f
   mt02bb.f
   mt01bb.f
@@ -352,7 +355,7 @@ files: bief_def.f
   mt06ff.f
   mt12ac.f
   mt99aa.f
-  mt12aa.f
+  mt11ac.f
   mt04cc.f
   mt08ab.f
   mt08pp.f
@@ -365,7 +368,6 @@ files: bief_def.f
   mt13aa.f
   mt06bb.f
   mt15pp.f
-  mt04bb.f
   mt06ft.f
   mt03bb.f
   mt07bb.f
@@ -400,8 +402,6 @@ files: bief_def.f
   bief_gcf.f
   bief_gammp.f
   bief_erf.f
-  read_partel_info.f
-  leclim.f
   write_data.f
   impvec.f
   bief_desimp.f
@@ -599,13 +599,11 @@ files: declarations_sisyphe.f
   point_sisyphe.f
   maxslope.f
   condis_sisyphe.f
-  init_constant.F
   disimp.f
   read_fic_conc.f
   qgl.f
   cgl.f
   conlit.f
-  bed_update.f
   bedload_direction.f
   bedload_interact.f
   bedload_bailard.f
@@ -645,8 +643,10 @@ files: declarations_sisyphe.f
   suspension_computation.f
   suspension_main.f
   nestor_interface.f
+  bed_update_activelayer_hirano.f
   noerod.f
   bilan_sisyphe.f
+  init_constant.F
   predes.f
   sis_arret.f
   condim_sisyphe.f
@@ -687,22 +687,22 @@ files: declarations_sisyphe.f
   cvsp_make_actlay.f
   cvsp_add_fraction.f
   cvsp_main.f
-  init_compo.f
-  init_avai.f
   init_compo_coh.f
   init_mixte.f
+  mean_grain_size.f
+  init_compo.f
+  init_avai.f
   vitchu_sisyphe.f
   init_sediment.f
   layer.f
   fluxpr_sisyphe.f
   flusec_sisyphe.f
   calcuw.f
-  mean_grain_size.f
+  bed_update.f
   init_zero.f
   entete_sisyphe.f
   sisyphe.F
   homere_sisyphe.F
-  update_activelayer_hirano.f
 
 [special]
 path: <root>|sources|utils|special

@@ -221,6 +221,7 @@
       INTEGER, PARAMETER :: NSOR = 100
       INTEGER            :: NLISS
       INTEGER            :: I,J,K,MN,MT,ISOUS,IMA,IMI,IELEB,KP1
+      INTEGER            :: ILAYER,ISAND
       INTEGER            :: IERR
       INTEGER            :: IMIN,IMAX,NUMENX,NUMDEB
       INTEGER            :: ALIRE(MAXVAR),ALIRV(MAXVAR),ALIRH(MAXVAR)
@@ -876,7 +877,8 @@
      &                     MS_SABLE, MS_VASE,ACLADM,
      &                     UNLADM,TOCE_SABLE,
      &                     CONC,NLAYER,DEBU,MIXTE,NEW_BED_MODEL,
-     &                     TOC_MUD,TOCE_MUD,VOLU2D)
+     &                     TOC_MUD,TOCE_MUD,VOLU2D,MESH%X%R,
+     &                		MESH%Y%R)
         IF(DEBUG.GT.0) WRITE(LU,*) 'END INIT_SEDIMENT'
 !
 !
@@ -1436,25 +1438,29 @@
 !!          ENDIF
 !! end old sisyphe
 !!************************************************************
+
+
               IF(TASS) THEN
                 WRITE(LU,*)'CONSOLIDATION NOT IMPLEMENTED YET'
                 CALL PLANTE(1)
                 STOP
               ENDIF
+			  
               IF(NOMBLAY.GE.2.AND.NSICLA.GE.2.AND.(.NOT.TASS)) THEN
+                 IF(DEBUG.GT.0) WRITE(LU,*)'BED_UPDATE'
+                 CALL BED_UPDATE(ZR,ZF,VOLU2D)
+                 IF(DEBUG.GT.0) WRITE(LU,*)'END BED_UPDATE'			  
                  IF(DEBUG.GT.0) WRITE(LU,*)'UPDATE_ACTIVELAYER_HIRANO'
-                 CALL UPDATE_ACTIVELAYER_HIRANO
+                 CALL BED_UPDATE_ACTIVELAYER_HIRANO
                  IF(DEBUG.GT.0) THEN
                    WRITE(LU,*)'END UPDATE_ACTIVELAYER_HIRANO'
                  ENDIF
               ENDIF
+			  
               IF(DEBUG.GT.0) WRITE(LU,*)'BED_UPDATE'
               CALL BED_UPDATE(ZR,ZF,VOLU2D)
               IF(DEBUG.GT.0) WRITE(LU,*)'END BED_UPDATE'
-              IF(NOMBLAY.LT.2.AND.NSICLA.LT.2) THEN
-                CALL OS('X=Y-Z   ',X=ELAY,Y=ZF,Z=ZR)
-!             ELSE: ELAY=ES(1) DONE IN BED_UPDATE
-              ENDIF
+!
 !
             ENDIF !ENDIF(CHARR)
       ! ********************** !

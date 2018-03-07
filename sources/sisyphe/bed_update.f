@@ -16,6 +16,7 @@
 !+        28/03/2017
 !+        V7P3
 !+  Creation of the subroutine.
+! output: ES, ratio_sand, ratio_mud, rato_mud_sand,ZF, masstot pour bilan
 !
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !| VOLU2D         |-->| INTEGRAL OF TEST FUNCTIONS
@@ -50,37 +51,37 @@
 ! to do for all the layers if masses are updated/computed somewhere before
 ! VARIOUS MASSES ARE STILL IN [kg/m2]
       DO IPOIN = 1,NPOIN
-!!!
-!!        DO ILAYER = 1,NOMBLAY
-!!          MASS_MIX_TOT(ILAYER,IPOIN) = 0.D0
-          MASS_SAND_TOT(1,IPOIN) = 0.D0
-!!          MASS_MUD_TOT(ILAYER,IPOIN) = 0.D0
-!!!
-!!          IF(NMUD.NE.0)THEN
-!!            DO IMUD = 1,NMUD
-!!              ! THIS CLIPPING IS - A PRIORI - NOT MANDATORY
-!!              IF(MASS_MUD(IMUD,ILAYER,IPOIN).LT.0.D0)THEN
-!!                MASS_MUD(IMUD,ILAYER,IPOIN) = 0.D0
-!!              ENDIF
-!!            ENDDO
-!!          ELSE
-!!! IL FAUT DECLARER MASS_MUD avec MAX(NMUD,1)
-!!            MASS_MUD(1,ILAYER,IPOIN) = 0.D0
-!!          ENDIF
-!!!
-!!          IF(NSAND.NE.0)THEN
-!!            DO ISAND = 1,NSAND
-!!              ! THIS CLIPPING IS - A PRIORI - NOT MANDATORY
-!!              IF(MASS_SAND(ISAND,ILAYER,IPOIN).LT.0.D0)THEN
-!!                MASS_SAND(ISAND,ILAYER,IPOIN) = 0.D0
-!!              ENDIF
-!!            ENDDO
-!!          ELSE
-!!! IL FAUT DECLARER MASS_SAND avec  MAX(NSAND,1)
-!!            MASS_SAND(1,ILAYER,IPOIN) = 0.D0
-!!          ENDIF
-!!        ENDDO
-!!!
+!
+        DO ILAYER = 1,NOMBLAY
+          MASS_MIX_TOT(ILAYER,IPOIN) = 0.D0
+          MASS_SAND_TOT(ILAYER,IPOIN) = 0.D0
+          MASS_MUD_TOT(ILAYER,IPOIN) = 0.D0
+!
+          IF(NMUD.NE.0)THEN
+            DO IMUD = 1,NMUD
+              ! THIS CLIPPING IS - A PRIORI - NOT MANDATORY
+              IF(MASS_MUD(IMUD,ILAYER,IPOIN).LT.0.D0)THEN
+                MASS_MUD(IMUD,ILAYER,IPOIN) = 0.D0
+              ENDIF
+            ENDDO
+          ELSE
+! IL FAUT DECLARER MASS_MUD avec MAX(NMUD,1)
+            MASS_MUD(1,ILAYER,IPOIN) = 0.D0
+          ENDIF
+!
+          IF(NSAND.NE.0)THEN
+            DO ISAND = 1,NSAND
+              ! THIS CLIPPING IS - A PRIORI - NOT MANDATORY
+              IF(MASS_SAND(ISAND,ILAYER,IPOIN).LT.0.D0)THEN
+                MASS_SAND(ISAND,ILAYER,IPOIN) = 0.D0
+              ENDIF
+            ENDDO
+          ELSE
+! IL FAUT DECLARER MASS_SAND avec  MAX(NSAND,1)
+            MASS_SAND(1,ILAYER,IPOIN) = 0.D0
+          ENDIF
+        ENDDO
+!
       ENDDO
 ! end attention
 !-----------------------------------------------------------------------------
@@ -217,15 +218,6 @@
      &    + DISCR)
         ENDDO
       ENDDO
-! THICKNESS OF THE FIRST LAYER IS THICKNESS OF ACTIVE LAYER
-!
-      IF(NSAND.GT.1.AND.NOMBLAY.GT.1) THEN
-        DO I=1,NPOIN
-          ELAY%R(I)=ES(I,1)
-! OPTION ACTIVE LAYER NOT CONSTANT: TO DO!
-!            ELAY%R(I)=3.D0 * ACLADM%R(J)
-        ENDDO
-      ENDIF
 !
 ! COMPUTE ZF (NOTE: THIS COULD BE MOVED)
 !
@@ -238,7 +230,7 @@
 !
 ! COMPUTES MASSTOT AT EVERY TIME STEP, FOR EVERY CLASS
 ! NECESSARY FOR BALANCE
-!
+! REFLECHIR SI NE FAIRE BILAN QUE A LA FIN DU PAS DE TEMPS
       DO ICLA=1,NSICLA
         MASSTOT(ICLA)=0.D0
       ENDDO

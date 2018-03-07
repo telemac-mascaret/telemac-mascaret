@@ -34,7 +34,7 @@ PARAMETRES DE SHIELDS = -9;-9;-9;-9
 DIAMETRES DES GRAINS = 0.0002;0.00031;0.00103;0.00169
 D90                           = 0.0002;0.00031;0.00103;0.00169
 / commented since ratio_sand defined in init_sediment.f
-/FRACTION INITIALE PAR CLASSE SEDIMENTOLOGIQUE = 0.25;0.25;0.25;0.25
+FRACTION INITIALE PAR CLASSE SEDIMENTOLOGIQUE = 0.25;0.25;0.25;0.25
 POROSITE DU LIT NON COHESIF   = 0.4
 FORMULE POUR EFFET DE PENTE   = 0
 FORMULE POUR LA DEVIATION     = 0
@@ -43,4 +43,4 @@ GLISSEMENT DU SEDIMENT        = NON
 / si on met 1, lorqu'on a plusieurs sables, il faut decider si le
 / modele de sol sera forcement du hirano (donc il vaut mieux
 / mettre 2 couches par defaut) ou autre
-NOMBRE DE COUCHES POUR GRANULO ETENDUE       = 1
+/NOMBRE DE COUCHES POUR GRANULO ETENDUE       = 
