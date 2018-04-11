@@ -101,7 +101,8 @@
       USE DECLARATIONS_SISYPHE, ONLY: MASS_MUD,MASS_SAND,
      & MASS_MUD_TOT,MASS_SAND_TOT,MASS_MIX_TOT,
      & RATIO_SAND,RATIO_MUD,RATIO_MUD_SAND,NSAND,NMUD,
-     & TYPE_SED,XKV,TOCE_SAND,MASSTOT,NUM_IMUD_ICLA,NUM_ISAND_ICLA,ELAY0
+     & TYPE_SED,XKV,TOCE_SAND,MASSTOT,NUM_IMUD_ICLA,NUM_ISAND_ICLA,
+     & ELAY0,NOMBSTRAT	 
       USE INTERFACE_PARALLEL, ONLY: P_DSUM
       IMPLICIT NONE
 !
@@ -130,15 +131,18 @@
       DOUBLE PRECISION, INTENT(INOUT)   :: TOCE_MUD(NOMBLAY,NPOIN)
       LOGICAL,           INTENT(IN)     :: NEW_BED_MODEL
       DOUBLE PRECISION,  INTENT(IN)     :: X(NPOIN),Y(NPOIN)
-	  !
+      !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
       INTEGER            :: I,J,K,IPOIN
-      INTEGER            :: ILAYER,IMUD,ISAND,ICLA
+      INTEGER            :: ILAYER,IMUD,ISAND,ICLA,ISTRAT
       DOUBLE PRECISION   :: DENS,DSTAR
       DOUBLE PRECISION   :: CHECK_RS,CHECK_RM
       DOUBLE PRECISION   :: TERM,DISCR
       DOUBLE PRECISION   :: MASS_TOT
+      DOUBLE PRECISION   :: tot,tot2,totsand,totmud
+      DOUBLE PRECISION   :: RATIO_INIT(NSICLA,NOMBSTRAT,NPOIN)	  
+      DOUBLE PRECISION   :: ESTRATUM(NPOIN,NOMBSTRAT)	  	  
 !======================================================================!
 !======================================================================!
 !                               PROGRAM                                !
@@ -168,35 +172,35 @@
       ELSE
 !     NEW BED MODEL!
 !
-! 1) USERS DEFINE LAYER THICKNESS
-!  faire call bed_init_user pour remplir estratum et ratio_init
+! 1) USERS DEFINE INITIAL LAYER THICKNESS AND INITIAL RATIOS FOR EACH CLASS
+      CALL BED_INIT_USER(ESTRATUM,RATIO_INIT)
 !
 !    INITIALISATION ES:
-		DO IPOIN=1,NPOIN
-		 DO ILAYER=1,NOMBLAY
-		    ES(IPOIN,ILAYER)=0.D0
-		 ENDDO
-		ENDDO
+        DO IPOIN=1,NPOIN
+         DO ILAYER=1,NOMBLAY
+            ES(IPOIN,ILAYER)=0.D0
+         ENDDO
+        ENDDO
 !
-      IF (.NOT.HIRANO)THEN
+      IF (NSICLA.EQ.1)THEN
         IF (NOMBLAY.EQ.1)THEN
             DO IPOIN=1,NPOIN
-				ES(IPOIN,NOMBLAY)= ESTRATUM(IPOIN,NOMBLAY) 
+                ES(IPOIN,NOMBLAY)= ESTRATUM(IPOIN,NOMBLAY) 
             ENDDO
-			ELSE
-            WRITE(LU,*) 'NOMBLAY > 1 et un seul sable'
+            ELSE
+            WRITE(LU,*) 'NOMBLAY > 1 and only one sediment class'
             CALL PLANTE(1)
             STOP
         ENDIF
       ELSE
 !   first layer is active layer
-			DO IPOIN=1,NPOIN
+            DO IPOIN=1,NPOIN
                 ELAY%R(IPOIN)= ELAY0 ! on pourra mettre une autre option ( 3 * Dm) a gerer dans bed_udate_hirano
-				ES(1,IPOIN) = 0.D0 ! la couche active est remplie dans le premeier appel de bed_update_hirano
-				DO ILAYER = 2,NOMBLAY
-				   ISTRAT=ILAYER-1
-				   ES(IPOIN,ILAYER) = ESTRATUM(IPOIN,ISTRAT)
-				ENDDO
+                ES(IPOIN,1) = 0.D0 ! la couche active est remplie dans le premeier appel de bed_update_hirano
+                DO ILAYER = 2,NOMBLAY
+                   ISTRAT=ILAYER-1
+                   ES(IPOIN,ILAYER) = ESTRATUM(IPOIN,ISTRAT)
+                ENDDO
             ENDDO            
       ENDIF
        DO IPOIN=1,NPOIN 
@@ -206,87 +210,101 @@
          ENDDO
        ENDDO
 ! 2) USERS DEFINES: INITIALISATION OF RATIO_SAND 
-!************FAIRE LE CALCUL DES RATIO_SAND, RATIO_MUD et RATIO_MUD_SAND à partir des RATIO_INIT(NCLA,NSTRAT,NPOIN)
+!************FAIRE LE CALCUL DES RATIO_SAND, RATIO_MUD et RATIO_MUD_SAND à partir des RATIO_INIT(NCLA,NOMBSTRAT,NPOIN)
 
-		DO IPOIN=1,NPOIN
-			DO ISTRAT=1,NSTRAT
-			    tot=0.D0
-				tot2=0.D0
-				DO ISAND=1,NSAND
-				tot= tot + RATIO_INIT(NUM_ISAND_ICLA(ISAND),ISTRAT,IPOIN)
-				ENDDO
-				DO ISAND=1,NSAND
-					IF(HIRANO)THEN
-						ILAYER = ISTRAT+1
+        DO IPOIN=1,NPOIN
+            DO ISTRAT=1,NOMBSTRAT
+                tot=0.D0
+                tot2=0.D0
+                DO ISAND=1,NSAND
+                tot=tot+RATIO_INIT(NUM_ISAND_ICLA(ISAND),ISTRAT,IPOIN)
+                ENDDO
+                DO ISAND=1,NSAND
+                    IF(NSICLA.GT.1)THEN
+                        ILAYER = ISTRAT+1
+!la couche active est remplie dans le premier appel de bed_update_hirano, mais il faut quand même initialiser ses ratios ...
+                        IF(ISAND.LT.NSAND)THEN
+						  RATIO_SAND(ISAND,1,IPOIN)=0.D0
+                        ELSE
+						  RATIO_SAND(NSAND,1,IPOIN)=1.D0
+                        ENDIF						
+                    ELSE
+                        ILAYER=ISTRAT
+                    ENDIF
+                    IF(ISAND.LT.NSAND)THEN
+                        IF(tot.GT.0.D0)THEN
+                            RATIO_SAND(ISAND,ILAYER,IPOIN)=
+     &                RATIO_INIT(NUM_ISAND_ICLA(ISAND),ISTRAT,IPOIN)/tot
+                        ELSE
+                            RATIO_SAND(NSAND,ILAYER,IPOIN)=0.D0
+                        ENDIF
+                        tot2=tot2+RATIO_SAND(ISAND,ILAYER,IPOIN)
+                    ELSE
+                        RATIO_SAND(NSAND,ILAYER,IPOIN)=1.D0-tot2
+                    ENDIF
+                ENDDO
+            ENDDO
+        ENDDO
+! 3) INITIALISATION OF RATIO_MUD 
+        DO IPOIN=1,NPOIN
+            DO ISTRAT=1,NOMBSTRAT
+                tot=0.D0
+                tot2=0.D0
+                DO IMUD=1,NMUD
+                tot= tot + RATIO_INIT(NUM_IMUD_ICLA(IMUD),ISTRAT,IPOIN)
+                ENDDO
+                DO IMUD=1,NMUD
+                    IF(NSICLA.GT.1)THEN
+                        ILAYER = ISTRAT+1
+!la couche active est remplie dans le premier appel de bed_update_hirano, mais il faut quand même initialiser ses ratios ...
+                        IF(IMUD.LT.NMUD)THEN
+						  RATIO_MUD(IMUD,1,IPOIN)=0.D0
+                        ELSE
+						  RATIO_MUD(NMUD,1,IPOIN)=1.D0
+                        ENDIF	
+                    ELSE
+                        ILAYER=ISTRAT
+                    ENDIF
+                    IF(IMUD.LT.NMUD)THEN
+                        IF(tot.GT.0.D0)THEN
+                            RATIO_MUD(IMUD,ILAYER,IPOIN)=
+     &                  RATIO_INIT(NUM_IMUD_ICLA(IMUD),ISTRAT,IPOIN)/tot
+                        ELSE
+                            RATIO_MUD(NMUD,ILAYER,IPOIN)=0.D0
+                        ENDIF
+                        tot2=tot2+RATIO_MUD(IMUD,ILAYER,IPOIN)
+                    ELSE
+                        RATIO_MUD(NMUD,ILAYER,IPOIN)=1.D0-tot2
+                    ENDIF
+                ENDDO
+            ENDDO
+        ENDDO
+! 4) INITIALISATION OF RATIO_MUD_SAND
+        DO IPOIN=1,NPOIN
+            DO ISTRAT=1,NOMBSTRAT
+                totmud=0.D0
+                totsand=0.D0
+                DO IMUD=1,NMUD
+                totmud= totmud + 
+     &          RATIO_INIT(NUM_IMUD_ICLA(IMUD),ISTRAT,IPOIN)
+                ENDDO
+                DO ISAND=1,NSAND
+                totsand= totsand + 
+     &          RATIO_INIT(NUM_ISAND_ICLA(ISAND),ISTRAT,IPOIN)
+                ENDDO               
+                IF(NSICLA.GT.1)THEN
+                ILAYER = ISTRAT+1
 !la couche active est remplie dans le premeier appel de bed_update_hirano
-					ELSE
-						ILAYER=ISTRAT
-					ENDIF
-					IF(ISAND.LT.NSAND)THEN
-						IF(tot.GT.0.D0)THEN
-							RATIO_SAND(NSAND,ILAYER,IPOIN)=RATIO_INIT(NUM_ISAND_ICLA(ISAND),ISTAT,IPOIN)/tot
-						ELSE
-							RATIO_SAND(NSAND,ILAYER,IPOIN)=0.D0
-						ENDIF
-						tot2=tot2+RATIO_SAND(NSAND,ILAYER,IPOIN)
-					ELSE
-						RATIO_SAND(NSAND,ILAYER,IPOIN)=1.D0-tot2
-					ENDIF
-				ENDDO
-			ENDDO
-		ENDDO
-! 3) USERS DEFINES: INITIALISATION OF RATIO_MUD 
-		DO IPOIN=1,NPOIN
-			DO ISTRAT=1,NSTRAT
-			    tot=0.D0
-				tot2=0.D0
-				DO IMUD=1,NMUD
-				tot= tot + RATIO_INIT(NUM_IMUD_ICLA(IMUD),ISTRAT,IPOIN)
-				ENDDO
-				DO IMUD=1,NMUD
-					IF(HIRANO)THEN
-						ILAYER = ISTRAT+1
-!la couche active est remplie dans le premeier appel de bed_update_hirano
-					ELSE
-						ILAYER=ISTRAT
-					ENDIF
-					IF(IMUD.LT.NMUD)THEN
-						IF(tot.GT.0.D0)THEN
-							RATIO_MUD(NMUD,ILAYER,IPOIN)=RATIO_INIT(NUM_IMUD_ICLA(IMUD),ISTAT,IPOIN)/tot
-						ELSE
-							RATIO_MUD(NMUD,ILAYER,IPOIN)=0.D0
-						ENDIF
-						tot2=tot2+RATIO_MUD(NMUD,ILAYER,IPOIN)
-					ELSE
-						RATIO_MUD(NMUD,ILAYER,IPOIN)=1.D0-tot2
-					ENDIF
-				ENDDO
-			ENDDO
-		ENDDO
-! 4) USERS DEFINES: INITIALISATION OF RATIO_MUD_SAND
-		DO IPOIN=1,NPOIN
-			DO ISTRAT=1,NSTRAT
-			    totmud=0.D0
-				totsand=0.D0
-				DO IMUD=1,NMUD
-				totmud= totmud + RATIO_INIT(NUM_IMUD_ICLA(IMUD),ISTRAT,IPOIN)
-				ENDDO
-				DO ISAND=1,NSAND
-				totsand= totsand + RATIO_INIT(NUM_ISAND_ICLA(ISAND),ISTRAT,IPOIN)
-				ENDDO				
-				IF(HIRANO)THEN
-					ILAYER = ISTRAT+1
-!la couche active est remplie dans le premeier appel de bed_update_hirano
-				ELSE
-					ILAYER=ISTRAT
-				ENDIF
-				IF(totmud+totsand.GT.0.D0)THEN
-					RATIO_MUD_SAND(ILAYER,IPOIN)=totmud/(totmud+totsand)
-				ELSE
-					RATIO_MUD_SAND(ILAYER,IPOIN)=1.D0
-				ENDIF
-			ENDDO
-		ENDDO		
+                ELSE
+                    ILAYER=ISTRAT
+                ENDIF
+                IF(totmud+totsand.GT.0.D0)THEN
+                   RATIO_MUD_SAND(ILAYER,IPOIN)=totmud/(totmud+totsand)
+                ELSE
+                   RATIO_MUD_SAND(ILAYER,IPOIN)=1.D0
+                ENDIF
+            ENDDO
+        ENDDO       
 !
 !  CHECK THE RATIOS
         DO IPOIN=1,NPOIN

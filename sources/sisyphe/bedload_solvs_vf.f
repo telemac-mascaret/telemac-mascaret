@@ -87,6 +87,7 @@
 !
       USE INTERFACE_SISYPHE, EX_BEDLOAD_SOLVS_VF => BEDLOAD_SOLVS_VF
       USE BIEF
+      USE DECLARATIONS_SISYPHE, ONLY : HN,HMIN_BEDLOAD,DVF	  
       USE DECLARATIONS_SPECIAL
       IMPLICIT NONE
 !
@@ -132,27 +133,39 @@
           IEL2 = NUBO(1,ISEGIN)
         ENDIF
 !       2 - QS FOR THE SEGMENT, BROKEN UP ACCORDING TO X AND Y
-!
+!       Centered scheme to determine the direction of solid transport
         QSMOY1 = 0.5D0*(QSX%R(IEL1) + QSX%R(IEL2))
         QSMOY2 = 0.5D0*(QSY%R(IEL1) + QSY%R(IEL2))
 !       3 - PROJECTS QS FOR THE SEGMENT ONTO THE SEGMENT NORMAL
 !
         QSP = VNOIN1*QSMOY1 + VNOIN2*QSMOY2
-!       4 - UPWIND SCHEME ON NODES WITH A "PROBLEM"
+!       4 - Final computation of fluxes taking into account upwinding coefficient and correction for rigid beds
 !
-        IF(BREACH%I(IEL1).EQ.1.AND.QSP.GT.0.D0) THEN
+        IF(QSP.GT.0.D0) THEN
+         IF(BREACH%I(IEL1).EQ.1) THEN !UPWIND SCHEME ON NODES WITH A "PROBLEM"		
           QSMOY1 = QSX%R(IEL1)
           QSMOY2 = QSY%R(IEL1)
-        ENDIF
-        IF(BREACH%I(IEL2).EQ.1.AND.QSP.LT.0.D0) THEN
+         ELSE
+          QSMOY1 = DVF*QSX%R(IEL1) + (1.D0-DVF)*QSX%R(IEL2)
+          QSMOY2 = DVF*QSY%R(IEL1) + (1.D0-DVF)*QSY%R(IEL2)		 
+         ENDIF		 
+        ELSE !QSP.LE.0.D0
+         IF(BREACH%I(IEL2).EQ.1) THEN !UPWIND SCHEME ON NODES WITH A "PROBLEM"	
           QSMOY1 = QSX%R(IEL2)
           QSMOY2 = QSY%R(IEL2)
-        ENDIF
+         ELSE		  
+          QSMOY1 = (1.D0-DVF)*QSX%R(IEL1) + DVF*QSX%R(IEL2)
+          QSMOY2 = (1.D0-DVF)*QSY%R(IEL1) + DVF*QSY%R(IEL2)		  
+         ENDIF
+		ENDIF
         QSP = VNOIN1*QSMOY1 + VNOIN2*QSMOY2
 !       5 - INTEGRATES BY THE SEGMENT LENGTH
 !
-        FLUX%R(IEL1) = FLUX%R(IEL1) + RNORM*QSP
-        FLUX%R(IEL2) = FLUX%R(IEL2) - RNORM*QSP
+        IF(HN%R(IEL1).GE.HMIN_BEDLOAD.AND.
+     &     HN%R(IEL2).GE.HMIN_BEDLOAD) THEN
+          FLUX%R(IEL1) = FLUX%R(IEL1) + RNORM*QSP
+          FLUX%R(IEL2) = FLUX%R(IEL2) - RNORM*QSP
+        ENDIF		  
       ENDDO
 !
 !     BOUNDARIES

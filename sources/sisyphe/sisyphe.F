@@ -881,7 +881,7 @@
      &                		MESH%Y%R)
         IF(DEBUG.GT.0) WRITE(LU,*) 'END INIT_SEDIMENT'
 !
-        IF(HIRANO) THEN
+        IF(NSICLA.GT.1) THEN
             IF(DEBUG.GT.0) WRITE(LU,*)'BED_UPDATE'
             CALL BED_UPDATE(ZR,ZF,VOLU2D)
             IF(DEBUG.GT.0) WRITE(LU,*)'END BED_UPDATE'			  
@@ -1461,7 +1461,7 @@
                 STOP
               ENDIF
 			  
-              IF(HIRANO) THEN
+              IF(NSICLA.GT.1) THEN
                  IF(DEBUG.GT.0) WRITE(LU,*)'BED_UPDATE'
                  CALL BED_UPDATE(ZR,ZF,VOLU2D)
                  IF(DEBUG.GT.0) WRITE(LU,*)'END BED_UPDATE'			  

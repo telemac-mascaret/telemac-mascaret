@@ -315,8 +315,9 @@
       NCONDIS       = MOTINT( ADRESS(1, 38) )
       SLOPEFF       = MOTINT( ADRESS(1, 39) )
       DEVIA         = MOTINT( ADRESS(1, 40) )
-      NOMBLAY       = MOTINT( ADRESS(1,251) )
+      NOMBSTRAT     = MOTINT( ADRESS(1,251) )
       NSICLA        = DIMENS(4,59)
+      IF(NSICLA.GT.1) NOMBLAY = NOMBSTRAT+1 ! active layer added		  
       HIDFAC        = MOTINT( ADRESS(1,253) )
       ICQ           = MOTINT( ADRESS(1, 41) )
 !     CONTROL SECTIONS
@@ -588,6 +589,10 @@
 !     MINIMUM DEPTH FOR BEDLOAD WHEN USING FE
 !
       HMIN_BEDLOAD=MOTREA(ADRESS(2,52))
+!
+!     CENTERING FOR FV
+!
+      DVF=MOTREA(ADRESS(2,53))
 !
 !     HIDING EXPOSURE MULTI GRAIN MODEL
 !

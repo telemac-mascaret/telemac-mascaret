@@ -2909,19 +2909,19 @@ AIDE1 = 'constant of the Krone and Partheniades erosion law (Kg/m2/s)'
 /
 / jaj re-using a found not used parameter
 /
-NOM = 'NOMBRE DE COUCHES POUR GRANULO ETENDUE'
-NOM1 = 'NUMBER OF BED LOAD MODEL LAYERS'
+NOM = 'NOMBRE DE COUCHES POUR STRATIFICATION INITIALE'
+NOM1 = 'NUMBER OF LAYERS FOR INITIAL STRATIFICATION'
 TYPE = INTEGER
 INDEX = 251
-MNEMO = 'NOMBLAY'
+MNEMO = 'NOMBSTRAT'
 TAILLE = 1
-DEFAUT = 2
-DEFAUT1 = 2
+DEFAUT = 1
+DEFAUT1 = 1
 RUBRIQUE = 'GENERAL'
 RUBRIQUE1 = 'GENERAL'
 NIVEAU = 1
-AIDE = 'Comme son nom l''indique..., defaut NOMBLAY=2'
-AIDE1 ='This is the given allocation limit, secure default NOMLAY=2'
+AIDE = 'Comme son nom l''indique..., defaut NOMBSTRAT=1'
+AIDE1 ='This is the given allocation limit, secure default NOMBSTRAT=1'
 
 // jaj #### added for sections
 
@@ -3793,4 +3793,19 @@ AIDE =
 'Liste des types de sediment: cohesif (CO) ou non cohesif (NCO).'
 AIDE1 =
 ' Liste of types of sediment: cohesive (CO) ou non cohesive (NCO).'
+
+NOM = 'DECENTREMENT POUR LE CHARRIAGE'
+NOM1 = 'UPWINDING FOR BEDLOAD'
+TYPE = REEL
+INDEX = 53
+MNEMO = 'DVF'
+DEFAUT = 0.5E0
+DEFAUT1 = 0.5E0
+RUBRIQUE = 'PARAMETRES NUMERIQUES'
+RUBRIQUE1 = 'NUMERICAL PARAMETERS'
+NIVEAU = 1
+AIDE = 'Parametre pour la résolution VF de equation d Exner,
+0.5 = Centre (precis), 1 = Decentrage amont (stable car diffusif)'
+AIDE1 = 'Parameter for FV solving of Exner equation
+0.5 = Centered (precise), 1 = Upwind (stable because diffusive)'
 /

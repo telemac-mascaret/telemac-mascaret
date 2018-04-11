@@ -77,8 +77,6 @@ files: bief_def.f
   strche.f
   fonstr.f
   read_dataset.f
-  read_partel_info.f
-  leclim.f
   vc13cc.f
   vc04tt.f
   vc01tt0.f
@@ -402,9 +400,12 @@ files: bief_def.f
   bief_gcf.f
   bief_gammp.f
   bief_erf.f
+  read_partel_info.f
+  leclim.f
   write_data.f
   impvec.f
   bief_desimp.f
+  write_header.f
   longitu.f
   vecle3.f
   vecle6.f
@@ -456,7 +457,6 @@ files: bief_def.f
   positive_depths.f
   bief_valida.f
   global_to_local_point.f
-  write_header.f
   write_mesh.f
   bief_close_files.f
 
@@ -599,6 +599,7 @@ files: declarations_sisyphe.f
   point_sisyphe.f
   maxslope.f
   condis_sisyphe.f
+  init_constant.F
   disimp.f
   read_fic_conc.f
   qgl.f
@@ -628,7 +629,7 @@ files: declarations_sisyphe.f
   suspension_fredsoe.f
   suspension_bijker.f
   init_transport.f
-  corstr_sisyphe.f
+  predes.f
   suspension_dispersion.f
   suspension_erosion_coh.f
   suspension_evol.f
@@ -646,8 +647,7 @@ files: declarations_sisyphe.f
   bed_update_activelayer_hirano.f
   noerod.f
   bilan_sisyphe.f
-  init_constant.F
-  predes.f
+  corstr_sisyphe.f
   sis_arret.f
   condim_sisyphe.f
   tassement_2.f
@@ -663,7 +663,6 @@ files: declarations_sisyphe.f
   bedload_effpnt.f
   bedload_solidischarge.f
   bedload_main.f
-  rescue_sisyphe_notperma.f
   coefro_sisyphe.f
   ride.f
   ride_vr.f
@@ -689,15 +688,17 @@ files: declarations_sisyphe.f
   cvsp_main.f
   init_compo_coh.f
   init_mixte.f
-  mean_grain_size.f
+  bed_init_user.f
   init_compo.f
   init_avai.f
   vitchu_sisyphe.f
   init_sediment.f
   layer.f
+  rescue_sisyphe_notperma.f
   fluxpr_sisyphe.f
   flusec_sisyphe.f
   calcuw.f
+  mean_grain_size.f
   bed_update.f
   init_zero.f
   entete_sisyphe.f

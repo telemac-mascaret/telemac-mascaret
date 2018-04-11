@@ -654,6 +654,7 @@ files: declarations_sisyphe.f
   sedi3d_impsed.f
   maxslope.f
   condis_sisyphe.f
+  init_constant.F
   disimp.f
   read_fic_conc.f
   qgl.f
@@ -681,7 +682,7 @@ files: declarations_sisyphe.f
   suspension_sandflow.f
   suspension_bijker.f
   init_transport.f
-  corstr_sisyphe.f
+  predes.f
   suspension_dispersion.f
   suspension_erosion_coh.f
   suspension_evol.f
@@ -698,8 +699,7 @@ files: declarations_sisyphe.f
   nestor_interface.f
   bed_update_activelayer_hirano.f
   bilan_sisyphe.f
-  init_constant.F
-  predes.f
+  corstr_sisyphe.f
   sis_arret.f
   condim_sisyphe.f
   tassement_2.f
@@ -715,7 +715,6 @@ files: declarations_sisyphe.f
   bedload_effpnt.f
   bedload_solidischarge.f
   bedload_main.f
-  rescue_sisyphe_notperma.f
   coefro_sisyphe.f
   ride.f
   ride_vr.f
@@ -741,15 +740,17 @@ files: declarations_sisyphe.f
   cvsp_main.f
   init_compo_coh.f
   init_mixte.f
-  mean_grain_size.f
+  bed_init_user.f
   init_compo.f
   init_avai.f
   vitchu_sisyphe.f
   init_sediment.f
   layer.f
+  rescue_sisyphe_notperma.f
   fluxpr_sisyphe.f
   flusec_sisyphe.f
   calcuw.f
+  mean_grain_size.f
   bed_update.f
   init_zero.f
   entete_sisyphe.f
