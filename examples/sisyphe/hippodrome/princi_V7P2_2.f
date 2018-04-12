@@ -472,14 +472,14 @@ CRWR              FVAIR = VAIR
      &                                WIND_SPD)
         ENDIF
 CRWR
-        IF(AT.LE.900.D0)THEN
-           COEF_TEMPS=AT/900.D0
+C        IF(AT.LE.900.D0)THEN
+C           COEF_TEMPS=AT/900.D0
 C        ELSEIF(AT.LE.20000.D0)THEN
 C           COEF_TEMPS=1.D0
 C        ELSE
            COEF_TEMPS=1.D0
-        ENDIF
-CRWR        WRITE(LU,*)'COEF_TEMPS',COEF_TEMPS
+C        ENDIF
+C        WRITE(LU,*)'COEF_TEMPS',COEF_TEMPS
         DO I=1,NPOIN
 CRWR           WINDX(I)=(-Y(I)/5000.D0*500.D0)*COEF_TEMPS
 CRWR           WINDY(I)=(X(I)/5000.D0*500.D0)*COEF_TEMPS

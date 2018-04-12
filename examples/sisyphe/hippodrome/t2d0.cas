@@ -3,7 +3,9 @@
 /----------------------------------------------------------------------
 LANGUE = 1
 COUPLAGE AVEC = SISYPHE
-FICHIER DES PARAMETRES DE SISYPHE = sisyphe1_vf.cas
+FICHIER DES PARAMETRES DE SISYPHE = sisyphe0_vf.cas / granulo unique
+/FICHIER DES PARAMETRES DE SISYPHE = sisyphe1_vf.cas / plusieurs classes de sable, pas de stratif initiale
+/FICHIER DES PARAMETRES DE SISYPHE = sisyphe1_vf_strat.cas / plusieurs classes de sable, plusierus couches de stratif initiale
 PERIODE DE COUPLAGE POUR SISYPHE = 1
 FICHIER DES CONDITIONS AUX LIMITES          : hyppodrome.cli
 FICHIER DE GEOMETRIE                        : hyppodrome.geo
@@ -19,11 +21,11 @@ FICHIER FORTRAN                             : princi_V7P2_2.f
 /
 TITRE : 'TEST MASSE'
 /
-DUREE DU CALCUL                                   : 19800
+DUREE DU CALCUL                                   : 2000
 /DUREE DU CALCUL                                   : 20.
 PAS DE TEMPS                                      : 5.
-PERIODE DE SORTIE LISTING                         : 120
-PERIODE POUR LES SORTIES GRAPHIQUES               : 120
+PERIODE DE SORTIE LISTING                         : 200
+PERIODE POUR LES SORTIES GRAPHIQUES               : 200
 VARIABLES POUR LES SORTIES GRAPHIQUES             : 'U,V,S,B,H,X,Y,M'
 /----------------------------------------------------------------------
 /                    CONDITIONS INITIALES

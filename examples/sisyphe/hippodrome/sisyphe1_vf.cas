@@ -3,8 +3,8 @@
 /-----------------------------------------------------------------------
 FICHIER DES CONDITIONS AUX LIMITES = hyppodrome.cli
 FICHIER DE GEOMETRIE               = hyppodrome.geo
-FICHIER DES RESULTATS              = res_sis.slf
-FICHIER FORTRAN                    = 'user_fortran1'
+FICHIER DES RESULTATS              = res_sis1_vf.slf
+/FICHIER FORTRAN                    = 'user_fortran1'
 /DEBUGGER = 1
 /-----------------------------------------------------------------------
 / INFORMATIONS SUR LE CALCUL
@@ -33,14 +33,11 @@ VITESSES DE CHUTE = -9;-9;-9;-9
 PARAMETRES DE SHIELDS = -9;-9;-9;-9
 DIAMETRES DES GRAINS = 0.0002;0.00031;0.00103;0.00169
 D90                           = 0.0002;0.00031;0.00103;0.00169
-/ commented since ratio_sand defined in init_sediment.f
 FRACTION INITIALE PAR CLASSE SEDIMENTOLOGIQUE = 0.25;0.25;0.25;0.25
-POROSITE DU LIT NON COHESIF   = 0.4
 FORMULE POUR EFFET DE PENTE   = 0
 FORMULE POUR LA DEVIATION     = 0
 GLISSEMENT DU SEDIMENT        = NON
-/ si on ne donne pas le nombre de couche -> 2 par defaut in .dico!
-/ si on met 1, lorqu'on a plusieurs sables, il faut decider si le
-/ modele de sol sera forcement du hirano (donc il vaut mieux
-/ mettre 2 couches par defaut) ou autre
-/NOMBRE DE COUCHES POUR GRANULO ETENDUE       = 
+/ si on ne donne pas le nombre de couches -> 1 par defaut in .dico!
+/NOMBRE DE COUCHES POUR STRATIFICATION INITIALE       = 
+/ Par défaut épaisseur de sediment de 100 (cf. bed_init_user), et epaisseur de couche active de 1000 (cf. dico)
+/EPAISSEUR DE COUCHE ACTIVE= 0.03

@@ -3,7 +3,7 @@
 /-----------------------------------------------------------------------
 FICHIER DES CONDITIONS AUX LIMITES = hyppodrome.cli
 FICHIER DE GEOMETRIE               = hyppodrome.geo
-FICHIER DES RESULTATS              = res_sis.slf
+FICHIER DES RESULTATS              = res_sis0_EF.slf
 /DEBUGGER = 1
 /-----------------------------------------------------------------------
 / INFORMATIONS SUR LE CALCUL
@@ -32,9 +32,8 @@ VITESSES DE CHUTE = -9
 PARAMETRES DE SHIELDS = -9
 DIAMETRES DES GRAINS = 0.0002
 D90                                          = 0.0002
-POROSITE DU LIT NON COHESIF                  = 0.4
 FORMULE POUR EFFET DE PENTE                  = 0
 FORMULE POUR LA DEVIATION                    = 0
 GLISSEMENT DU SEDIMENT                       = NON
-/ si on ne donne pas le nombre de couche -> 2 par defaut in .dico!
-NOMBRE DE COUCHES POUR GRANULO ETENDUE       = 1
+/ si on ne donne pas le nombre de couches -> 1 par defaut in .dico!
+/NOMBRE DE COUCHES POUR STRATIFICATION INITIALE       = 
