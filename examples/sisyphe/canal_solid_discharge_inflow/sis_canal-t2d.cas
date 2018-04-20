@@ -24,7 +24,6 @@ SUSPENSION FOR ALL SANDS                 = NO
 SHIELDS PARAMETERS                       = 0.047D0
 SETTLING VELOCITIES                      = -9
 NON COHESIVE BED POROSITY                = 0.375
-NUMBER OF BED LOAD MODEL LAYERS          = 1
 /---------------------------------------------------------------------/
 /       BOUNDARY CONDITIONS                                           /
 /---------------------------------------------------------------------/

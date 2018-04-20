@@ -14,6 +14,7 @@
 /---------------------------------------------------------------
 /                         FICHIERS
 /---------------------------------------------------------------
+NEW BED MODEL      = YES
 GEOMETRY FILE = geo_bump2d-t2d.slf
 BOUNDARY CONDITIONS FILE = geo_bump2d-t2d.cli
 RESULTS FILE = sis_bump2d-t2d.slf

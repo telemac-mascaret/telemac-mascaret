@@ -65,8 +65,8 @@
               ENDIF
             ENDDO
           ELSE
-! IL FAUT DECLARER MASS_MUD avec MAX(NMUD,1)
-            MASS_MUD(1,ILAYER,IPOIN) = 0.D0
+!! IL FAUT DECLARER MASS_MUD avec MAX(NMUD,1)
+!            MASS_MUD(1,ILAYER,IPOIN) = 0.D0
           ENDIF
 !
           IF(NSAND.NE.0)THEN
@@ -77,8 +77,8 @@
               ENDIF
             ENDDO
           ELSE
-! IL FAUT DECLARER MASS_SAND avec  MAX(NSAND,1)
-            MASS_SAND(1,ILAYER,IPOIN) = 0.D0
+!! IL FAUT DECLARER MASS_SAND avec  MAX(NSAND,1)
+!            MASS_SAND(1,ILAYER,IPOIN) = 0.D0
           ENDIF
         ENDDO
 !

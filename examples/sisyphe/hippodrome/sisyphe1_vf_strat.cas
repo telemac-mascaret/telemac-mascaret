@@ -3,7 +3,7 @@
 /-----------------------------------------------------------------------
 FICHIER DES CONDITIONS AUX LIMITES = hyppodrome.cli
 FICHIER DE GEOMETRIE               = hyppodrome.geo
-FICHIER DES RESULTATS              = res_sis1_VF_strat_centre.slf
+FICHIER DES RESULTATS              = res_sis1_vf_strat_centre.slf
 FICHIER FORTRAN                    = 'user_fortran3'
 /DEBUGGER = 1
 /-----------------------------------------------------------------------
@@ -13,7 +13,7 @@ PAS DE TEMPS = 5
 /-----------------------------------------------------------------------
 / PARAMETRES DE SORTIE
 /-----------------------------------------------------------------------
-VARIABLES POUR LES SORTIES GRAPHIQUES = 
+VARIABLES POUR LES SORTIES GRAPHIQUES =
 /'U,V,S,E,H,B,M,TOB,1A*,2A*,3A*,4A*,*ES'
 'E,B,M,1A*,2A*,3A*,4A*,*ES'
 BILAN DE MASSE                        = OUI

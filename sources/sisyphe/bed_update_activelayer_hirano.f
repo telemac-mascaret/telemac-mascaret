@@ -82,7 +82,7 @@
 !     COMPUTATION OF THE THICKNESS FOR TRANSFER
 !
       DO IPOIN=1,NPOIN
-        THICK_TRANSFER = ES(IPOIN,1)- ELAY%R(IPOIN)		
+        THICK_TRANSFER = ES(IPOIN,1)- ELAY%R(IPOIN)
 !       POSITIVE SIGNE MEANS DEPOSITION, NEGATIVE MEANS EROSION
 !-----------------------------------------------------------------------
 !      DEPOSITION CASE
@@ -123,7 +123,7 @@
                     FLUX_MASS_MUD(IMUD,ILAYER,IPOIN)=
      &               FLUX_MASS_MUD(IMUD,ILAYER,IPOIN)-
      &               MASS_MUD(IMUD,ILAYER,IPOIN)
-    
+
                     FLUX_MASS_MUD(IMUD,1,IPOIN)=
      &               FLUX_MASS_MUD(IMUD,1,IPOIN)+
      &               MASS_MUD(IMUD,ILAYER,IPOIN)
@@ -134,7 +134,7 @@
                     FLUX_MASS_SAND(ISAND,ILAYER,IPOIN)=
      &               FLUX_MASS_SAND(ISAND,ILAYER,IPOIN)-
      &               MASS_SAND(ISAND,ILAYER,IPOIN)
-    
+
                     FLUX_MASS_SAND(ISAND,1,IPOIN)=
      &               FLUX_MASS_SAND(ISAND,1,IPOIN)+
      &               MASS_SAND(ISAND,ILAYER,IPOIN)
@@ -153,26 +153,26 @@
               FLUX_MASS_MUD(IMUD,1,IPOIN)=
      &              FLUX_MASS_MUD(IMUD,1,IPOIN)+
      &              (THICK_TRANSFER_TEMPO/ES(IPOIN,ILAYER))
-     &              *MASS_MUD(IMUD,ILAYER,IPOIN)     
+     &              *MASS_MUD(IMUD,ILAYER,IPOIN)
                 ENDDO
             ENDIF
             IF(NSAND.GE.1) THEN
-      
+
                 DO ISAND=1,NSAND
                FLUX_MASS_SAND(ISAND,ILAYER,IPOIN)=
      &              FLUX_MASS_SAND(ISAND,ILAYER,IPOIN)-
      &              (THICK_TRANSFER_TEMPO/ES(IPOIN,ILAYER))
      &              *MASS_SAND(ISAND,ILAYER,IPOIN)
-     
+
                FLUX_MASS_SAND(ISAND,1,IPOIN)=
      &              FLUX_MASS_SAND(ISAND,1,IPOIN)+
      &              (THICK_TRANSFER_TEMPO/ES(IPOIN,ILAYER))
      &              *MASS_SAND(ISAND,ILAYER,IPOIN)
                 ENDDO
-            ENDIF         
+            ENDIF
           GOTO 100
           ENDIF
-          ENDDO 
+          ENDDO
 100   CONTINUE
         ENDIF
       ENDDO ! NPOIN

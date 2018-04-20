@@ -9,6 +9,7 @@
 /       COMPUTER INFORMATIONS                                         /
 /---------------------------------------------------------------------/
 /                                                                     /
+NEW BED MODEL      = YES
 GEOMETRY FILE                     : Bar_Test_Random.slf
 BOUNDARY CONDITIONS FILE          : Bar_Test_Random.cli
 RESULTS FILE                      : Bar_Test_Random_Sis.slf
@@ -30,9 +31,11 @@ CRITICAL EVOLUTION RATIO                       : 0.5
 /       BED SEDIMENT TRANSPORT                                        /
 /---------------------------------------------------------------------/
 /
-BED LOAD                                       : YES
+TYPE OF SEDIMENT                               : NCO
+BED LOAD FOR ALL SANDS                         : YES
 SHIELDS PARAMETERS                             : 0.047
-BED-LOAD TRANSPORT FORMULA                     : 1             / MPM
+SETTLING VELOCITIES                            : -9
+BED-LOAD TRANSPORT FORMULA FOR ALL SANDS       : 1             / MPM
 SEDIMENT DIAMETERS                             : 0.00048
 /
 /---------------------------------------------------------------------/

@@ -3,7 +3,7 @@
 /-----------------------------------------------------------------------
 FICHIER DES CONDITIONS AUX LIMITES = hyppodrome.cli
 FICHIER DE GEOMETRIE               = hyppodrome.geo
-FICHIER DES RESULTATS              = res_sis_0_VF.slf
+FICHIER DES RESULTATS              = res_sis0_vf.slf
 /DEBUGGER = 1
 /-----------------------------------------------------------------------
 / INFORMATIONS SUR LE CALCUL
@@ -36,4 +36,4 @@ FORMULE POUR EFFET DE PENTE                  = 0
 FORMULE POUR LA DEVIATION                    = 0
 GLISSEMENT DU SEDIMENT                       = NON
 / si on ne donne pas le nombre de couches -> 1 par defaut in .dico!
-/NOMBRE DE COUCHES POUR STRATIFICATION INITIALE       = 
+/NOMBRE DE COUCHES POUR STRATIFICATION INITIALE       =
