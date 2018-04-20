@@ -6,18 +6,19 @@
 !
 !***********************************************************************
 !
+! 
       USE BIEF
       USE DECLARATIONS_SPECIAL
       USE DECLARATIONS_SISYPHE
       IMPLICIT NONE
 !
       DOUBLE PRECISION,INTENT(INOUT):: ESTRATUM(NPOIN,NOMBSTRAT)
-      DOUBLE PRECISION,INTENT(INOUT)::
-     &  RATIO_INIT(NSICLA,NOMBSTRAT,NPOIN)
+      DOUBLE PRECISION,INTENT(INOUT):: 
+     &     RATIO_INIT(NSICLA,NOMBSTRAT,NPOIN)
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
       INTEGER            :: IPOIN,ICLA,ISTRAT
-!
+!     
 !======================================================================!
 !======================================================================!
 !                               PROGRAM                                !
@@ -49,4 +50,3 @@
 !
       RETURN
       END
-
