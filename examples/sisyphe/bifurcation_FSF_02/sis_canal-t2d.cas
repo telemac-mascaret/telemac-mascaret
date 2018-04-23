@@ -9,6 +9,7 @@
 /       COMPUTER INFORMATIONS
 /---------------------------------------------------------------------
 /
+NEW BED MODEL                     : YES
 GEOMETRY FILE                     : geo_FSF_02.slf
 /BOUNDARY CONDITIONS FILE          : geo_FSF_02.cli
 BOUNDARY CONDITIONS FILE          : sis_FSF_02.cli
@@ -21,7 +22,7 @@ RESULTS FILE                      : sis_FSF_02.slf
 TITLE            : 'F.S.F. in a fixed rectangular channel with a bump'
 /CORRECTION ON CONVECTION VELOCITY              : YES
 /TYPE OF ADVECTION                              : 1
-VARIABLES FOR GRAPHIC PRINTOUTS                : 'H,U,V,Q,B,E,QSBL,QS'
+VARIABLES FOR GRAPHIC PRINTOUTS           : 'H,U,V,Q,B,E,QSBL,QS,1ES'
 MASS-BALANCE                                   : YES
 ZERO                                           : 1e-12
 /TETA                                           : 0.5
@@ -35,11 +36,12 @@ TYPE OF ADVECTION                         : 13
 /
 TYPE OF SEDIMENT = NCO
 /PRESCRIBED SOLID DISCHARGES : 0.   ; 1.0E-4   ; 1.0E-4
-PRESCRIBED SOLID DISCHARGES : 0.   ; 1.0E-5   ; 5.0E-6
+PRESCRIBED SOLID DISCHARGES : 0.   ; 0.0265   ; 0.01325
 NON COHESIVE BED POROSITY : 0.40
 BED LOAD FOR ALL SANDS                     : YES
 SHIELDS PARAMETERS                         : 0.047
-BED-LOAD TRANSPORT FORMULA FOR ALL SANDS   : 1 / MPM
+/ MPM
+BED-LOAD TRANSPORT FORMULA FOR ALL SANDS   : 1
 SETTLING VELOCITIES                        : -9
 SEDIMENT DIAMETERS                         : 0.0001
 /

@@ -50,6 +50,15 @@
 !+   Correction for multiples boundaries. Thanks to Dougal Clunie
 !+   for pointing out this error.
 !
+!history  R. KOPMANN (BAW)
+!+        13/07/2016
+!+        V7P2
+!+        Integrating liquid boundary file for QS
+!
+!history  M. SECHER AND P. TASSI (EDF)
+!+        17/03/2017
+!+        V7P3
+!+        Add conditional for liquid boundary file for QS
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !| NBOR           |-->| GLOBAL NUMBER OF BOUNDARY POINT
 !| AT             |-->| TEMPS (s)
@@ -74,6 +83,7 @@
 !
       INTEGER, EXTERNAL          :: P_IMAX
       DOUBLE PRECISION, EXTERNAL :: CGL
+      DOUBLE PRECISION, EXTERNAL :: QGL
 !
 !-----------------------------------------------------------------------
 !
@@ -88,22 +98,22 @@
         DO K=1,NPTFR
           I = NBOR(K)
           IF(NCSIZE.GT.1) I = MESH%KNOLG%I(I)
-          IF(I.EQ.58) Q2BOR%R(K) = 1.0D0
-          IF(I.EQ.59) Q2BOR%R(K) = 1.0D0
-          IF(I.EQ.44) Q2BOR%R(K) = 1.0D0
-          IF(I.EQ.32) Q2BOR%R(K) = 1.0D0
-          IF(I.EQ.22) Q2BOR%R(K) = 1.0D0
-          IF(I.EQ.14) Q2BOR%R(K) = 1.0D0
-          IF(I.EQ.8) Q2BOR%R(K) = 1.0D0
-          IF(I.EQ.4) Q2BOR%R(K) = 1.0D0
-          IF(I.EQ.2) Q2BOR%R(K) = 1.0D0
-          IF(I.EQ.1) Q2BOR%R(K) = 1.0D0
-          IF(I.EQ.3) Q2BOR%R(K) = 1.0D0
-          IF(I.EQ.7) Q2BOR%R(K) = 1.0D0
-          IF(I.EQ.13) Q2BOR%R(K) = 1.0D0
-          IF(I.EQ.21) Q2BOR%R(K) = 1.0D0
-          IF(I.EQ.31) Q2BOR%R(K) = 1.0D0
-          IF(I.EQ.43) Q2BOR%R(K) = 1.0D0
+          IF(I.EQ.58) Q2BOR%R(K) = 2650.0D0
+          IF(I.EQ.59) Q2BOR%R(K) = 2650.0D0
+          IF(I.EQ.44) Q2BOR%R(K) = 2650.0D0
+          IF(I.EQ.32) Q2BOR%R(K) = 2650.0D0
+          IF(I.EQ.22) Q2BOR%R(K) = 2650.0D0
+          IF(I.EQ.14) Q2BOR%R(K) = 2650.0D0
+          IF(I.EQ.8) Q2BOR%R(K) = 2650.0D0
+          IF(I.EQ.4) Q2BOR%R(K) = 2650.0D0
+          IF(I.EQ.2) Q2BOR%R(K) = 2650.0D0
+          IF(I.EQ.1) Q2BOR%R(K) = 2650.0D0
+          IF(I.EQ.3) Q2BOR%R(K) = 2650.0D0
+          IF(I.EQ.7) Q2BOR%R(K) = 2650.0D0
+          IF(I.EQ.13) Q2BOR%R(K) = 2650.0D0
+          IF(I.EQ.21) Q2BOR%R(K) = 2650.0D0
+          IF(I.EQ.31) Q2BOR%R(K) = 2650.0D0
+          IF(I.EQ.43) Q2BOR%R(K) = 2650.0D0
         ENDDO
       ENDIF
 !
@@ -116,7 +126,10 @@
       IF(NSICLA.GT.1) THEN
         DO I=NSICLA,1,-1
           DO K=1,NPTFR
-            EBOR%ADR(I)%P%R(K)=AVAIL(NBOR(K),1,I)*EBOR%ADR(1)%P%R(K)
+! --TEMPORARY!!-- RATIO_SAND NEED TO BE REPLACED BY A GENERAL VARIABLE
+! (NOT RELATED TO ONLY SANDS)
+            EBOR%ADR(I)%P%R(K)=RATIO_SAND(I,1,NBOR(K))
+     &                         *EBOR%ADR(1)%P%R(K)
           ENDDO
         ENDDO
       ENDIF
@@ -173,6 +186,15 @@
         DO IFRLIQ=1,NFRLIQ
           IF(NCSIZE.GT.1) YADEB(IFRLIQ)=P_IMAX(YADEB(IFRLIQ))
           IF(YADEB(IFRLIQ).EQ.1) THEN
+!
+!         READING BOUNDARY CONDITION FILE WITH SOLID DISCHARGE
+!
+      IF(CHARR) THEN
+!     AVOID OVERRIDING WITH SUSPENDED SEDIMENT TRANSPORT
+          IF(SIS_FILES(SISLIQ)%NAME(1:1).NE.' ') THEN
+                SOLDIS(IFRLIQ)=QGL(IFRLIQ,AT)
+          ENDIF
+      ENDIF
             CALL DISIMP(SOLDIS(IFRLIQ),Q2BOR,NUMLIQ%I,IFRLIQ,NSOLDIS,
      &                  T5,T1,
 !                             MASK OF LIQUID BOUNDARIES DONE IN SISYPHE
@@ -183,7 +205,9 @@
                 DO K=1,NPTFR
                   IF(NUMLIQ%I(K).EQ.IFRLIQ.AND.
      &               LIQBOR%I(K).EQ.KENT) THEN
-                    QBOR%ADR(I)%P%R(K)=AVAIL(NBOR(K),1,I)*T1%R(K)
+! --TEMPORARY!!-- RATIO_SAND NEED TO BE REPLACED BY A GENERAL VARIABLE
+! (NOT RELATED TO ONLY SANDS)
+                    QBOR%ADR(I)%P%R(K)=RATIO_SAND(I,1,NBOR(K))*T1%R(K)
                   ENDIF
                 ENDDO
               ENDDO
