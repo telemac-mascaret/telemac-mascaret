@@ -84,7 +84,7 @@
       G = GRAV
       RHO = XMVE
       RHO_S = XMVS
-      PON = XKV(1) ! it must be generalized for all layer ?
+      PON = XKV0(1) ! it must be generalized for all layer ?
 !
 !-----------------------------------------------------------------------
 ! CHARACTERISTIC GRAIN DIAMETERS FOR SURFACE

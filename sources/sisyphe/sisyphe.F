@@ -1609,7 +1609,7 @@
               IF(DEBUG.GT.0) WRITE(LU,*) 'APPEL DE TASSEMENT'
               IF(ITASS.EQ.1) THEN ! modify for all layers XKV
                 CALL TASSEMENT(ZF,NPOIN,DTS,ELAY,T3,T2,LT,AVAIL,NSICLA,
-     &                       ES,XMVS,XKV(1),TRANS_MASS,CONC_MUD,
+     &                       ES,XMVS,XKV,TRANS_MASS,CONC_MUD,
      &                       NCOUCH_TASS,MS_SABLE%R,MS_VASE%R)
               ELSEIF(ITASS.EQ.2.OR.ITASS.EQ.3) THEN
 !!!! ONLY FOR ONE CLASS

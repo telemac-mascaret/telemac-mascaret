@@ -317,7 +317,7 @@
       DEVIA         = MOTINT( ADRESS(1, 40) )
       NOMBSTRAT     = MOTINT( ADRESS(1,251) )
       NSICLA        = DIMENS(4,59)
-      IF(NSICLA.GT.1) NOMBLAY = NOMBSTRAT+1 ! active layer added		  
+      IF(NSICLA.GT.1) NOMBLAY = NOMBSTRAT+1 ! active layer added          
       HIDFAC        = MOTINT( ADRESS(1,253) )
       ICQ           = MOTINT( ADRESS(1, 41) )
 !     CONTROL SECTIONS
@@ -397,8 +397,8 @@
 !     THUS INITIALIZATION
 !
 !
-      DO K=1,DIMENS(2,5) !can be also NOMBLAY
-         XKV(K) = MOTREA( ADRESS(2,  5) + K-1 )
+      DO K=1,NOMBSTRAT
+         XKV0(K) = MOTREA( ADRESS(2,  5) + K-1 )
       ENDDO
 !     SHIELDS NUMBERS
       DO K=1,DIMENS(2,6)
@@ -1109,8 +1109,8 @@
 !V
       ELSE
 !        DO K=1,DIMENS(2,5)
-!         CSF_SABLE(K) = (1.D0-XKV(K))
-         CSF_SABLE = (1.D0-XKV(1)) ! generalize
+!         CSF_SABLE(K) = (1.D0-XKV0(K))
+         CSF_SABLE = (1.D0-XKV0(1)) ! generalize
 !        ENDDO
       ENDIF
 !

@@ -65,7 +65,7 @@
       DOUBLE PRECISION, INTENT(INOUT) :: ES(NPOIN,NOMBLAY)
       DOUBLE PRECISION, INTENT(IN)    :: TRANS_MASS(NOMBLAY)
       DOUBLE PRECISION, INTENT(IN)    :: CONC_MUD(NOMBLAY)
-      DOUBLE PRECISION, INTENT(IN)    :: XMVS,XKV(NOMBLAY)
+      DOUBLE PRECISION, INTENT(IN)    :: XMVS,XKV(NOMBLAY,NPOIN)
 !
 !+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 !
@@ -79,12 +79,13 @@
 ! COMPUTES THE TOTAL SEDIMENT THICKNESS (SAND + MUD) BEFORE CONSOLIDATION
 !
 ! ** PT **
-      CONC_SABLE=XMVS/XKV(1) ! to modify XKV(1) to integrate all values in the vertical direction?
+
 !
 ! T2: MUD THICKNESS BEFORE CONSOLIDATION
 !
       DO I=1,NPOIN
 !
+        CONC_SABLE=XMVS/XKV(1,I) ! to modify XKV(1) to integrate all values in the vertical direction?
         T2%R(I)=0.D0
         DO J=1,NOMBLAY
           EPAI_VASE(J)=MS_VASE(I,J)/CONC_MUD(J)

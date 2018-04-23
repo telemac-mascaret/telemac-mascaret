@@ -36,7 +36,7 @@
 !
       INTEGER IPOIN,ILAYER,ISAND,IMUD,IERR
       DOUBLE PRECISION THICK_TRANSFER,THICK_TRANSFER_TEMPO
-      DOUBLE PRECISION TERM,DISCR,TOT
+      DOUBLE PRECISION TERM,DISCR,TOT,RATIO_XKV
       DOUBLE PRECISION, ALLOCATABLE :: FLUX_MASS_MUD(:,:,:)
       DOUBLE PRECISION, ALLOCATABLE :: FLUX_MASS_SAND(:,:,:)
 !
@@ -116,7 +116,8 @@
           THICK_TRANSFER_TEMPO = ABS(THICK_TRANSFER)
 
           DO ILAYER =2,NOMBLAY
-           IF (THICK_TRANSFER_TEMPO.GE.ES(IPOIN,ILAYER))THEN
+           RATIO_XKV = (1.D0-XKV(ILAYER,IPOIN))/(1.D0-XKV(1,IPOIN))
+           IF (THICK_TRANSFER_TEMPO.GE.ES(IPOIN,ILAYER)*RATIO_XKV)THEN
 
             IF(NMUD.GE.1) THEN
                 DO IMUD=1,NMUD
@@ -141,18 +142,18 @@
                 ENDDO
             ENDIF
             THICK_TRANSFER_TEMPO = THICK_TRANSFER_TEMPO
-     &                              - ES(IPOIN,ILAYER)
+     &                              - ES(IPOIN,ILAYER)*RATIO_XKV
           ELSE
             IF(NMUD.GE.1) THEN
                 DO IMUD=1,NMUD
               FLUX_MASS_MUD(IMUD,ILAYER,IPOIN)=
      &          FLUX_MASS_MUD(IMUD,ILAYER,IPOIN)-
-     &              (THICK_TRANSFER_TEMPO/ES(IPOIN,ILAYER))
+     &              (THICK_TRANSFER_TEMPO/(ES(IPOIN,ILAYER)*RATIO_XKV))
      &              *MASS_MUD(IMUD,ILAYER,IPOIN)
 
               FLUX_MASS_MUD(IMUD,1,IPOIN)=
      &              FLUX_MASS_MUD(IMUD,1,IPOIN)+
-     &              (THICK_TRANSFER_TEMPO/ES(IPOIN,ILAYER))
+     &              (THICK_TRANSFER_TEMPO/(ES(IPOIN,ILAYER)*RATIO_XKV))
      &              *MASS_MUD(IMUD,ILAYER,IPOIN)
                 ENDDO
             ENDIF
@@ -161,12 +162,12 @@
                 DO ISAND=1,NSAND
                FLUX_MASS_SAND(ISAND,ILAYER,IPOIN)=
      &              FLUX_MASS_SAND(ISAND,ILAYER,IPOIN)-
-     &              (THICK_TRANSFER_TEMPO/ES(IPOIN,ILAYER))
+     &              (THICK_TRANSFER_TEMPO/(ES(IPOIN,ILAYER)*RATIO_XKV))
      &              *MASS_SAND(ISAND,ILAYER,IPOIN)
 
                FLUX_MASS_SAND(ISAND,1,IPOIN)=
      &              FLUX_MASS_SAND(ISAND,1,IPOIN)+
-     &              (THICK_TRANSFER_TEMPO/ES(IPOIN,ILAYER))
+     &              (THICK_TRANSFER_TEMPO/(ES(IPOIN,ILAYER)*RATIO_XKV))
      &              *MASS_SAND(ISAND,ILAYER,IPOIN)
                 ENDDO
             ENDIF

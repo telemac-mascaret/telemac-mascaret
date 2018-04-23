@@ -130,7 +130,8 @@
       LOGICAL, INTENT(IN)             :: TASSE
       LOGICAL, INTENT(IN)             :: SEDCO, SEDNCO, MIXTE
       INTEGER, INTENT(IN)             :: ITASS
-      DOUBLE PRECISION, INTENT(IN)    :: RHOS,XKV(NCOUCH), PVSNCO0
+      DOUBLE PRECISION, INTENT(IN)    :: RHOS,PVSNCO0
+      DOUBLE PRECISION, INTENT(IN)    :: XKV(NCOUCH,NPOIN2)
       TYPE(BIEF_OBJ), INTENT (INOUT)  :: H
       DOUBLE PRECISION, TARGET, INTENT(IN)    :: Z(NPOIN3)
       INTEGER, INTENT(IN)             :: NPLAN
@@ -182,8 +183,9 @@
 !       NOEROD IS IN LIBRARY SISYPHE
 !
 !       ONLY ONE LAYER
-        CFDEP = (1.D0-XKV(1))*RHOS ! check if porosity is variable along the vertical direction
+
         DO IPOIN = 1,NPOIN2
+          CFDEP = (1.D0-XKV(1,IPOIN))*RHOS ! check if porosity is variable along the vertical direction		
           HDEP(IPOIN) = 0.D0
 !         CV adding layers for non cohesive
           DO IC=1, NCOUCH
@@ -195,9 +197,9 @@
       ENDIF
 !
       IF(MIXTE) THEN
-        CFDEP= (1.D0-XKV(1))*RHOS ! check if porosity is variable along the vertical direction
         PVSCO0 = 1.D0-PVSNCO0
         DO IPOIN=1,NPOIN2
+          CFDEP= (1.D0-XKV(1,IPOIN))*RHOS ! check if porosity is variable along the vertical direction		
           CONC(IPOIN,1)  = CONC_LAYER(1)
           TOCE(IPOIN,1)  = TOCE_LAYER(1)
           PVSCO(IPOIN)   = PVSCO0
